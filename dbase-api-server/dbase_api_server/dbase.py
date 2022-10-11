@@ -54,6 +54,7 @@ class DepositsDatabase:
         try:
             cursor.execute(get_query)
             record = cursor.fetchall()
+            return record
         except(Exception, Error):
             return False
          
