@@ -1,5 +1,5 @@
 import psycopg2
-from psycopg2 import Error
+from psycopg2 import Error, connection
 
 
 class DepositsDatabase:
@@ -10,18 +10,20 @@ class DepositsDatabase:
                  port: int,
                  database: str
                  ) -> None:
-        self.__connection = psycopg2.connect(user=user,
-                                             password=password,
-                                             host=host,
-                                             port=port,
-                                             database=database)
+        self.__connection = psycopg2.connect(
+            user=user,
+            password=password,
+            host=host,
+            port=port,
+            database=database
+        )
 
     @property
-    def connection_value(self) -> None:
+    def connection_params(self) -> connection:
         return self.__connection
 
-    @connection_value.setter
-    def connection_value_setup(self, new_value: None) -> None:
+    @connection_params.setter
+    def connection_value_setup(self, new_value: connection) -> connection:
         self.__connection = new_value
 
     def add_deposit_info(self,
