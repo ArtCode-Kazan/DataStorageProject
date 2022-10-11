@@ -32,7 +32,7 @@ class DepositsDatabase:
             return False
 
     def delete_deposit_data(self, area_name: str):
-        """Delete deposit data from 'deposits' table"""
+        """Delete deposit data from 'deposits' table."""
         cursor = self.connection.cursor()
         delete_query = '''
             DELETE FROM deposits WHERE area_name = %s;
@@ -44,3 +44,16 @@ class DepositsDatabase:
             return True
         except (Exception, Error):
             return False
+
+    def get_all_deposits_data(self):
+        """Get all deposits data from 'deposits' table."""
+        cursor = self.connection.cursor()
+        get_query = '''
+            SELECT * FROM deposits;
+        '''
+        try:
+            cursor.execute(get_query)
+            record = cursor.fetchall()
+        except(Exception, Error):
+            return False
+         
