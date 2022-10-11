@@ -10,24 +10,32 @@ class DepositsDatabase:
                  port: int,
                  database: str
                  ) -> None:
-        self.connection = psycopg2.connect(user=user,
-                                           password=password,
-                                           host=host,
-                                           port=port,
-                                           database=database)
+        self.__connection = psycopg2.connect(user=user,
+                                             password=password,
+                                             host=host,
+                                             port=port,
+                                             database=database)
 
-    def insert_deposit_data(self,
-                            area_name: str) -> bool:
+    @property
+    def connection_value(self) -> None:
+        return self.__connection
+
+    @connection_value.setter
+    def connection_value_setup(self, new_value: None) -> None:
+        self.__connection = new_value
+
+    def add_deposit_info(self,
+                         area_name: str) -> bool:
         """Insert deposit data in 'deposits' table."""
-        cursor = self.connection.cursor()
-        insert_query = """
+        cursor = self.__connection.cursor()
+        query = """
             INSERT INTO deposits(area_name)
             VALUES(%s);
         """
-        cursor.execute(insert_query, (area_name,))
+        cursor.execute(query, (area_name,))
 
         try:
-            self.connection.commit()
+            self.__connection.commit()
             return True
         except (Exception, Error):
             return False
