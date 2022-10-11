@@ -5,3 +5,4 @@ repos:
     rev: 3.8.2
     hooks:
       - id: flake8
+        args: [--suppress-none-returning]
