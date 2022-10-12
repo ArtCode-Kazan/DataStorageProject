@@ -21,15 +21,8 @@ class DepositsDatabase:
     def connection(self) -> connection:
         return self.__connection
 
-    def insert_deposit_data(self, area_name: str) -> bool:
-        """Insert deposit data in 'deposits' table."""
-        cursor = self.connection.cursor()
-        insert_query = """
-            INSERT INTO deposits(area_name)
-            VALUES(%s);
-        """
-        cursor.execute(insert_query, (area_name,))
-
+    def __commit_db_changes(self) -> bool:
+        """Save changes ahter query and show errors"""
         try:
             self.__connection.commit()
             return True
@@ -44,3 +37,13 @@ class DepositsDatabase:
         except DatabaseError as error:
             print(f'{error}: problems with database')
         return False
+
+    def add_deposit_info(self,
+                         area_name: str) -> bool:
+        """Insert deposit data in 'deposits' table."""
+        insert_query = """
+            INSERT INTO deposits(area_name)
+            VALUES(%s);
+        """
+        self.cursor.execute(insert_query, (area_name,))
+        return self.__commit_db_changes()
