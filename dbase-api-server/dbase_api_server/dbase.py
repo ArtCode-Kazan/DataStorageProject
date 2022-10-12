@@ -1,5 +1,5 @@
 import psycopg2
-from psycopg2 import Error, connection
+from psycopg2 import connection
 
 
 class DepositsDatabase:
@@ -9,21 +9,18 @@ class DepositsDatabase:
                  host: str,
                  port: int,
                  database: str
-                 ) -> None:
+                 ):
         self.__connection = psycopg2.connect(
-            user=user,
-            password=password,
-            host=host,
-            port=port,
-            database=database
+            host=host, port=port, database=database,
+            user=user, password=password
         )
 
     @property
-    def connection_params(self) -> connection:
+    def connection(self) -> connection:
         return self.__connection
 
-    @connection_params.setter
-    def connection_value_setup(self, new_value: connection) -> connection:
+    @connection.setter
+    def connection(self, new_value: connection) -> connection:
         self.__connection = new_value
 
     def add_deposit_info(self,
@@ -39,5 +36,13 @@ class DepositsDatabase:
         try:
             self.__connection.commit()
             return True
-        except (Exception, Error):
-            return False
+        except psycopg2.OperationalError as error:
+            return print(f'{error}: problems with database operation')
+        except psycopg2.DataError as error:
+            return print(f'{error}: problems with processed data')
+        except psycopg2.InternalError as error:
+            return print(f'{error}: database encounters an internal error')
+        except psycopg2.ProgrammingError as error:
+            return print(f'{error}: wrong number of parameters')
+        except psycopg2.DatabaseError as error:
+            return print(f'{error}: problems with database')
