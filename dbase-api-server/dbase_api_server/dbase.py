@@ -1,21 +1,11 @@
 from dataclasses import dataclass
 import logging
-from logging.handlers import RotatingFileHandler
 
 import psycopg2
 from psycopg2 import OperationalError, DataError, InternalError
 from psycopg2 import ProgrammingError, DatabaseError
 
 from psycopg2 import connection
-
-
-logger = logging.getLogger(__name__)
-handler = RotatingFileHandler(
-    'my_logger.log',
-    maxBytes=50000000,
-    backupCount=5
-)
-logger.addHandler(handler)
 
 
 @dataclass
