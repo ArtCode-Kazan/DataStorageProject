@@ -2,9 +2,9 @@ from dataclasses import dataclass
 
 
 @dataclass
-class DBaseConnection:
-    user: str
-    password: str
+class ConnectionParams:
     host: str
     port: int
+    user: str
+    password: str
     database: str

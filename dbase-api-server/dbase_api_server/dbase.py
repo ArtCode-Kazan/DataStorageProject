@@ -5,17 +5,18 @@ from psycopg2 import connect
 from psycopg2 import OperationalError, DataError, InternalError
 from psycopg2 import ProgrammingError, DatabaseError
 
-from containers import DBaseConnection
+from containers import ConnectionParams
 
 
 class StorageDBase:
-    def __init__(self, params: DBaseConnection):
+    def __init__(self, params: ConnectionParams):
         self.__connection = connect(
-            user=params.user,
-            password=params.password,
             host=params.host,
             port=params.port,
-            database=params.database)
+            user=params.user,
+            password=params.password,
+            database=params.database
+        )
         self.cursor = self.__connection.cursor()
 
     @property
