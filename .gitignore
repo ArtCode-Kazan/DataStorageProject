@@ -3,3 +3,7 @@
 *.iml
 out
 gen
+
+# Environments
+.venv
+venv/
