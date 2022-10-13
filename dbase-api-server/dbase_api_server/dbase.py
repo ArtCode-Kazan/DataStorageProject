@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -17,17 +18,18 @@ handler = RotatingFileHandler(
 logger.addHandler(handler)
 
 
+@dataclass
 class DepositsDatabase:
-    def __init__(self,
-                 user: str,
-                 password: str,
-                 host: str,
-                 port: int,
-                 database: str
-                 ):
+    user: str
+    password: str
+    host: str
+    port: int
+    database: str
+
+    def __post_init__(self):
         self.__connection = psycopg2.connect(
-            host=host, port=port, database=database,
-            user=user, password=password
+            host=self.host, port=self.port, database=self.database,
+            user=self.user, password=self.password
         )
         self.cursor = self.__connection.cursor()
 
