@@ -1,23 +1,29 @@
+from dataclasses import dataclass
 import logging
 
-from psycopg2 import connection, connect
+from psycopg2 import connect, connection
 
 from psycopg2 import OperationalError, DataError, InternalError
 from psycopg2 import ProgrammingError, DatabaseError
 
 
+@dataclass
+class DBaseConnection:
+    user: str
+    password: str
+    host: str
+    port: int
+    database: str
+
+
 class StorageDBase:
-    def __init__(self,
-                 user: str,
-                 password: str,
-                 host: str,
-                 port: int,
-                 database: str
-                 ):
+    def __init__(self, params: DBaseConnection):
         self.__connection = connect(
-            host=host, port=port, database=database,
-            user=user, password=password
-        )
+            user=params.user,
+            password=params.password,
+            host=params.host,
+            port=params.port,
+            database=params.database)
         self.cursor = self.__connection.cursor()
 
     @property
