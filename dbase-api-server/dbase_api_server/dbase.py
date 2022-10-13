@@ -1,19 +1,11 @@
-from dataclasses import dataclass
 import logging
 
-from psycopg2 import connect, connection
-
+from psycopg2._psycopg import connection
+from psycopg2 import connect
 from psycopg2 import OperationalError, DataError, InternalError
 from psycopg2 import ProgrammingError, DatabaseError
 
-
-@dataclass
-class DBaseConnection:
-    user: str
-    password: str
-    host: str
-    port: int
-    database: str
+from containers import DBaseConnection
 
 
 class StorageDBase:
