@@ -1,25 +1,24 @@
-from dataclasses import dataclass
 import logging
 
 import psycopg2
-from psycopg2 import OperationalError, DataError, InternalError
-from psycopg2 import ProgrammingError, DatabaseError
 
 from psycopg2 import connection
 
+from psycopg2 import OperationalError, DataError, InternalError
+from psycopg2 import ProgrammingError, DatabaseError
 
-@dataclass
+
 class DepositsDatabase:
-    user: str
-    password: str
-    host: str
-    port: int
-    database: str
-
-    def __post_init__(self):
+    def __init__(self,
+                 user: str,
+                 password: str,
+                 host: str,
+                 port: int,
+                 database: str
+                 ):
         self.__connection = psycopg2.connect(
-            host=self.host, port=self.port, database=self.database,
-            user=self.user, password=self.password
+            host=host, port=port, database=database,
+            user=user, password=password
         )
         self.cursor = self.__connection.cursor()
 
