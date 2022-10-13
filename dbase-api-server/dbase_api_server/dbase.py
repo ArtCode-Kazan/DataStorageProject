@@ -1,14 +1,12 @@
 import logging
 
-import psycopg2
-
-from psycopg2 import connection
+from psycopg2 import connection, connect
 
 from psycopg2 import OperationalError, DataError, InternalError
 from psycopg2 import ProgrammingError, DatabaseError
 
 
-class DepositsDatabase:
+class StorageDBase:
     def __init__(self,
                  user: str,
                  password: str,
@@ -16,7 +14,7 @@ class DepositsDatabase:
                  port: int,
                  database: str
                  ):
-        self.__connection = psycopg2.connect(
+        self.__connection = connect(
             host=host, port=port, database=database,
             user=user, password=password
         )
@@ -26,7 +24,7 @@ class DepositsDatabase:
     def connection(self) -> connection:
         return self.__connection
 
-    def __commit_db_changes(self) -> bool:
+    def __commit(self) -> bool:
         """Save changes ahter query and show errors"""
         try:
             self.__connection.commit()
@@ -51,4 +49,4 @@ class DepositsDatabase:
             VALUES(%s);
         """
         self.cursor.execute(insert_query, (area_name,))
-        return self.__commit_db_changes()
+        return self.__commit()
