@@ -20,8 +20,7 @@ class CustomDockerClient:
         return image_names
 
     def is_image_exist(self, image_name: str) -> bool:
-        images = self.client.images.list(name=image_name)
-        return True if images else False
+        return image_name in self.images_tags
 
     def remove_image(self, image_name: str):
         self.client.images.remove(image=image_name)
