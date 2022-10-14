@@ -5,7 +5,7 @@ from docker.models.containers import ContainerCollection
 
 from hamcrest import assert_that, equal_to, is_
 
-from test_environment.docker_client import CustomDockerClient
+from environment.docker_client import CustomDockerClient
 
 
 class TestCustomDockerClient:
