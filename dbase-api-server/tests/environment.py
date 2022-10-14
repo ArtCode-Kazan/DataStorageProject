@@ -6,7 +6,7 @@ from dbase_api_server.containers import ConnectionParams
 
 from dbase_api_server.dbase import DEFAULT_PORT, DEFAULT_PATH
 
-from test_environment.docker import CustomDockerClient
+from test_environment.docker_client import CustomDockerClient
 from test_environment.storage import Storage
 
 
