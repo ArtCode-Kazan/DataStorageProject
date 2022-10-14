@@ -2,6 +2,7 @@ from typing import List, Dict, Set
 
 import docker
 from docker.client import DockerClient
+from docker.models.containers import Container
 
 
 class CustomDockerClient:
@@ -36,7 +37,13 @@ class CustomDockerClient:
             volumes=volumes, detach=True, name=container_name
         )
 
-    def remove_container(self, container_name: str):
-        container = self.client.containers.get(container_id=container_name)
-        container.stop()
+    def get_container_by_name(self, name: str) -> Container:
+        return self.client.containers.get(container_id=name)
+
+    def clear_system(self):
         self.client.containers.prune()
+
+    def remove_container(self, container_name: str):
+        container = self.get_container_by_name(name=container_name)
+        container.stop()
+        self.clear_system()
