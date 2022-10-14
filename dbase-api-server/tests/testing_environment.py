@@ -6,8 +6,19 @@ from dbase_api_server.containers import ConnectionParams
 
 from dbase_api_server.dbase import DEFAULT_PORT, DEFAULT_PATH
 
-from test_environment.docker_client import CustomDockerClient
-from test_environment.storage import Storage
+from environment.docker_client import CustomDockerClient
+from environment.storage import Storage
+
+
+import platform
+import getpass
+
+
+TEMP_FOLDERS = {
+    'linux': '/tmp',
+    'windows': os.path.join('C:/', 'Users', getpass.getuser(),
+                            'Appdata', 'Local', 'Temp')
+}
 
 
 DOCKER_FOLDER = 'postgres-server'
@@ -29,7 +40,13 @@ class TestEnvironment:
             database=os.getenv('POSTGRES_DBASE')
         )
 
-        self.__storage = Storage(folder_name=TMP_FOLDER)
+        platform_name = platform.system().lower()
+        try:
+            temp_root = TEMP_FOLDERS[platform_name]
+        except KeyError:
+            raise KeyError('Unknown OS platform')
+
+        self.__storage = Storage(root=temp_root, folder_name=TMP_FOLDER)
         self.__docker_client = CustomDockerClient()
 
     @property
