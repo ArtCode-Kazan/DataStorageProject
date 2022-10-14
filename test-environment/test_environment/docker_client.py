@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Set
 
 import docker
 from docker.client import DockerClient
@@ -11,6 +11,13 @@ class CustomDockerClient:
     @property
     def client(self) -> DockerClient:
         return self.__client
+
+    @property
+    def images_tags(self) -> Set[str]:
+        image_names = set()
+        for image in self.client.images.list(all=True):
+            image_names.add(image.tags[0].split(':')[0])
+        return image_names
 
     def is_image_exist(self, image_name: str) -> bool:
         images = self.client.images.list(name=image_name)
