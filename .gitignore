@@ -6,6 +6,7 @@ gen
 
 # Temp folders
 .pytest_cache
+__pycache__
 
 # Environments
 .venv
