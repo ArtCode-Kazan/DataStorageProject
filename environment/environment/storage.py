@@ -9,7 +9,6 @@ Examples:
         from environment import Storage
         my_storage = Storage(root='/tmp', folder_name='my-tmp-folder')
 
-
     Storage creation::
 
         from environment import Storage
