@@ -1,22 +1,44 @@
-"""
-Модуль предназначен для работы с файловой системой компьютера
-в случае создания окружения для каких-либо задач.
+"""Module for working with file system.
+
+This module can help if you create temp folder for creation environment of
+test session.
+
+Examples:
+    Storage initialization::
+
+        from environment import Storage
+        my_storage = Storage(root='/tmp', folder_name='my-tmp-folder')
+
+
+    Storage creation::
+
+        from environment import Storage
+
+        my_storage = Storage(root='/tmp', folder_name='my-tmp-folder')
+        my_storage.create()
+
+    Storage deleting::
+
+        from environment import Storage
+
+        my_storage = Storage(root='/tmp', folder_name='my-tmp-folder')
+        my_storage.clear()
+
 """
 
 import os
 import shutil
 
 
-class Storage:
-    """
-    Класс-обертка для управления доступом к хранилищу окружения
-    """
+class Storage(object):
+    """Class-adapter for access driving with environment storage."""
     def __init__(self, root: str, folder_name: str):
-        """
-        Конструктор класса.
+        """Initial class method.
 
-        :param root: корневой путь для создания папки хранилища окружения
-        :param folder_name: имя папки хранилища окружения
+        Args:
+            root: root folder path for creating storage folder
+            folder_name: storage folder name
+
         """
         if not os.path.exists(root):
             raise OSError('Invalid root path')
@@ -25,27 +47,27 @@ class Storage:
 
     @property
     def path(self) -> str:
-        """
-        Свойство возвращает полный путь к папке хранилища.
+        """Return full path to folder storage.
 
-        :return: полный путь к папке хранилища
+        Returns: full path
+
         """
         return self.__path
 
     def create(self):
-        """
-        Метод создает папку хранилища, если ее не существует.
+        """Method creates storage folder if folder is exists.
 
-        :return: None
+        Returns: None
+
         """
         if not os.path.exists(self.path):
             os.mkdir(self.path)
 
     def clear(self):
-        """
-        Метод удаляет папку хранилища, если папка существует.
+        """Method remove storage folder if folder is exists.
 
-        :return: None
+        Returns: None
+
         """
         if os.path.exists(self.path):
             shutil.rmtree(self.path)
