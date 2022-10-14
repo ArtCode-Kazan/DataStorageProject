@@ -5,7 +5,11 @@ from psycopg2 import connect
 from psycopg2 import OperationalError, DataError, InternalError
 from psycopg2 import ProgrammingError, DatabaseError
 
-from containers import ConnectionParams
+from dbase_api_server.containers import ConnectionParams
+
+
+DEFAULT_PORT = 5432
+DEFAULT_PATH = '/var/lib/postgresql/data'
 
 
 class StorageDBase:
