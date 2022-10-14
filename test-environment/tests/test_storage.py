@@ -2,7 +2,7 @@ import os
 from unittest.mock import Mock, PropertyMock, patch
 
 import pytest
-from hamcrest import assert_that, equal_to
+from hamcrest import assert_that, equal_to, is_
 
 from test_environment.storage import TEMP_FOLDERS
 from test_environment.storage import Storage
@@ -42,7 +42,7 @@ class TestStorage:
             is_passed = False
         except KeyError:
             is_passed = True
-        assert_that(actual_or_assertion=is_passed, matcher=equal_to(True))
+        assert_that(actual_or_assertion=is_passed, matcher=is_(True))
 
     @pytest.mark.parametrize('is_path_exist', [True, False])
     @patch.object(Storage, 'path', new_callable=PropertyMock)
