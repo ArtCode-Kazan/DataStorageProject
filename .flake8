@@ -2,3 +2,6 @@
 inline-quotes = '
 ignore = ANN101
 exclude = .git,__pycache__,.pytest_cache,build,dist,venv
+per-file-ignores =
+    environment/tests/*: D, ANN
+    dbase-api-server/tests/*: D, ANN
