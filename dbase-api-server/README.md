@@ -18,3 +18,15 @@
 cd <root>/dbase-api-server
 poetry install
 ```
+
+**Как настроить тестовое окружение**
+
+В папке tests нужно создать `.env` файл с такими переменными 
+(значения могут быть любыми):
+`
+POSTGRES_USER=test-account
+POSTGRES_PASSWORD=q1w2e3r4t5y6
+POSTGRES_DBASE=test-dbase
+POSTGRES_HOST=127.0.0.1
+POSTGRES_PORT=8133
+`
