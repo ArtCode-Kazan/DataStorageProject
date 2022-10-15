@@ -93,8 +93,9 @@ class TestCustomDockerClient:
         prune_mock.assert_called_once()
 
     @patch.object(CustomDockerClient, 'clear_system')
+    @patch.object(ImageCollection, 'prune')
     @patch.object(CustomDockerClient, 'get_container_by_name')
-    def test_remove_container(self, get_container_mock: Mock,
+    def test_remove_container(self, get_container_mock: Mock, prune_mock: Mock,
                               clear_system_mock: Mock):
         stop_mock = Mock(stop=Mock(return_value=True))
         get_container_mock.return_value = stop_mock
@@ -104,4 +105,5 @@ class TestCustomDockerClient:
 
         stop_mock.stop.assert_called_once()
         get_container_mock.assert_called_once_with(name=self.some_value)
+        prune_mock.assert_called_once()
         clear_system_mock.assert_called_once()
