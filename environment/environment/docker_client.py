@@ -158,5 +158,4 @@ class CustomDockerClient:
         """
         container = self.get_container_by_name(name=container_name)
         container.stop()
-        self.client.images.prune()
         self.clear_system()
