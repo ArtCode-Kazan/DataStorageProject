@@ -4,10 +4,14 @@
 out
 gen
 
-# Temp folders
-.pytest_cache
-__pycache__
-
 # Environments
 .env
 venv
+
+# Temp folders
+.pytest_cache
+__pycache__
+htmlcov
+
+# Temp files
+.coverage
