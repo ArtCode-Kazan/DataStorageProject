@@ -31,8 +31,9 @@ import shutil
 
 class Storage(object):
     """Class-adapter for access driving with environment storage."""
+
     def __init__(self, root: str, folder_name: str):
-        """Initial class method.
+        """Initialize class method.
 
         Args:
             root: root folder path for creating storage folder
@@ -54,7 +55,7 @@ class Storage(object):
         return self.__path
 
     def create(self):
-        """Method creates storage folder if folder is exists.
+        """Create storage folder if folder is exists.
 
         Returns: None
 
@@ -63,7 +64,7 @@ class Storage(object):
             os.mkdir(self.path)
 
     def clear(self):
-        """Method remove storage folder if folder is exists.
+        """Remove storage folder if folder is exists.
 
         Returns: None
 
