@@ -1,16 +1,13 @@
 import os
+import platform
+import getpass
 
 import dotenv
 
-from dbase_api_server.containers import ConnectionParams
-
+from dbase_api_server.containers import PostgresConnectionParams
 from dbase_api_server.dbase import DEFAULT_PORT, DEFAULT_PATH
 
 from environment import CustomDockerClient, Storage
-
-
-import platform
-import getpass
 
 
 TEMP_FOLDERS = {
@@ -31,7 +28,7 @@ dotenv.load_dotenv()
 
 class TestEnvironment:
     def __init__(self):
-        self.__connection_params = ConnectionParams(
+        self.__connection_params = PostgresConnectionParams(
             user=os.getenv('POSTGRES_USER'),
             password=os.getenv('POSTGRES_PASSWORD'),
             host=os.getenv('POSTGRES_HOST'),
@@ -49,7 +46,7 @@ class TestEnvironment:
         self.__docker_client = CustomDockerClient()
 
     @property
-    def connection_params(self) -> ConnectionParams:
+    def connection_params(self) -> PostgresConnectionParams:
         return self.__connection_params
 
     @property
