@@ -57,7 +57,7 @@ class TestCustomDockerClient:
         remove_mock.assert_called_once_with(image=self.some_value)
 
     @patch.object(ImageCollection, 'build')
-    def test_image(self, build_mock: Mock):
+    def test_build_image(self, build_mock: Mock):
         _ = self.create_object().create_image(
             docker_root=self.some_folder, image_name=self.some_value
         )
