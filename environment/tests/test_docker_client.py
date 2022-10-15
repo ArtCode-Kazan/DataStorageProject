@@ -28,8 +28,25 @@ class TestCustomDockerClient:
 
     @patch.object(ImageCollection, 'list')
     def test_images_tags(self, list_mock: Mock):
-        _ = self.create_object().images_tags
+        test_tags = [
+            ('a:v1', 'v1'),
+            ('a:v2', 'v2'),
+            ('b:v0', 'v0'),
+            ('c:v0', 'v0'),
+            ('d:v', 'v')
+        ]
+
+        test_images = []
+        for tag in test_tags:
+            image = Mock(tags=tag)
+            test_images.append(image)
+
+        list_mock.return_value = test_images
+        tags = self.create_object().images_tags
+
         list_mock.assert_called_once_with(all=True)
+        assert_that(actual_or_assertion=tags,
+                    matcher=equal_to({'a', 'b', 'c', 'd'}))
 
     @patch.object(CustomDockerClient, 'images_tags', new_callable=PropertyMock)
     def test_is_image_exist(self, images_tags_mock: Mock):
