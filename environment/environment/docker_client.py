@@ -35,8 +35,9 @@ from docker.models.containers import Container
 
 class CustomDockerClient:
     """Class-adapter for simple working with docker client."""
+
     def __init__(self):
-        """Initial class method."""
+        """Initialize class method."""
         self.__client = docker.from_env()
 
     @property
