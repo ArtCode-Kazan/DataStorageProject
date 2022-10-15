@@ -10,3 +10,11 @@ repos:
           - flake8-quotes
           - flake8-docstrings
         args: [--suppress-none-returning, --docstring-convention=google]
+  -  repo: local
+     hooks:
+       - id: pytest-check
+         name: pytest-check
+         entry: pytest
+         language: system
+         pass_filenames: false
+         always_run: true
