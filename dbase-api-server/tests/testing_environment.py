@@ -1,14 +1,12 @@
+import getpass
 import os
 import platform
-import getpass
 
 import dotenv
 
 from dbase_api_server.containers import PostgresConnectionParams
-from dbase_api_server.dbase import DEFAULT_PORT, DEFAULT_PATH
-
+from dbase_api_server.dbase import DEFAULT_PATH, DEFAULT_PORT
 from environment import CustomDockerClient, Storage
-
 
 TEMP_FOLDERS = {
     'linux': '/tmp',

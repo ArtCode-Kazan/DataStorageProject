@@ -7,7 +7,6 @@ This module organize information about objects.
 from dataclasses import dataclass
 from typing import List
 
-
 __all__ = ['PostgresConnectionParams']
 
 

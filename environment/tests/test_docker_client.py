@@ -1,8 +1,7 @@
 from unittest.mock import Mock, PropertyMock, patch
 
-from docker.models.images import ImageCollection
 from docker.models.containers import ContainerCollection
-
+from docker.models.images import ImageCollection
 from hamcrest import assert_that, equal_to, is_
 
 from environment.docker_client import CustomDockerClient
