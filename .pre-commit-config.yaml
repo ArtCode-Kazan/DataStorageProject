@@ -10,6 +10,12 @@ repos:
           - flake8-quotes
           - flake8-docstrings
         args: [--suppress-none-returning, --docstring-convention=google]
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        name: isort (python)
+        args: [-c]
   -  repo: local
      hooks:
        - id: pytest-check
