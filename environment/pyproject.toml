@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["Michael <mihail.tchernov@yandex.ru>"]
 readme = "README.md"
-packages = [{include = "test_environment"}]
+packages = [{include = "environment"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
