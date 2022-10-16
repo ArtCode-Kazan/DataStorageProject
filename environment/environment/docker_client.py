@@ -26,7 +26,7 @@ Examples:
 
 """
 
-from typing import List, Dict, Set
+from typing import Dict, List, Set
 
 import docker
 from docker.client import DockerClient

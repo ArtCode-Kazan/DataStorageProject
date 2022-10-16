@@ -21,13 +21,12 @@ Examples:
 
 import logging
 
-from psycopg2._psycopg import connection as postgres_connection
+from psycopg2 import (DatabaseError, DataError, InternalError,
+                      OperationalError, ProgrammingError)
 from psycopg2 import connect as connect_to_db
-from psycopg2 import OperationalError, DataError, InternalError
-from psycopg2 import ProgrammingError, DatabaseError
+from psycopg2._psycopg import connection as postgres_connection
 
 from dbase_api_server.containers import PostgresConnectionParams
-
 
 DEFAULT_PORT = 5432
 DEFAULT_PATH = '/var/lib/postgresql/data'
