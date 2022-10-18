@@ -13,12 +13,12 @@ from dbase_api_server.dbase import DEFAULT_PATH, DEFAULT_PORT
 from environment import CustomDockerClient, Storage
 
 LINUX_PLATFORM, WINDOWS_PLATFORM = 'linux', 'windows'
+
 TEMP_FOLDERS = {
     LINUX_PLATFORM: '/tmp',
     WINDOWS_PLATFORM: os.path.join('C:/', 'Users', getpass.getuser(),
                                    'Appdata', 'Local', 'Temp')
 }
-
 
 DOCKER_FOLDER = 'postgres-server'
 TMP_FOLDER = 'test-postgres'
