@@ -10,10 +10,11 @@ from dbase_api_server.dbase import DEFAULT_PORT, DEFAULT_PATH
 from environment import CustomDockerClient, Storage
 
 
+LINUX_PLATFORM, WINDOWS_PLATFORM = 'linux', 'windows'
 TEMP_FOLDERS = {
-    'linux': '/tmp',
-    'windows': os.path.join('C:/', 'Users', getpass.getuser(),
-                            'Appdata', 'Local', 'Temp')
+    LINUX_PLATFORM: '/tmp',
+    WINDOWS_PLATFORM: os.path.join('C:/', 'Users', getpass.getuser(),
+                                   'Appdata', 'Local', 'Temp')
 }
 
 
