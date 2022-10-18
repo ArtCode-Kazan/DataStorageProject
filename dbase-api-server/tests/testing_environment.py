@@ -37,9 +37,9 @@ class TestEnvironment:
             database=os.getenv('POSTGRES_DBASE')
         )
 
-        platform_name = platform.system().lower()
+        self.__platform_name = platform.system().lower()
         try:
-            temp_root = TEMP_FOLDERS[platform_name]
+            temp_root = TEMP_FOLDERS[self.__platform_name]
         except KeyError:
             raise KeyError('Unknown OS platform')
 
@@ -49,6 +49,10 @@ class TestEnvironment:
     @property
     def connection_params(self) -> PostgresConnectionParams:
         return self.__connection_params
+
+    @property
+    def platform_name(self) -> str:
+        return self.__platform_name
 
     @property
     def docker_client(self) -> CustomDockerClient:
