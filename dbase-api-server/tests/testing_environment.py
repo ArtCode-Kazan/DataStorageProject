@@ -1,8 +1,13 @@
 import os
 import platform
 import getpass
+import subprocess
+from time import sleep
 
 import dotenv
+
+from psycopg2 import OperationalError
+from psycopg2 import connect as connect_to_db
 
 from dbase_api_server.containers import PostgresConnectionParams
 from dbase_api_server.dbase import DEFAULT_PORT, DEFAULT_PATH
@@ -89,11 +94,37 @@ class TestEnvironment:
             container_name=CONTAINER_NAME
         )
 
+    def is_dbase_access(self, retrying=5, waiting=5) -> bool:
+        for _ in range(retrying):
+            try:
+                _ = connect_to_db(
+                    host=self.connection_params.host,
+                    port=self.connection_params.port,
+                    user=self.connection_params.user,
+                    password=self.connection_params.password,
+                    database=self.connection_params.database
+                )
+                return True
+            except OperationalError:
+                sleep(waiting)
+        return False
+
     def initialize(self):
         self.storage.create()
         self.start_docker_container()
+        if not self.is_dbase_access():
+            self.finalize()
+            raise OperationalError
+
+    def unblock_folder(self):
+        if self.platform_name == LINUX_PLATFORM:
+            login, password = os.getlogin(), os.getenv('SYSTEM_PASSWORD')
+            path = self.storage.path
+            command = f'echo {password} | sudo -S shown -R {login} {path}'
+            subprocess.call(command, shell=True)
 
     def finalize(self):
         self.docker_client.remove_container(container_name=CONTAINER_NAME)
-        self.storage.clear()
         self.docker_client.remove_image(image_name=IMAGE_NAME)
+        self.unblock_folder()
+        self.storage.clear()
