@@ -25,6 +25,7 @@ from psycopg2 import (DatabaseError, DataError, InternalError,
                       OperationalError, ProgrammingError)
 from psycopg2 import connect as connect_to_db
 from psycopg2._psycopg import connection as postgres_connection
+from psycopg2._psycopg import cursor as db_cursor
 from psycopg2.errors import UniqueViolation
 from pypika import Query, Table
 
@@ -64,7 +65,16 @@ class StorageDBase:
         """
         return self.__connection
 
-    def commit(self) -> bool:
+    @property
+    def cursor(self) -> db_cursor:
+        """Return postgres cursor object.
+
+        Returns: cursor object from psycopg2
+
+        """
+        return self.__connection.cursor()
+
+    def is_success_commit(self) -> bool:
         """Commit changes in database.
 
         If commit unsuccessful - create message in logger
@@ -73,7 +83,7 @@ class StorageDBase:
 
         """
         try:
-            self.__connection.commit()
+            self.connection.commit()
             return True
         except DataError as error:
             logging.error(error, 'problems with processed data')
