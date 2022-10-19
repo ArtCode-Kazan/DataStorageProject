@@ -59,7 +59,7 @@ class StorageDBase:
         """
         return self.__connection
 
-    def __commit(self) -> bool:
+    def commit(self) -> bool:
         """Commit changes in database.
 
         If commit unsuccessful - create message in logger
@@ -96,4 +96,4 @@ class StorageDBase:
             VALUES(%s);
         """
         self.cursor.execute(insert_query, (area_name,))
-        return self.__commit()
+        return self.commit()

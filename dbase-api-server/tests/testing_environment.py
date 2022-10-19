@@ -117,7 +117,7 @@ class TestEnvironment:
         if self.platform_name == LINUX_PLATFORM:
             login, password = os.getlogin(), os.getenv('SYSTEM_PASSWORD')
             path = self.storage.path
-            command = f'echo {password} | sudo -S shown -R {login} {path}'
+            command = f'echo {password} | sudo -S chown -R {login} {path}'
             subprocess.call(command, shell=True)
 
     def finalize(self):
