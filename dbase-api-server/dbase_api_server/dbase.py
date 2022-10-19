@@ -74,8 +74,6 @@ class StorageDBase:
         try:
             self.__connection.commit()
             return True
-        except OperationalError as error:
-            logging.error(error, 'problems with database operation')
         except DataError as error:
             logging.error(error, 'problems with processed data')
         except InternalError as error:
