@@ -25,6 +25,7 @@ from psycopg2 import (DatabaseError, DataError, InternalError,
                       OperationalError, ProgrammingError)
 from psycopg2 import connect as connect_to_db
 from psycopg2._psycopg import connection as postgres_connection
+from psycopg2.errors import UniqueViolation
 
 from dbase_api_server.containers import PostgresConnectionParams
 
@@ -95,5 +96,8 @@ class StorageDBase:
             INSERT INTO deposits(area_name)
             VALUES(%s);
         """
-        self.cursor.execute(insert_query, (area_name,))
-        return self.commit()
+        try:
+            self.cursor.execute(insert_query, (area_name,))
+            return self.commit()
+        except UniqueViolation as error:
+            logging.error(error, 'column name already exists')
