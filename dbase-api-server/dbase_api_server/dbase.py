@@ -42,14 +42,17 @@ class StorageDBase:
         Args:
             params: container with connection parameters (host, port, etc.)
         """
-        self.__connection = connect_to_db(
-            host=params.host,
-            port=params.port,
-            user=params.user,
-            password=params.password,
-            database=params.database
-        )
-        self.cursor = self.__connection.cursor()
+        try:
+            self.__connection = connect_to_db(
+                host=params.host,
+                port=params.port,
+                user=params.user,
+                password=params.password,
+                database=params.database
+            )
+        except OperationalError as err:
+            logging.error(err, 'problems with database operation')
+            raise
 
     @property
     def connection(self) -> postgres_connection:
