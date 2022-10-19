@@ -26,6 +26,7 @@ from psycopg2 import (DatabaseError, DataError, InternalError,
 from psycopg2 import connect as connect_to_db
 from psycopg2._psycopg import connection as postgres_connection
 from psycopg2.errors import UniqueViolation
+from pypika import Query, Table
 
 from dbase_api_server.containers import PostgresConnectionParams
 
@@ -93,12 +94,14 @@ class StorageDBase:
         Returns: True if info was added success, False - if not.
 
         """
-        insert_query = """
-            INSERT INTO deposits(area_name)
-            VALUES(%s);
-        """
+        table = Table('deposits')
+        query = Query.into(table).columns('area_name').insert(area_name)
         try:
-            self.cursor.execute(insert_query, (area_name,))
-            return self.commit()
+            self.cursor.execute(query)
+            return self.is_success_commit()
         except UniqueViolation as error:
-            logging.error(error, 'column name already exists')
+            logging.error(
+                error,
+                f'deposit with name {area_name} already exists'
+            )
+            return False
