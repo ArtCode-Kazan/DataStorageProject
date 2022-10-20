@@ -86,13 +86,26 @@ class StorageDBase:
             self.connection.commit()
             return True
         except DataError as error:
-            logging.error(error, 'problems with processed data')
+            logging.error(
+                error,
+                'problems with processed data'
+            )
         except InternalError as error:
-            logging.error(error, 'database encounters an internal error')
+            logging.error(
+                error,
+                'database encounters an internal error'
+            )
         except ProgrammingError as error:
-            logging.error(error, 'wrong number of parameters')
+            logging.error(
+                error,
+                'wrong number of parameters'
+            )
         except DatabaseError as error:
-            logging.error(error, 'problems with database')
+            logging.error(
+                error,
+                'problems with database'
+            )
+        self.connection.rollback()
         return False
 
     def add_deposit_info(self, area_name: str) -> bool:
@@ -112,16 +125,14 @@ class StorageDBase:
         try:
             self.cursor.execute(query)
             return self.is_success_commit()
-        except UniqueViolation as error:
-            logging.error(
-                error,
-                f'deposit with name {lower_area_name} already exists'
-            )
-            self.connection.rollback()
         except CheckViolation as error:
             logging.error(
                 error,
                 'deposit name cannot be blank'
             )
-            self.connection.rollback()
+        except UniqueViolation as error:
+            logging.error(
+                error,
+                f'deposit with name {lower_area_name} already exists'
+            )
         return False
