@@ -105,13 +105,16 @@ class StorageDBase:
 
         """
         table = Table('deposits')
-        query = Query.into(table).columns('area_name').insert(area_name)
+        lower_area_name = area_name.lower()
+        query = str(Query.into(table).columns('area_name').insert(
+            lower_area_name
+        ))
         try:
-            self.cursor.execute(str(query))
+            self.cursor.execute(query)
             return self.is_success_commit()
         except UniqueViolation as error:
             logging.error(
                 error,
-                f'deposit with name {area_name} already exists'
+                f'deposit with name {lower_area_name} already exists'
             )
             return False
