@@ -5,8 +5,8 @@ import subprocess
 from time import sleep
 
 import dotenv
-from psycopg2 import OperationalError
-from psycopg2 import connect as connect_to_db
+from psycopg import OperationalError
+from psycopg import connect as connect_to_db
 
 from dbase_api_server.containers import PostgresConnectionParams
 from dbase_api_server.dbase import DEFAULT_PATH, DEFAULT_PORT

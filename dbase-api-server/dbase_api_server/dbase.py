@@ -21,12 +21,12 @@ Examples:
 
 import logging
 
-from psycopg2 import (DatabaseError, DataError, InternalError,
-                      OperationalError, ProgrammingError)
-from psycopg2 import connect as connect_to_db
-from psycopg2._psycopg import connection as postgres_connection
-from psycopg2._psycopg import cursor as db_cursor
-from psycopg2.errors import CheckViolation, UniqueViolation
+from psycopg import (DatabaseError, DataError, InternalError, OperationalError,
+                     ProgrammingError)
+from psycopg import connect as connect_to_db
+from psycopg.connection import Connection
+from psycopg.cursor import Cursor
+from psycopg.errors import CheckViolation, UniqueViolation
 from pypika import Query, Table
 
 from dbase_api_server.containers import PostgresConnectionParams
@@ -57,7 +57,7 @@ class StorageDBase:
             raise
 
     @property
-    def connection(self) -> postgres_connection:
+    def connection(self) -> Connection:
         """Return postgres connection object.
 
         Returns: connection object from psycopg2
@@ -66,7 +66,7 @@ class StorageDBase:
         return self.__connection
 
     @property
-    def cursor(self) -> db_cursor:
+    def cursor(self) -> Cursor:
         """Return postgres cursor object.
 
         Returns: cursor object from psycopg2
