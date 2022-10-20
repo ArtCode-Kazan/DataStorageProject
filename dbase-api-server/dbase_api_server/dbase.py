@@ -20,11 +20,10 @@ Examples:
 """
 
 import logging
+from typing import Union
 
-from psycopg import (DatabaseError, DataError, InternalError, OperationalError,
-                     ProgrammingError, connect)
+from psycopg import OperationalError, connect
 from psycopg.connection import Connection
-from psycopg.cursor import Cursor
 from psycopg.errors import CheckViolation, UniqueViolation
 from pypika import Query, Table
 
@@ -44,11 +43,9 @@ class StorageDBase:
             params: container with connection parameters (host, port, etc.)
         """
         try:
-            self.__connection = connect(
-                conninfo=params.connection_string
-            )
-        except OperationalError as err:
-            logging.error(err, 'problems with database operation')
+            self.__connection = connect(conninfo=params.connection_string)
+        except OperationalError:
+            logging.error('problems with database operation')
             raise
 
     @property
@@ -60,46 +57,58 @@ class StorageDBase:
         """
         return self.__connection
 
-    @property
-    def cursor(self) -> Cursor:
-        """Return postgres cursor object.
+    def select_one_record(self, query: str) -> Union[None, str, int, float,
+                                                     tuple]:
+        """Select only one record.
 
-        Returns: cursor object from psycopg2
+        Args:
+            query: string with query text
+
+        Returns: value of record. If no record return None
 
         """
-        return self.__connection.cursor()
+        cursor = self.connection.cursor()
+        cursor.execute(query)
+        record = cursor.fetchone()
+        if record is None:
+            return
+        return record[0]
 
-    def is_success_commit(self) -> bool:
-        """Commit changes in database.
+    def select_many_records(self, query: str) -> Union[None, list]:
+        """Return many selected records.
 
-        If commit unsuccessful - create message in logger
+        Args:
+            query: string with query text
 
-        Returns: True if commit is success, False - if commit  has some error.
+        Returns: list of selected rows. If no records - return None
+
+        """
+        cursor = self.connection.cursor()
+        cursor.execute(query)
+        records = cursor.fetchall()
+        if records is None:
+            return
+        return records
+
+    def is_success_changing_query(self, query: str) -> bool:
+        """Return changing query status.
+
+        Args:
+            query: string with query text
+
+        Returns: True - if success, else - False
 
         """
         try:
+            cursor = self.connection.cursor()
+            cursor.execute(query)
             self.connection.commit()
             return True
-        except DataError as error:
-            logging.error(
-                error,
-                'problems with processed data'
-            )
-        except InternalError as error:
-            logging.error(
-                error,
-                'database encounters an internal error'
-            )
-        except ProgrammingError as error:
-            logging.error(
-                error,
-                'wrong number of parameters'
-            )
-        except DatabaseError as error:
-            logging.error(
-                error,
-                'problems with database'
-            )
+        except UniqueViolation:
+            logging.error('field(s) has non unique value')
+        except CheckViolation:
+            logging.error('field(s) dont pass dbase check condition(s)')
+
         self.connection.rollback()
         return False
 
@@ -112,22 +121,10 @@ class StorageDBase:
         Returns: True if info was added success, False - if not.
 
         """
-        table = Table('deposits')
         lower_area_name = area_name.lower()
-        query = str(Query.into(table).columns('area_name').insert(
-            lower_area_name
-        ))
-        try:
-            self.cursor.execute(query)
-            return self.is_success_commit()
-        except CheckViolation as error:
-            logging.error(
-                error,
-                'deposit name cannot be blank'
-            )
-        except UniqueViolation as error:
-            logging.error(
-                error,
-                f'deposit with name {lower_area_name} already exists'
-            )
-        return False
+
+        table = Table('deposits')
+        query = str(
+            Query.into(table).columns('area_name').insert(lower_area_name)
+        )
+        return self.is_success_changing_query(query=query)
