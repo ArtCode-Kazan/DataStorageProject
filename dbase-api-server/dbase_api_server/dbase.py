@@ -107,7 +107,7 @@ class StorageDBase:
         table = Table('deposits')
         query = Query.into(table).columns('area_name').insert(area_name)
         try:
-            self.cursor.execute(query)
+            self.cursor.execute(str(query))
             return self.is_success_commit()
         except UniqueViolation as error:
             logging.error(
