@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS deposits(
     id SERIAL PRIMARY KEY,
-    area_name TEXT NOT NULL UNIQUE
+    area_name TEXT NOT NULL CHECK (area_name != '') UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS works(
