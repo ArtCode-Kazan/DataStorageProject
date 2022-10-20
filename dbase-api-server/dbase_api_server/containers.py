@@ -19,7 +19,7 @@ class PostgresConnectionParams:
         port: port number
         user: username in Postgres
         password: user password
-        database: Postgres database name
+        dbname: Postgres database name
 
     """
 
@@ -27,7 +27,7 @@ class PostgresConnectionParams:
     port: int
     user: str
     password: str
-    database: str
+    dbname: str
 
     @property
     def docker_env(self) -> List[str]:
@@ -39,5 +39,16 @@ class PostgresConnectionParams:
         return [
             f'POSTGRES_USER={self.user}',
             f'POSTGRES_PASSWORD={self.password}',
-            f'POSTGRES_DB={self.database}'
+            f'POSTGRES_DB={self.dbname}'
         ]
+
+    @property
+    def connection_string(self) -> str:
+        """Return connection line for psycopg.
+
+        Returns: connection string
+
+        """
+        return (f'host={self.host} port={self.port} '
+                f'user={self.user} password={self.password} '
+                f'dbname={self.dbname}')

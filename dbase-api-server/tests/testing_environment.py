@@ -36,7 +36,7 @@ class TestEnvironment:
             password=os.getenv('POSTGRES_PASSWORD'),
             host=os.getenv('POSTGRES_HOST'),
             port=int(os.getenv('POSTGRES_PORT')),
-            database=os.getenv('POSTGRES_DBASE')
+            dbname=os.getenv('POSTGRES_DBASE')
         )
 
         self.__platform_name = platform.system().lower()
@@ -91,15 +91,11 @@ class TestEnvironment:
             container_name=CONTAINER_NAME
         )
 
-    def is_dbase_access(self, retrying=5, waiting=5) -> bool:
+    def is_dbase_access(self, retrying=60, waiting=1) -> bool:
         for _ in range(retrying):
             try:
                 _ = connect_to_db(
-                    host=self.connection_params.host,
-                    port=self.connection_params.port,
-                    user=self.connection_params.user,
-                    password=self.connection_params.password,
-                    database=self.connection_params.database
+                    conninfo=self.connection_params.connection_string
                 )
                 return True
             except OperationalError:

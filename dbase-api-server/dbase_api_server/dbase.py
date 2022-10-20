@@ -22,8 +22,7 @@ Examples:
 import logging
 
 from psycopg import (DatabaseError, DataError, InternalError, OperationalError,
-                     ProgrammingError)
-from psycopg import connect as connect_to_db
+                     ProgrammingError, connect)
 from psycopg.connection import Connection
 from psycopg.cursor import Cursor
 from psycopg.errors import CheckViolation, UniqueViolation
@@ -45,12 +44,8 @@ class StorageDBase:
             params: container with connection parameters (host, port, etc.)
         """
         try:
-            self.__connection = connect_to_db(
-                host=params.host,
-                port=params.port,
-                user=params.user,
-                password=params.password,
-                database=params.database
+            self.__connection = connect(
+                conninfo=params.connection_string
             )
         except OperationalError as err:
             logging.error(err, 'problems with database operation')
