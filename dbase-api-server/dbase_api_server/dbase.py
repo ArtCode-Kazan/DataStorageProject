@@ -26,7 +26,7 @@ from psycopg2 import (DatabaseError, DataError, InternalError,
 from psycopg2 import connect as connect_to_db
 from psycopg2._psycopg import connection as postgres_connection
 from psycopg2._psycopg import cursor as db_cursor
-from psycopg2.errors import UniqueViolation
+from psycopg2.errors import CheckViolation, UniqueViolation
 from pypika import Query, Table
 
 from dbase_api_server.containers import PostgresConnectionParams
@@ -117,4 +117,11 @@ class StorageDBase:
                 error,
                 f'deposit with name {lower_area_name} already exists'
             )
-            return False
+            self.connection.rollback()
+        except CheckViolation as error:
+            logging.error(
+                error,
+                'deposit name cannot be blank'
+            )
+            self.connection.rollback()
+        return False
