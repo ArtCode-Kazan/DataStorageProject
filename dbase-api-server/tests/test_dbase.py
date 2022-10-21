@@ -133,7 +133,8 @@ class TestStorageDBase:
     def test_update_blank_deposit_name(self, up_test_dbase,
                                        clear_deposits_table):
         old_area_name = 'test-name'
-        up_test_dbase.add_deposit_info(old_area_name)
+        is_added = up_test_dbase.add_deposit_info(old_area_name)
+        assert_that(actual_or_assertion=is_added, matcher=is_(True))
 
         new_area_name = ''
         is_added = up_test_dbase.update_deposit_name(old_area_name,
@@ -143,7 +144,8 @@ class TestStorageDBase:
     def test_update_duplicate_deposit_name(self, up_test_dbase,
                                            clear_deposits_table):
         old_area_name = 'test-name'
-        up_test_dbase.add_deposit_info(old_area_name)
+        is_added = up_test_dbase.add_deposit_info(old_area_name)
+        assert_that(actual_or_assertion=is_added, matcher=is_(True))
 
         new_area_name = 'test-name'
         is_added = up_test_dbase.update_deposit_name(old_area_name,
