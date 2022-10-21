@@ -170,3 +170,61 @@ class TestStorageDBase:
         assert_that(actual_or_assertion=isinstance(records, list),
                     matcher=is_(True))
         assert_that(actual_or_assertion=records, matcher=area_names)
+
+    def test_update_deposit_name(self, up_test_dbase,
+                                 clear_deposits_table):
+        old_area_name = 'test-name'
+        is_added = up_test_dbase.add_deposit_info(old_area_name)
+        assert_that(actual_or_assertion=is_added, matcher=is_(True))
+
+        new_area_name = 'test-name-1'
+        is_updated = up_test_dbase.update_deposit_name(old_area_name,
+                                                       new_area_name)
+        assert_that(actual_or_assertion=is_updated, matcher=is_(True))
+
+        table = Table('deposits')
+        query = str(
+            Query.from_(table).select(Count(1)).where(
+                table.area_name == 'test-name-1'
+            )
+        )
+        count = up_test_dbase.select_one_record(query)
+        assert_that(actual_or_assertion=count, matcher=equal_to(1))
+
+    def test_update_blank_deposit_name(self, up_test_dbase,
+                                       clear_deposits_table):
+        old_area_name = 'test-name'
+        is_added = up_test_dbase.add_deposit_info(old_area_name)
+        assert_that(actual_or_assertion=is_added, matcher=is_(True))
+
+        new_area_name = ''
+        is_added = up_test_dbase.update_deposit_name(old_area_name,
+                                                     new_area_name)
+        assert_that(actual_or_assertion=is_added, matcher=is_(False))
+
+    def test_update_duplicate_deposit_name(self, up_test_dbase,
+                                           clear_deposits_table):
+        old_area_name = 'test-name'
+        is_added = up_test_dbase.add_deposit_info(old_area_name)
+        assert_that(actual_or_assertion=is_added, matcher=is_(True))
+
+        new_area_name = 'test-name'
+        is_added = up_test_dbase.update_deposit_name(old_area_name,
+                                                     new_area_name)
+        assert_that(actual_or_assertion=is_added, matcher=is_(False))
+
+    def test_update_missing_deposit_name(self, up_test_dbase,
+                                         clear_deposits_table):
+        old_name = 'test-name'
+        new_area_name = 'test-name-1'
+        up_test_dbase.update_deposit_name(old_name,
+                                          new_area_name)
+
+        table = Table('deposits')
+        query = str(
+            Query.from_(table).select(Count(1)).where(
+                table.area_name == 'test-name-1'
+            )
+        )
+        count = up_test_dbase.select_one_record(query)
+        assert_that(actual_or_assertion=count, matcher=equal_to(0))
