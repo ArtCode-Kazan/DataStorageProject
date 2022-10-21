@@ -94,3 +94,18 @@ class TestStorageDBase:
         cursor.execute(query)
         count = cursor.fetchone()[0]
         assert_that(actual_or_assertion=count, matcher=equal_to(1))
+
+    def test_get_all_deposit_names(self, up_test_dbase,
+                                   clear_deposits_table):
+        area_names = ['test-name-1', 'test-name-2', 'test-name-3']
+        for area_name in area_names:
+            up_test_dbase.add_deposit_info(area_name=area_name)
+
+        records = up_test_dbase.get_all_deposit_names()
+        assert_that(
+            actual_or_assertion=len(records),
+            matcher=equal_to(len(area_names))
+        )
+        assert_that(actual_or_assertion=isinstance(records, list),
+                    matcher=is_(True))
+        assert_that(actual_or_assertion=records, matcher=area_names)
