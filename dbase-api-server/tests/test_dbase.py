@@ -75,3 +75,22 @@ class TestStorageDBase:
         cursor.execute(query)
         count = cursor.fetchone()[0]
         assert_that(actual_or_assertion=count, matcher=equal_to(1))
+
+    def test_upper_and_lower_deposit_names(self, up_test_dbase,
+                                           clear_deposits_table):
+        is_added = up_test_dbase.add_deposit_info('test-area')
+        assert_that(actual_or_assertion=is_added, matcher=is_(True))
+
+        is_added = up_test_dbase.add_deposit_info('TEST-AREA')
+        assert_that(actual_or_assertion=is_added, matcher=is_(False))
+
+        table = Table('deposits')
+        query = str(
+            Query.from_(table).select(Count(1)).where(
+                table.area_name == 'test-area'
+            )
+        )
+        cursor = up_test_dbase.connection.cursor()
+        cursor.execute(query)
+        count = cursor.fetchone()[0]
+        assert_that(actual_or_assertion=count, matcher=equal_to(1))
