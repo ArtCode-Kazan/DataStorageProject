@@ -129,7 +129,7 @@ class StorageDBase:
         )
         return self.is_success_changing_query(query=query)
 
-    def get_all_deposit_names(self) -> List:
+    def get_all_deposit_names(self) -> List[str]:
         """Get all deposit info from database.
 
         Returns: True if query completed succes, False - if not
