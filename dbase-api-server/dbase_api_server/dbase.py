@@ -132,8 +132,26 @@ class StorageDBase:
     def get_all_deposit_names(self) -> Union[None, list]:
         """Get all deposit info from database.
 
-        Returns: True if query completed succes, False - if not
+        Returns: True if query completed succes, False - if not.
         """
         table = Table('deposits')
         query = str(Query.from_(table).select('area_name'))
         return self.select_many_records(query=query)
+
+    def update_deposit_name(self, area_name: str,
+                            updated_area_name: str) -> bool:
+        """Update deposit name.
+
+        Args:
+            area_name: deposit area name
+            updated_area_name: updated deposit area name
+
+        Returns: True if name updated success, False - if not.
+        """
+        table = Table('deposits')
+        query = str(
+            Query.update(table).set(table.area_name, updated_area_name).where(
+                table.area_name == area_name
+            )
+        )
+        return self.is_success_changing_query(query=query)
