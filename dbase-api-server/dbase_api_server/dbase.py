@@ -13,7 +13,7 @@ Examples:
             port=5432,
             user='user-1',
             password='qwerty',
-            database='simple-dbase'
+            dbname='simple-dbase'
         )
         my_adapter = StorageDBase(params=connection_params)
 
