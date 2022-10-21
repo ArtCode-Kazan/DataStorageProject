@@ -22,7 +22,7 @@ Examples:
 import logging
 from typing import Union
 
-from psycopg import OperationalError, connect
+from psycopg import OperationalError
 from psycopg.connection import Connection
 from psycopg.errors import CheckViolation, UniqueViolation
 from pypika import Query, Table
@@ -43,7 +43,9 @@ class StorageDBase:
             params: container with connection parameters (host, port, etc.)
         """
         try:
-            self.__connection = connect(conninfo=params.connection_string)
+            self.__connection = Connection.connect(
+                conninfo=params.connection_string
+            )
         except OperationalError:
             logging.error('problems with database operation')
             raise

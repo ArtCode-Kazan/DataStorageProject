@@ -1,9 +1,52 @@
+from unittest.mock import Mock, patch
+
 from hamcrest import assert_that, equal_to, is_
+from psycopg import OperationalError
+from psycopg.connection import Connection
 from pypika import Query, Table
 from pypika.functions import Count
 
+from dbase_api_server.containers import PostgresConnectionParams
+from dbase_api_server.dbase import StorageDBase
+
 
 class TestStorageDBase:
+    connection_params = PostgresConnectionParams(
+        host='some-host',
+        port=7777,
+        user='some-user',
+        password='some-password',
+        dbname='some-dbase'
+    )
+
+    @patch.object(Connection, '_wait_conn')
+    def test_correct_init(self, wait_conn_mock: Mock):
+
+        wait_conn_mock.return_value.prepare_threshold = None
+        with patch.object(Connection, 'connect') as connect_mock:
+            StorageDBase(params=self.connection_params)
+            connect_mock.assert_called_once_with(
+                conninfo=self.connection_params.connection_string
+            )
+
+    @patch('logging.error')
+    @patch.object(Connection, '_wait_conn')
+    def test_bad_init(self, wait_conn_mock: Mock, logging_mock: Mock):
+        wait_conn_mock.return_value.prepare_threshold = None
+        with patch.object(Connection, 'connect') as connect_mock:
+            connect_mock.side_effect = OperationalError
+            try:
+                StorageDBase(params=self.connection_params)
+                is_success = False
+            except OperationalError:
+                is_success = True
+
+            assert_that(actual_or_assertion=is_success, matcher=is_(True))
+            connect_mock.assert_called_once_with(
+                conninfo=self.connection_params.connection_string
+            )
+            logging_mock.assert_called_once()
+
     def test_select_one_record(self, up_test_dbase):
         table = Table('deposits')
 
