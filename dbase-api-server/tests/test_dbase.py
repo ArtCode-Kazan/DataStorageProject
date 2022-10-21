@@ -157,9 +157,9 @@ class TestStorageDBase:
         area_name = 'test-name'
         up_test_dbase.add_deposit_info(area_name)
 
-        fake_area_name = 'test-name-3'
+        missing_area_name = 'test-name-3'
         updated_area_name = 'test-name-1'
-        up_test_dbase.update_deposit_name(fake_area_name,
+        up_test_dbase.update_deposit_name(missing_area_name,
                                           updated_area_name)
 
         table = Table('deposits')
