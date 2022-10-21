@@ -167,9 +167,15 @@ class TestStorageDBase:
             actual_or_assertion=len(records),
             matcher=equal_to(len(area_names))
         )
-        assert_that(actual_or_assertion=isinstance(records, list),
-                    matcher=is_(True))
-        assert_that(actual_or_assertion=records, matcher=area_names)
+        assert_that(
+            actual_or_assertion=isinstance(records, list),
+            matcher=is_(True)
+        )
+        expected_values = [(x,) for x in area_names]
+        assert_that(
+            actual_or_assertion=records,
+            matcher=equal_to(expected_values)
+        )
 
     def test_update_deposit_name(self, up_test_dbase,
                                  clear_deposits_table):
