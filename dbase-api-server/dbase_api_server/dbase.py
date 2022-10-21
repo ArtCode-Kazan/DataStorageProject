@@ -20,7 +20,7 @@ Examples:
 """
 
 import logging
-from typing import List, Union
+from typing import Union
 
 from psycopg import OperationalError, connect
 from psycopg.connection import Connection
@@ -129,7 +129,7 @@ class StorageDBase:
         )
         return self.is_success_changing_query(query=query)
 
-    def get_all_deposit_names(self) -> List[str]:
+    def get_all_deposit_names(self) -> Union[None, list]:
         """Get all deposit info from database.
 
         Returns: True if query completed succes, False - if not
