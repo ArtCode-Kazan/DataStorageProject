@@ -86,7 +86,7 @@ class StorageDBase:
         cursor = self.connection.cursor()
         cursor.execute(query)
         records = cursor.fetchall()
-        if records is None:
+        if not records:
             return
         return records
 

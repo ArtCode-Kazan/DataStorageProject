@@ -14,6 +14,15 @@ class TestStorageDBase:
             matcher=equal_to(0)
         )
 
+        query = str(
+            Query.from_(table).select('area_name').where(table.area_name == '')
+        )
+        record = up_test_dbase.select_one_record(query=query)
+        assert_that(
+            actual_or_assertion=record,
+            matcher=is_(None)
+        )
+
     def test_select_many_records(self, up_test_dbase, fill_deposit_names):
         area_names_count = fill_deposit_names
         table = Table('deposits')
@@ -26,6 +35,15 @@ class TestStorageDBase:
         )
         assert_that(actual_or_assertion=isinstance(records, list),
                     matcher=is_(True))
+
+        query = str(
+            Query.from_(table).select('area_name').where(table.area_name == '')
+        )
+        records = up_test_dbase.select_many_records(query=query)
+        assert_that(
+            actual_or_assertion=records,
+            matcher=is_(None)
+        )
 
     def test_add_deposit_name(self, up_test_dbase, clear_deposits_table):
         is_added = up_test_dbase.add_deposit_info('test-area')
