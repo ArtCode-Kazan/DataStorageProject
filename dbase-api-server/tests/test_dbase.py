@@ -109,3 +109,66 @@ class TestStorageDBase:
         assert_that(actual_or_assertion=isinstance(records, list),
                     matcher=is_(True))
         assert_that(actual_or_assertion=records, matcher=area_names)
+
+    def test_update_deposit_name(self, up_test_dbase,
+                                 clear_deposits_table):
+        area_name = 'test-name'
+        up_test_dbase.add_deposit_info(area_name)
+
+        updated_area_name = 'test-name-1'
+        up_test_dbase.update_deposit_name(area_name, updated_area_name)
+
+        table = Table('deposits')
+        query = str(
+            Query.from_(table).select(Count(1)).where(
+                table.area_name == 'test-name-1'
+            )
+        )
+        cursor = up_test_dbase.connection.cursor()
+        cursor.execute(query)
+        count = cursor.fetchone()[0]
+        assert_that(actual_or_assertion=count, matcher=equal_to(1))
+
+    def test_update_blank_deposit_name(self, up_test_dbase,
+                                       clear_deposits_table):
+        area_name = 'test-name'
+        up_test_dbase.add_deposit_info(area_name)
+
+        updated_area_name = ''
+        is_added = up_test_dbase.update_deposit_name(area_name,
+                                                     updated_area_name)
+        assert_that(actual_or_assertion=is_added, matcher=is_(False))
+
+    def test_update_dupilcate_deposit_name(self, up_test_dbase,
+                                           clear_deposits_table):
+        area_name = 'test-name'
+        up_test_dbase.add_deposit_info(area_name)
+
+        area_name = 'test-name-1'
+        up_test_dbase.add_deposit_info(area_name)
+
+        updated_area_name = 'test-name'
+        is_added = up_test_dbase.update_deposit_name(area_name,
+                                                     updated_area_name)
+        assert_that(actual_or_assertion=is_added, matcher=is_(False))
+
+    def test_update_missing_deposit_name(self, up_test_dbase,
+                                         clear_deposits_table):
+        area_name = 'test-name'
+        up_test_dbase.add_deposit_info(area_name)
+
+        fake_area_name = 'test-name-3'
+        updated_area_name = 'test-name-1'
+        up_test_dbase.update_deposit_name(fake_area_name,
+                                          updated_area_name)
+
+        table = Table('deposits')
+        query = str(
+            Query.from_(table).select(Count(1)).where(
+                table.area_name == 'test-name-3'
+            )
+        )
+        cursor = up_test_dbase.connection.cursor()
+        cursor.execute(query)
+        count = cursor.fetchone()[0]
+        assert_that(actual_or_assertion=count, matcher=equal_to(0))
