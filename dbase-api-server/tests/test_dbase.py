@@ -42,14 +42,14 @@ class TestStorageDBase:
         records_count = cursor.fetchone()[0]
         assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
 
-    def test_blank_deposit_name(self, up_test_dbase):
+    def test_blank_deposit_name(self, up_test_dbase, clear_deposits_table):
         is_added = up_test_dbase.add_deposit_info('')
         assert_that(actual_or_assertion=is_added, matcher=is_(False))
 
         table = Table('deposits')
         query = str(
             Query.from_(table).select(Count(1)).where(
-                table.area_name == 'test-area'
+                table.area_name == ''
             )
         )
         cursor = up_test_dbase.connection.cursor()
