@@ -148,9 +148,14 @@ class StorageDBase:
 
         Returns: True if name updated success, False - if not.
         """
+        lower_updated_area_name = updated_area_name
+        if area_name.lower() == lower_updated_area_name:
+            return False
+
         table = Table('deposits')
         query = str(
-            Query.update(table).set(table.area_name, updated_area_name).where(
+            Query.update(table).set(
+                table.area_name, lower_updated_area_name).where(
                 table.area_name == area_name
             )
         )
