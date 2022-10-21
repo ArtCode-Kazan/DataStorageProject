@@ -138,25 +138,25 @@ class StorageDBase:
         query = str(Query.from_(table).select('area_name'))
         return self.select_many_records(query=query)
 
-    def update_deposit_name(self, area_name: str,
-                            updated_area_name: str) -> bool:
+    def update_deposit_name(self, old_area_name: str,
+                            new_area_name: str) -> bool:
         """Update deposit name.
 
         Args:
-            area_name: deposit area name
-            updated_area_name: updated deposit area name
+            old_area_name: deposit area name
+            new_area_name: updated deposit area name
 
         Returns: True if name updated success, False - if not.
         """
-        lower_updated_area_name = updated_area_name
-        if area_name.lower() == lower_updated_area_name:
+        lower_updated_area_name = new_area_name
+        if old_area_name.lower() == lower_updated_area_name:
             return False
 
         table = Table('deposits')
         query = str(
             Query.update(table).set(
                 table.area_name, lower_updated_area_name).where(
-                table.area_name == area_name
+                table.area_name == old_area_name
             )
         )
         return self.is_success_changing_query(query=query)
