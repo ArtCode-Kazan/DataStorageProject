@@ -1,24 +1,25 @@
 CREATE TABLE IF NOT EXISTS deposits(
     id SERIAL PRIMARY KEY,
-    area_name TEXT NOT NULL CHECK (area_name != '') UNIQUE
+    area_name VARCHAR(100) NOT NULL CHECK (area_name != '') UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS works(
     id SERIAL PRIMARY KEY,
-    well_name TEXT,
+    well_name VARCHAR(10) DEFAULT 'NULL',
     start_time TIMESTAMP NOT NULL,
     work_type TEXT NOT NULL,
     deposit_id INTEGER NOT NULL,
-    FOREIGN KEY(deposit_id) REFERENCES deposits(id)
+    FOREIGN KEY(deposit_id) REFERENCES deposits(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS stations(
     id SERIAL PRIMARY KEY,
-    x_wgs84 INTEGER NOT NULL,
-    y_wgs84 INTEGER NOT NULL,
-    altitude INTEGER NOT NULL,
+    station_number INTEGER NOT NULL,
+    x_wgs84 NUMERIC(8, 2) NOT NULL,
+    y_wgs84 NUMERIC(8, 2) NOT NULL,
+    altitude NUMERIC(6, 2) NOT NULL,
     work_id INTEGER NOT NULL,
-    FOREIGN KEY(work_id) REFERENCES works(id)
+    FOREIGN KEY(work_id) REFERENCES works(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS seismic_records(
@@ -26,9 +27,9 @@ CREATE TABLE IF NOT EXISTS seismic_records(
     start_time TIMESTAMP NOT NULL,
     stop_time TIMESTAMP NOT NULL,
     frequency INTEGER NOT NULL,
-    is_using BOOLEAN NOT NULL,
+    is_using BOOLEAN NOT NULL DEFAULT TRUE,
     origin_name TEXT NOT NULL,
     unique_name TEXT NOT NULL UNIQUE,
     station_id INTEGER NOT NULL,
-    FOREIGN KEY(station_id) REFERENCES stations(id)
+    FOREIGN KEY(station_id) REFERENCES stations(id) ON DELETE CASCADE
 );
