@@ -70,11 +70,13 @@ class StorageDBase:
 
         """
         cursor = self.connection.cursor()
-        cursor.execute(query)
+        cursor.execute(query=query)
         record = cursor.fetchone()
         if record is None:
             return
-        return record[0]
+        if len(record) == 1:
+            return record[0]
+        return record
 
     def select_many_records(self, query: str) -> Union[None, list]:
         """Return many selected records.
@@ -86,10 +88,13 @@ class StorageDBase:
 
         """
         cursor = self.connection.cursor()
-        cursor.execute(query)
+        cursor.execute(query=query)
         records = cursor.fetchall()
         if not records:
             return
+
+        if len(records[0]) == 1:
+            return [x[0] for x in records]
         return records
 
     def is_success_changing_query(self, query: str) -> bool:
@@ -103,7 +108,7 @@ class StorageDBase:
         """
         try:
             cursor = self.connection.cursor()
-            cursor.execute(query)
+            cursor.execute(query=query)
             self.connection.commit()
             return True
         except UniqueViolation:
@@ -134,7 +139,7 @@ class StorageDBase:
     def get_all_deposit_names(self) -> Union[None, list]:
         """Get all deposit info from database.
 
-        Returns: True if query completed succes, False - if not.
+        Returns: True if query completed success, False - if not.
         """
         table = Table('deposits')
         query = str(Query.from_(table).select('area_name'))
@@ -150,14 +155,13 @@ class StorageDBase:
 
         Returns: True if name updated success, False - if not.
         """
-        lower_updated_area_name = new_area_name
-        if old_area_name.lower() == lower_updated_area_name:
-            return False
+        old_area_name = old_area_name.lower()
+        new_area_name = new_area_name.lower()
 
         table = Table('deposits')
         query = str(
             Query.update(table).set(
-                table.area_name, lower_updated_area_name).where(
+                table.area_name, new_area_name).where(
                 table.area_name == old_area_name
             )
         )
