@@ -4,7 +4,8 @@ import pytest
 from hamcrest import assert_that, equal_to, is_
 from psycopg import OperationalError
 from psycopg.connection import Connection
-from psycopg.errors import CheckViolation, UniqueViolation
+from psycopg.errors import (CheckViolation, StringDataRightTruncation,
+                            UniqueViolation)
 from pypika import Query, Table
 from pypika.functions import Count
 
@@ -142,7 +143,10 @@ class TestStorageDBase:
         assert_that(actual_or_assertion=is_rollback, matcher=is_(False))
         assert_that(actual_or_assertion=is_success, matcher=is_(True))
 
-    @pytest.mark.parametrize('error_type', [UniqueViolation, CheckViolation])
+    @pytest.mark.parametrize(
+        'error_type',
+        [UniqueViolation, CheckViolation, StringDataRightTruncation]
+    )
     @patch('logging.error')
     @patch.object(Connection, 'connect')
     @patch.object(Connection, '_wait_conn')
