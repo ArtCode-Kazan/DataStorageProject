@@ -117,7 +117,7 @@ class StorageDBase:
         except CheckViolation:
             logging.error('field(s) dont pass dbase check condition(s)')
         except StringDataRightTruncation:
-            logging.error('field(s) longer than 100 characters')
+            logging.error('field(s) longer than allowed')
 
         self.connection.rollback()
         return False
