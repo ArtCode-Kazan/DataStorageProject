@@ -42,3 +42,16 @@ def add_new_deposit_name(area_name: str) -> bool:
     Returns: True if name added success, False - if not.
     """
     return dbase_adapter.add_deposit_info(area_name)
+
+
+@app.post('/update-deposit')
+def update_deposit_name(old_area_name: str, new_area_name: str) -> bool:
+    """Update deposit name.
+
+    Args:
+        old_area_name: deposit area name
+        new_area_name: updated deposit area name
+
+    Returns: True if name updated success, False - if not.
+    """
+    return dbase_adapter.update_deposit_name(old_area_name, new_area_name)
