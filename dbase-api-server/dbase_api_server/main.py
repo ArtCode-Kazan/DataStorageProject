@@ -30,3 +30,15 @@ def get_all_deposits() -> bool:
     Returns: True if query completed success, False - if not.
     """
     return dbase_adapter.get_all_deposit_names()
+
+
+@app.post('/add-deposit')
+def add_new_deposit_name(area_name: str) -> bool:
+    """Add deposit info to database.
+
+    Args:
+        area_name: deposit area name
+
+    Returns: True if name added success, False - if not.
+    """
+    return dbase_adapter.add_deposit_info(area_name)
