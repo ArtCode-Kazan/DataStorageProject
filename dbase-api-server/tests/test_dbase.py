@@ -347,7 +347,7 @@ class TestStorageDBase:
         records_count = up_test_dbase.select_one_record(query)
         assert_that(actual_or_assertion=records_count, matcher=equal_to(0))
 
-    def test_field_lenght_exceeded(self, up_test_dbase):
+    def test_field_lengh_exceeded(self, up_test_dbase):
         area_name = 'test-name' * 12
         is_success = up_test_dbase.add_deposit_info(area_name)
         assert_that(actual_or_assertion=is_success, matcher=is_(False))
