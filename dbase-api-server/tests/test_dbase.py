@@ -348,21 +348,25 @@ class TestStorageDBase:
         assert_that(actual_or_assertion=records_count, matcher=equal_to(0))
 
     @pytest.mark.parametrize(
-        ['passed_values', 'expected_values', 'expected_records_count'],
+        ['passed_value', 'expected_value', 'expected_records_count'],
         [('a', True, 1), ('a' * 100, True, 1), ('a' * 111, False, 0)]
     )
-    def test_field_deposit_name_lengh(self, up_test_dbase, passed_values,
-                                      expected_values, expected_records_count):
-        is_success = up_test_dbase.add_deposit_info(passed_values)
-        assert_that(actual_or_assertion=is_success,
-                    matcher=is_(expected_values))
+    def test_field_deposit_name_lengh(self, up_test_dbase, passed_value,
+                                      expected_value, expected_records_count):
+        is_success = up_test_dbase.add_deposit_info(passed_value)
+        assert_that(
+            actual_or_assertion=is_success,
+            matcher=is_(expected_value)
+        )
 
         table = Table('deposits')
         query = str(
             Query.from_(table).select(Count(1)).where(
-                table.area_name == passed_values
+                table.area_name == passed_value
             )
         )
         is_added = up_test_dbase.select_one_record(query)
-        assert_that(actual_or_assertion=is_added,
-                    matcher=equal_to(expected_records_count))
+        assert_that(
+            actual_or_assertion=is_added,
+            matcher=equal_to(expected_records_count)
+        )
