@@ -7,7 +7,7 @@ This module organize information about objects.
 from dataclasses import dataclass
 from typing import List
 
-__all__ = ['PostgresConnectionParams']
+__all__ = ['PostgresConnectionParams', 'ResponseContainer']
 
 
 @dataclass
@@ -52,3 +52,30 @@ class PostgresConnectionParams:
         return (f'host={self.host} port={self.port} '
                 f'user={self.user} password={self.password} '
                 f'dbname={self.dbname}')
+
+
+@dataclass
+class ResponseContainer:
+    """Container with API response dictionary.
+
+    Args:
+        status: response status
+        message: description with response action
+        data: info about deposit area name
+
+    """
+    status: bool
+    message: str
+    data: dict
+
+    def convert_to_dict(self) -> dict:
+        """Returns API response dictionary.
+
+        Returns: response dict
+
+        """
+        return {
+            'status': self.status,
+            'message': self.message,
+            'data': self.data
+        }
