@@ -33,6 +33,7 @@ def get_all_deposits() -> dict:
     area_names = dbase_adapter.get_all_deposit_names()
     if area_names is None:
         area_names = []
+
     container = ResponseContainer(
         status=True,
         message='All deposits name returns successfully',
