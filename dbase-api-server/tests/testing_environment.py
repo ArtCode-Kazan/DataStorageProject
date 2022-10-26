@@ -21,7 +21,63 @@ TEMP_FOLDERS = {
                                    'Appdata', 'Local', 'Temp')
 }
 
-DOCKER_COMPOSE_FILE_TEMPLATE_NAME = 'docker_compose.yaml.template'
+DOCKER_COMPOSE_FILE_CONTENT: str = """
+version: '3.8'
+
+services:
+    postgres-server:
+        build:
+            context: {postgres-server-folder}
+            dockerfile: Dockerfile
+        image: {image-prefix}-pg-server
+        container_name: {container-prefix}-pg-container
+        environment:
+            - POSTGRES_HOST=postgres-server
+            - POSTGRES_PORT=5678
+            - POSTGRES_USER={POSTGRES_USER}
+            - POSTGRES_PASSWORD={POSTGRES_PASSWORD}
+            - POSTGRES_DB={POSTGRES_DB}
+        volumes:
+            - {temp-storage-folder}:/var/lib/postgresql/data
+        ports:
+            - "{POSTGRES_PORT}:5678"
+        command: -p 5678
+        healthcheck:
+            test: [ "CMD-SHELL", 
+                    "pg_isready 
+                    -h postgres-server 
+                    -p 5678 
+                    -d {POSTGRES_DB} 
+                    -U {POSTGRES_USER}" 
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    dbase-api-server:
+        build:
+            context: {dbase-api-server-folder}
+            dockerfile: Dockerfile
+        image: {image-prefix}-dbase-api-server
+        container_name: {container-prefix}-dbase-api-server-container
+        environment:
+            - POSTGRES_HOST=postgres-server
+            - POSTGRES_PORT=5678
+            - POSTGRES_USER={POSTGRES_USER}
+            - POSTGRES_PASSWORD={POSTGRES_PASSWORD}
+            - POSTGRES_DB={POSTGRES_DB}
+            - APP_HOST=dbase-api-server
+            - APP_PORT=8133
+        ports:
+            - "{APP_PORT}:8133"
+        command: -p 8133
+        depends_on:
+            postgres-server:
+                condition: service_healthy
+
+"""
+
+
 DOCKER_COMPOSE_FILENAME = 'docker-compose.yaml'
 
 TMP_FOLDER_NAME = 'test-postgres'
@@ -48,32 +104,19 @@ def get_cmd_output(root: str, command: List[str]) -> Tuple[bool, List[str]]:
 
 
 class DockerComposeFileTemplate:
-    def __init__(self, path: str):
-        if not os.path.join(path):
-            raise OSError('Docker compose file template not found')
-
-        self.__origin_content = self.load(path)
-        self.__changed_content = self.__origin_content
-
-    @staticmethod
-    def load(path: str) -> str:
-        with open(path, 'r') as file_ctx:
-            return file_ctx.read()
+    def __init__(self):
+        self.__content = DOCKER_COMPOSE_FILE_CONTENT
 
     @property
-    def origin_content(self) -> str:
-        return self.__origin_content
+    def content(self) -> str:
+        return self.__content
 
-    @property
-    def changed_content(self) -> str:
-        return self.__changed_content
-
-    @changed_content.setter
-    def changed_content(self, value: str):
-        self.__changed_content = value
+    @content.setter
+    def content(self, value: str):
+        self.__content = value
 
     def replace(self, old_substring: str, new_substring: str):
-        self.changed_content = self.changed_content.replace(
+        self.content = self.content.replace(
             old_substring, new_substring
         )
 
@@ -139,7 +182,7 @@ class DockerComposeFileTemplate:
             raise OSError('Export root not found')
         export_path = os.path.join(export_root, DOCKER_COMPOSE_FILENAME)
         with open(export_path, 'w') as file_ctx:
-            file_ctx.write(self.changed_content)
+            file_ctx.write(self.content)
 
 
 class TestEnvironment:
@@ -201,21 +244,11 @@ class TestEnvironment:
         return os.path.split(os.path.split(path)[0])[0]
 
     @property
-    def docker_compose_template_file_path(self) -> str:
-        path = os.path.join(
-            self.root_folder, DBASE_API_SERVER_FOLDER_NAME, 'tests',
-            DOCKER_COMPOSE_FILE_TEMPLATE_NAME
-        )
-        return path
-
-    @property
     def docker_compose_file_path(self) -> str:
         return os.path.join(self.tmp_root, DOCKER_COMPOSE_FILENAME)
 
     def create_docker_compose_file(self):
-        file_template = DockerComposeFileTemplate(
-            path=self.docker_compose_template_file_path
-        )
+        file_template = DockerComposeFileTemplate()
 
         file_template.add_image_prefix(prefix_value=IMAGE_PREFIX)
         file_template.add_container_prefix(prefix_value=CONTAINER_PREFIX)
