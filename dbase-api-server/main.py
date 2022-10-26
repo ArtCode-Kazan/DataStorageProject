@@ -3,6 +3,7 @@
 import os
 
 import dotenv
+import uvicorn
 from fastapi import FastAPI
 
 from dbase_api_server.containers import (PostgresConnectionParams,
@@ -18,9 +19,24 @@ dbase_adapter = StorageDBase(
         password=os.getenv('POSTGRES_PASSWORD'),
         host=os.getenv('POSTGRES_HOST'),
         port=int(os.getenv('POSTGRES_PORT')),
-        dbname=os.getenv('POSTGRES_DBASE')
+        dbname=os.getenv('POSTGRES_DB')
     )
 )
+
+
+@app.get('/ping')
+def check_service_alive() -> dict:
+    """Return ping-pong response.
+
+    Returns: dict object with status and message
+
+    """
+    container = ResponseContainer(
+        status=True,
+        message='Service is alive',
+        data={}
+    )
+    return container.convert_to_dict()
 
 
 @app.get('/get-all-deposits')
@@ -93,3 +109,12 @@ def update_deposit_name(old_area_name: str, new_area_name: str) -> dict:
         data={}
     )
     return container.convert_to_dict()
+
+
+if __name__ == '__main__':
+    uvicorn.run(
+        'main:app',
+        reload=True,
+        host=os.getenv('APP_HOST'),
+        port=int(os.getenv('APP_PORT'))
+    )
