@@ -31,6 +31,8 @@ def get_all_deposits() -> dict:
     operation discription and all deposit area names.
     """
     area_names = dbase_adapter.get_all_deposit_names()
+    if area_names is None:
+        area_names = []
     container = ResponseContainer(
         status=True,
         message='All deposits name returns successfully',
@@ -42,7 +44,7 @@ def get_all_deposits() -> dict:
 
 
 @app.post('/add-deposit')
-def add_new_deposit_name(area_name: str) -> bool:
+def add_new_deposit_name(area_name: str) -> dict:
     """Add deposit info to database.
 
     Args:
@@ -51,19 +53,22 @@ def add_new_deposit_name(area_name: str) -> bool:
     Returns: dict object with request status, message with
     action discription and added deposit area name.
     """
-    add_new_area_name = dbase_adapter.add_deposit_info(area_name)
+    is_added = dbase_adapter.add_deposit_info(area_name)
+    if is_added:
+        message = f'Deposit name "{area_name}" added successfully'
+    else:
+        message = f'Cant add deposit name "{area_name}"'
+
     container = ResponseContainer(
-        status=add_new_area_name,
-        message=f'Deposit name \"{area_name}\" added successfully',
-        data={
-            'area_name': area_name
-        }
+        status=is_added,
+        message=message,
+        data={}
     )
     return container.convert_to_dict()
 
 
 @app.post('/update-deposit')
-def update_deposit_name(old_area_name: str, new_area_name: str) -> bool:
+def update_deposit_name(old_area_name: str, new_area_name: str) -> dict:
     """Update deposit name.
 
     Args:
@@ -73,15 +78,17 @@ def update_deposit_name(old_area_name: str, new_area_name: str) -> bool:
     Returns: dict object with request status, message with
     action discription and updated deposit area name.
     """
-    update_area_name = dbase_adapter.update_deposit_name(old_area_name,
-                                                         new_area_name)
+    is_added = dbase_adapter.update_deposit_name(old_area_name,
+                                                 new_area_name)
+    if is_added:
+        message = (f'Deposit "{old_area_name}" successfully '
+                   f'renamed to "{new_area_name}"')
+    else:
+        message = f'Cant rename "{old_area_name} to "{new_area_name}"'
+
     container = ResponseContainer(
-        status=update_area_name,
-        message=f'Deposit \"{old_area_name}\" successfully '
-                'renamed to \"{new_area_name}\"',
-        data={
-            'old_area_name': old_area_name,
-            'new_area_name': new_area_name
-        }
+        status=is_added,
+        message=message,
+        data={}
     )
     return container.convert_to_dict()
