@@ -36,7 +36,7 @@ class TestEnvironment:
             password=os.getenv('POSTGRES_PASSWORD'),
             host=os.getenv('POSTGRES_HOST'),
             port=int(os.getenv('POSTGRES_PORT')),
-            dbname=os.getenv('POSTGRES_DBASE')
+            dbname=os.getenv('POSTGRES_DB')
         )
 
         self.__platform_name = platform.system().lower()
