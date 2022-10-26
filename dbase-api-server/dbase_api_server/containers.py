@@ -5,9 +5,13 @@ This module organize information about objects.
 """
 
 from dataclasses import dataclass
-from typing import List
+from typing import List, Union
 
-__all__ = ['PostgresConnectionParams', 'ResponseContainer']
+__all__ = [
+    'PostgresConnectionParams',
+    'UvicornConnectionParams',
+    'ResponseContainer'
+]
 
 
 @dataclass
@@ -55,6 +59,28 @@ class PostgresConnectionParams:
 
 
 @dataclass
+class UvicornConnectionParams:
+    """Container with connection parameters for uvicorn.
+
+    Args:
+        host: host address
+        port: port number
+
+    """
+    host: str
+    port: int
+
+    @property
+    def url_address(self) -> str:
+        """Return full url address.
+
+        Returns: string with url address
+
+        """
+        return f'http://{self.host}:{self.port}'
+
+
+@dataclass
 class ResponseContainer:
     """Container with API response dictionary.
 
@@ -66,7 +92,7 @@ class ResponseContainer:
     """
     status: bool
     message: str
-    data: dict
+    data: Union[dict, list, int, float, str]
 
     def convert_to_dict(self) -> dict:
         """Returns API response dictionary.
