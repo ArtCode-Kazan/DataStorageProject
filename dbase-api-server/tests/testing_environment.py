@@ -276,7 +276,7 @@ class TestEnvironment:
     def start_docker_compose(self):
         if not os.path.exists(self.docker_compose_file_path):
             raise OSError('Docker compose file not found')
-        command = ['docker-compose', 'up', '--detach']
+        command = ['docker', 'compose', 'up', '--detach']
         is_success, messages = get_cmd_output(
             root=self.tmp_root, command=command
         )
@@ -286,7 +286,7 @@ class TestEnvironment:
     def down_docker_compose(self):
         if not os.path.exists(self.docker_compose_file_path):
             raise OSError('Docker compose file not found')
-        command = ['docker-compose', 'down']
+        command = ['docker', 'compose', 'down']
         is_success, messages = get_cmd_output(
             root=self.tmp_root, command=command
         )

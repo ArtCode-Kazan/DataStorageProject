@@ -5,7 +5,8 @@ services:
         build:
             context: ./postgres-server
             dockerfile: Dockerfile
-        image: porter/elasticsearch
+        image: compose-pg-server-image
+        container_name: compose-pg-server-container
         environment:
             - POSTGRES_HOST=postgres-server
             - POSTGRES_PORT=5678
@@ -27,6 +28,8 @@ services:
         build:
             context: ./dbase-api-server
             dockerfile: Dockerfile
+        image: compose-dbase-api-server-image
+        container_name: compose-dbase-api-server-container
         environment:
             - POSTGRES_HOST=postgres-server
             - POSTGRES_PORT=5678

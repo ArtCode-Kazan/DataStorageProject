@@ -23,7 +23,7 @@ RUN mkdir SERVER_FOLDER
 
 COPY . $SERVER_FOLDER
 
-RUN cd $SERVER_FOLDER && poetry install --no-dev
+RUN cd $SERVER_FOLDER && poetry install --only main
 
 WORKDIR $SERVER_FOLDER
 
