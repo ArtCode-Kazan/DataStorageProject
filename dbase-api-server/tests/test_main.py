@@ -8,10 +8,11 @@ load_dotenv()
 
 APP_HOST = os.getenv('APP_HOST')
 APP_PORT = os.getenv('APP_PORT')
+URL = f'http://{APP_HOST}:{APP_PORT}'
 
 
 def test_get_all_deposits(up_test_dbase, clear_deposits_table):
-    url = f'http://{APP_HOST}:{APP_PORT}/get-all-deposits'
+    url = f'{URL}/get-all-deposits'
     response = requests.get(url)
     expected_value = {
         'status': True,
@@ -53,7 +54,7 @@ def test_get_all_deposits(up_test_dbase, clear_deposits_table):
 
 def test_add_new_deposit_name(clear_deposits_table):
     payload = {'area_name': 'test-name'}
-    url = f'http://{APP_HOST}:{APP_PORT}/add-deposit'
+    url = f'{URL}/add-deposit'
     response = requests.post(url, params=payload)
     expected_value = {
         'status': True,
@@ -76,7 +77,7 @@ def test_add_new_deposit_name(clear_deposits_table):
         'message': f'Cant add deposit name "{payload["area_name"]}"',
         'data': {}
     }
-    url = f'http://{APP_HOST}:{APP_PORT}/add-deposit'
+    url = f'{URL}/add-deposit'
     response = requests.post(url, params=payload)
     assert_that(
         actual_or_assertion=response.json(),
@@ -102,7 +103,7 @@ def test_update_deposit_name(up_test_dbase, clear_deposits_table):
                     f'renamed to "{payload["new_area_name"]}"'),
         'data': {}
     }
-    url = (f'http://{APP_HOST}:{APP_PORT}/update-deposit')
+    url = (f'{URL}/update-deposit')
     response = requests.post(url, params=payload)
     assert_that(
         actual_or_assertion=response.json(),
@@ -123,7 +124,7 @@ def test_update_deposit_name(up_test_dbase, clear_deposits_table):
                     f'to "{payload["new_area_name"]}"'),
         'data': {}
     }
-    url = (f'http://{APP_HOST}:{APP_PORT}/update-deposit')
+    url = (f'{URL}/update-deposit')
     response = requests.post(url, params=payload)
     assert_that(
         actual_or_assertion=response.json(),
