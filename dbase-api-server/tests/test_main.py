@@ -77,3 +77,42 @@ def test_add_new_deposit_name(clear_deposits_table):
         actual_or_assertion=response.status_code,
         matcher=equal_to(200)
     )
+
+
+def test_update_deposit_name(up_test_dbase, clear_deposits_table):
+    old_area_name = 'test-name'
+    up_test_dbase.add_deposit_info(area_name=old_area_name)
+
+    new_area_name = 'test-name-2'
+    expected_value = {
+        'status': True,
+        'message': (f'Deposit "{old_area_name}" successfully '
+                    f'renamed to "{new_area_name}"'),
+        'data': {}
+    }
+    url = (f'http://{app_host}:{app_port}/update-deposit?'
+           f'old_area_name={old_area_name}&new_area_name={new_area_name}')
+    response = requests.post(url)
+    assert_that(
+        actual_or_assertion=response.json(),
+        matcher=equal_to(expected_value)
+    )
+
+    old_area_name = 'test-name-2'
+    new_area_name = ''
+    expected_value = {
+        'status': False,
+        'message': f'Cant rename "{old_area_name} to "{new_area_name}"',
+        'data': {}
+    }
+    url = (f'http://{app_host}:{app_port}/update-deposit?'
+           f'old_area_name={old_area_name}&new_area_name={new_area_name}')
+    response = requests.post(url)
+    assert_that(
+        actual_or_assertion=response.json(),
+        matcher=equal_to(expected_value)
+    )
+    assert_that(
+        actual_or_assertion=response.status_code,
+        matcher=equal_to(200)
+    )
