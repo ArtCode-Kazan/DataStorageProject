@@ -52,18 +52,6 @@ def test_get_all_deposits(up_test_dbase, clear_deposits_table):
 
 
 def test_add_new_deposit_name(clear_deposits_table):
-    # area_name = 'test-name'
-    # expected_value = {
-    #     'status': True,
-    #     'message': f'Deposit name "{area_name}" added successfully',
-    #     'data': {}
-    # }
-    # url = f'http://{APP_HOST}:{APP_PORT}/add-deposit?area_name={area_name}'
-    # response = requests.post(url)
-    # assert_that(
-    #     actual_or_assertion=response.json(),
-    #     matcher=equal_to(expected_value)
-    # )
     payload = {'area_name': 'test-name'}
     url = f'http://{APP_HOST}:{APP_PORT}/add-deposit'
     response = requests.post(url, params=payload)
