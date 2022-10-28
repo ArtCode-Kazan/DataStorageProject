@@ -26,7 +26,7 @@ def test_get_all_deposits(up_test_dbase, clear_deposits_table):
     )
     assert_that(
         actual_or_assertion=response.status_code,
-        matcher=equal_to(200)
+        matcher=equal_to(requests.codes.ok)
     )
 
     area_name = 'test-area'
@@ -47,7 +47,7 @@ def test_get_all_deposits(up_test_dbase, clear_deposits_table):
     )
     assert_that(
         actual_or_assertion=response.status_code,
-        matcher=equal_to(200)
+        matcher=equal_to(requests.codes.ok)
     )
 
 
@@ -67,7 +67,7 @@ def test_add_new_deposit_name(clear_deposits_table):
 
     assert_that(
         actual_or_assertion=response.status_code,
-        matcher=equal_to(200)
+        matcher=equal_to(requests.codes.ok)
     )
 
     payload = {'area_name': ''}
@@ -84,7 +84,7 @@ def test_add_new_deposit_name(clear_deposits_table):
     )
     assert_that(
         actual_or_assertion=response.status_code,
-        matcher=equal_to(200)
+        matcher=equal_to(requests.codes.ok)
     )
 
 
@@ -110,7 +110,7 @@ def test_update_deposit_name(up_test_dbase, clear_deposits_table):
     )
     assert_that(
         actual_or_assertion=response.status_code,
-        matcher=equal_to(200)
+        matcher=equal_to(requests.codes.ok)
     )
 
     payload = {
@@ -131,5 +131,5 @@ def test_update_deposit_name(up_test_dbase, clear_deposits_table):
     )
     assert_that(
         actual_or_assertion=response.status_code,
-        matcher=equal_to(200)
+        matcher=equal_to(requests.codes.ok)
     )
