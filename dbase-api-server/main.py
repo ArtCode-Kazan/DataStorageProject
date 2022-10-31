@@ -5,10 +5,9 @@ import os
 import dotenv
 import uvicorn
 from fastapi import FastAPI
-from pydantic import BaseModel
 
-from dbase_api_server.containers import (PostgresConnectionParams,
-                                         ResponseContainer)
+from dbase_api_server.containers import (Deposits, PostgresConnectionParams,
+                                         ResponseContainer, UpdateDeposits)
 from dbase_api_server.dbase import StorageDBase
 
 dotenv.load_dotenv()
@@ -23,28 +22,6 @@ dbase_adapter = StorageDBase(
         dbname=os.getenv('POSTGRES_DB')
     )
 )
-
-
-class Deposits(BaseModel):
-    """Model with field for adding new deposit.
-
-    Args:
-        area_name: deposit name for adding
-
-    """
-    area_name: str
-
-
-class UpdateDeposits(BaseModel):
-    """Model with fields for renaming deposit area name.
-
-    Args:
-        old_area_name: initial area name
-        new_area_name: area name for renaming
-
-    """
-    old_area_name: str
-    new_area_name: str
 
 
 @app.get('/ping')
