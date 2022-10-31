@@ -7,6 +7,8 @@ This module organize information about objects.
 from dataclasses import dataclass
 from typing import List, Union
 
+from pydantic import BaseModel
+
 __all__ = [
     'PostgresConnectionParams',
     'UvicornConnectionParams',
@@ -105,3 +107,27 @@ class ResponseContainer:
             'message': self.message,
             'data': self.data
         }
+
+
+@dataclass
+class Deposits(BaseModel):
+    """Model with field for adding new deposit.
+
+    Args:
+        area_name: deposit name for adding
+
+    """
+    area_name: str
+
+
+@dataclass
+class UpdateDeposits(BaseModel):
+    """Model with fields for renaming deposit area name.
+
+    Args:
+        old_area_name: initial area name
+        new_area_name: area name for renaming
+
+    """
+    old_area_name: str
+    new_area_name: str
