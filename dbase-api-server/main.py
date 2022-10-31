@@ -5,6 +5,7 @@ import os
 import dotenv
 import uvicorn
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 from dbase_api_server.containers import (PostgresConnectionParams,
                                          ResponseContainer)
@@ -22,6 +23,28 @@ dbase_adapter = StorageDBase(
         dbname=os.getenv('POSTGRES_DB')
     )
 )
+
+
+class Deposits(BaseModel):
+    """Model with field for adding new deposit.
+
+    Args:
+        area_name: deposit name for adding
+
+    """
+    area_name: str
+
+
+class UpdateDeposits(BaseModel):
+    """Model with fields for renaming deposit area name.
+
+    Args:
+        old_area_name: initial area name
+        new_area_name: area name for renaming
+
+    """
+    old_area_name: str
+    new_area_name: str
 
 
 @app.get('/ping')
@@ -61,20 +84,20 @@ def get_all_deposits() -> dict:
 
 
 @app.post('/add-deposit')
-def add_new_deposit_name(area_name: str) -> dict:
+def add_new_deposit_name(deposits: Deposits) -> dict:
     """Add deposit info to database.
 
     Args:
-        area_name: deposit area name
+        deposits: Deposits model with area_name field
 
     Returns: dict object with request status, message with
     action discription and added deposit area name.
     """
-    is_added = dbase_adapter.add_deposit_info(area_name)
+    is_added = dbase_adapter.add_deposit_info(deposits.area_name)
     if is_added:
-        message = f'Deposit name "{area_name}" added successfully'
+        message = f'Deposit name "{deposits.area_name}" added successfully'
     else:
-        message = f'Cant add deposit name "{area_name}"'
+        message = f'Cant add deposit name "{deposits.area_name}"'
 
     container = ResponseContainer(
         status=is_added,
@@ -85,23 +108,24 @@ def add_new_deposit_name(area_name: str) -> dict:
 
 
 @app.post('/update-deposit')
-def update_deposit_name(old_area_name: str, new_area_name: str) -> dict:
+def update_deposit_name(update_deposits: UpdateDeposits) -> dict:
     """Update deposit name.
 
     Args:
-        old_area_name: deposit area name
-        new_area_name: updated deposit area name
+        update_deposits: UpdateDeposits model with old_area_name and
+        new area_name fields
 
     Returns: dict object with request status, message with
     action discription and updated deposit area name.
     """
-    is_added = dbase_adapter.update_deposit_name(old_area_name,
-                                                 new_area_name)
+    is_added = dbase_adapter.update_deposit_name(update_deposits.old_area_name,
+                                                 update_deposits.new_area_name)
     if is_added:
-        message = (f'Deposit "{old_area_name}" successfully '
-                   f'renamed to "{new_area_name}"')
+        message = (f'Deposit "{update_deposits.old_area_name}" successfully '
+                   f'renamed to "{update_deposits.new_area_name}"')
     else:
-        message = f'Cant rename "{old_area_name} to "{new_area_name}"'
+        message = (f'Cant rename "{update_deposits.old_area_name} to '
+                   f'"{update_deposits.new_area_name}"')
 
     container = ResponseContainer(
         status=is_added,
