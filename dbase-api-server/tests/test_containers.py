@@ -1,7 +1,6 @@
 from hamcrest import assert_that, equal_to, is_
 
 from dbase_api_server.containers import (PostgresConnectionParams,
-                                         ResponseContainer,
                                          UvicornConnectionParams)
 
 
@@ -56,25 +55,4 @@ class TestUvicornConnectionParams:
         assert_that(
             actual_or_assertion=self.obj.url_address,
             matcher=equal_to(self.url_address)
-        )
-
-
-class TestResponseContainer:
-    status = True
-    message = 'some-message'
-    data = {'some-data': 'my-data'}
-
-    dict_value = {
-        'status': status,
-        'message': message,
-        'data': data
-    }
-
-    def test_convert_to_dict(self):
-        obj = ResponseContainer(
-            status=self.status, message=self.message, data=self.data
-        )
-        assert_that(
-            actual_or_assertion=obj.convert_to_dict(),
-            matcher=equal_to(self.dict_value)
         )
