@@ -54,7 +54,7 @@ def test_get_all_deposits(up_test_dbase, clear_deposits_table):
     )
 
 
-def test_add_new_deposit_name(clear_deposits_table):
+def test_add_new_deposit(clear_deposits_table):
     url = f'{URL}/add-deposit'
     payload = Deposit(area_name='area-name')
     response = requests.post(url, json=payload.dict())
@@ -91,20 +91,20 @@ def test_add_new_deposit_name(clear_deposits_table):
     )
 
 
-def test_update_deposit_name(up_test_dbase, clear_deposits_table):
-    old_area_name, new_area_name = 'test-name', 'test-name-2'
+def test_update_deposit(up_test_dbase, clear_deposits_table):
+    old_area_name, area_name = 'test-name', 'test-name-2'
 
     up_test_dbase.add_deposit_info(area_name=old_area_name)
 
     payload = Deposit(
-        new_area_name=new_area_name,
+        new_area_name=area_name,
         old_area_name=old_area_name
     )
 
     expected_value = {
         'status': True,
         'message': (f'Deposit "{payload.old_area_name}" successfully '
-                    f'renamed to "{payload.new_area_name}"'),
+                    f'renamed to "{payload.area_name}"'),
         'data': {}
     }
     url = (f'{URL}/update-deposit')
@@ -120,19 +120,19 @@ def test_update_deposit_name(up_test_dbase, clear_deposits_table):
 
 
 def test_update_blank_deposit_name(up_test_dbase, clear_deposits_table):
-    old_area_name, new_area_name = 'new_area_name', ''
+    old_area_name, area_name = 'new_area_name', ''
 
     up_test_dbase.add_deposit_info(area_name=old_area_name)
 
     payload = Deposit(
         old_area_name=old_area_name,
-        new_area_name=new_area_name
+        area_name=area_name
     )
 
     expected_value = {
         'status': False,
         'message': (f'Cant rename "{payload.old_area_name} '
-                    f'to "{payload.new_area_name}"'),
+                    f'to "{payload.area_name}"'),
         'data': {}
     }
     url = (f'{URL}/update-deposit')

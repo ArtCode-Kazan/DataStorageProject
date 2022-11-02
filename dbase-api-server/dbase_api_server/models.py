@@ -33,5 +33,5 @@ class Deposit(BaseModel):
 
     """
     area_name: str = DEFAULT_STRING
-    new_area_name: str = DEFAULT_STRING
+    # new_area_name: str = DEFAULT_STRING
     old_area_name: str = DEFAULT_STRING

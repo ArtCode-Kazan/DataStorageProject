@@ -61,22 +61,22 @@ def get_all_deposits() -> dict:
 
 
 @app.post('/add-deposit')
-def add_new_deposit_name(area_name: Deposit) -> dict:
+def add_new_deposit(deposit: Deposit) -> dict:
     """Add deposit info to database.
 
     Args:
-        area_name: deposits area name
+        deposit: deposits area name
 
     Returns: dict object with request status, message with
     action discription and added deposit area name.
     """
     is_added = dbase_adapter.add_deposit_info(
-        area_name=area_name.area_name
+        area_name=deposit.area_name
     )
     if is_added:
-        message = f'Deposit name "{area_name.area_name}" added successfully'
+        message = f'Deposit name "{deposit.area_name}" added successfully'
     else:
-        message = f'Cant add deposit name "{area_name.area_name}"'
+        message = f'Cant add deposit name "{deposit.area_name}"'
 
     returned_info = Response(
         status=is_added,
@@ -87,28 +87,28 @@ def add_new_deposit_name(area_name: Deposit) -> dict:
 
 
 @app.post('/update-deposit')
-def update_deposit_name(area_names: Deposit) -> dict:
+def update_deposit(deposit: Deposit) -> dict:
     """Update deposit name.
 
     Args:
-        area_names: deposit area name and updated deposit area name
+        deposit: deposit area name and updated deposit area name
 
     Returns: dict object with request status, message with
     action discription and updated deposit area name.
     """
     is_added = dbase_adapter.update_deposit_name(
-        old_area_name=area_names.old_area_name,
-        new_area_name=area_names.new_area_name
+        old_area_name=deposit.old_area_name,
+        new_area_name=deposit.area_name
     )
     if is_added:
         message = (
-            f'Deposit "{area_names.old_area_name}" successfully '
-            f'renamed to "{area_names.new_area_name}"'
+            f'Deposit "{deposit.old_area_name}" successfully '
+            f'renamed to "{deposit.area_name}"'
         )
     else:
         message = (
-            f'Cant rename "{area_names.old_area_name} to '
-            f'"{area_names.new_area_name}"'
+            f'Cant rename "{deposit.old_area_name} to '
+            f'"{deposit.area_name}"'
         )
 
     returned_info = Response(
