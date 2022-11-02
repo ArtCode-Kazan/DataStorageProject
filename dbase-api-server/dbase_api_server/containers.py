@@ -7,7 +7,10 @@ This module organize information about objects.
 from dataclasses import dataclass
 from typing import List
 
-__all__ = ['PostgresConnectionParams']
+__all__ = [
+    'PostgresConnectionParams',
+    'UvicornConnectionParams',
+]
 
 
 @dataclass
@@ -52,3 +55,25 @@ class PostgresConnectionParams:
         return (f'host={self.host} port={self.port} '
                 f'user={self.user} password={self.password} '
                 f'dbname={self.dbname}')
+
+
+@dataclass
+class UvicornConnectionParams:
+    """Container with connection parameters for uvicorn.
+
+    Args:
+        host: host address
+        port: port number
+
+    """
+    host: str
+    port: int
+
+    @property
+    def url_address(self) -> str:
+        """Return full url address.
+
+        Returns: string with url address
+
+        """
+        return f'http://{self.host}:{self.port}'

@@ -1,6 +1,7 @@
 from hamcrest import assert_that, equal_to, is_
 
-from dbase_api_server.containers import PostgresConnectionParams
+from dbase_api_server.containers import (PostgresConnectionParams,
+                                         UvicornConnectionParams)
 
 
 class TestPostgresConnectionParams:
@@ -10,18 +11,11 @@ class TestPostgresConnectionParams:
     password = 'some-password'
     dbname = 'some-dbase'
 
-    def create_object(self):
-        return PostgresConnectionParams(
-            host=self.host,
-            port=self.port,
-            user=self.user,
-            password=self.password,
-            dbname=self.dbname
-        )
+    obj = PostgresConnectionParams(
+        host=host, port=port, user=user, password=password, dbname=dbname
+    )
 
     def test_docker_env(self):
-        params = self.create_object()
-
         expected_value = [
             f'POSTGRES_USER={self.user}',
             f'POSTGRES_PASSWORD={self.password}',
@@ -29,14 +23,13 @@ class TestPostgresConnectionParams:
         ]
 
         assert_that(
-            actual_or_assertion=params.docker_env,
+            actual_or_assertion=self.obj.docker_env,
             matcher=equal_to(expected_value)
         )
 
     def test_connection_string(self):
-        params = self.create_object()
         assert_that(
-            actual_or_assertion=isinstance(params.connection_string, str),
+            actual_or_assertion=isinstance(self.obj.connection_string, str),
             matcher=is_(True)
         )
 
@@ -46,6 +39,20 @@ class TestPostgresConnectionParams:
             f'dbname={self.dbname}'
         )
         assert_that(
-            actual_or_assertion=params.connection_string,
+            actual_or_assertion=self.obj.connection_string,
             matcher=equal_to(expected_value)
+        )
+
+
+class TestUvicornConnectionParams:
+    host = 'some-host'
+    port = 1234
+    url_address = 'http://some-host:1234'
+
+    obj = UvicornConnectionParams(host=host, port=port)
+
+    def test_url_address(self):
+        assert_that(
+            actual_or_assertion=self.obj.url_address,
+            matcher=equal_to(self.url_address)
         )
