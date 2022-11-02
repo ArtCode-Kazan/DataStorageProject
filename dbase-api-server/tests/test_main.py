@@ -97,7 +97,7 @@ def test_update_deposit(up_test_dbase, clear_deposits_table):
     up_test_dbase.add_deposit_info(area_name=old_area_name)
 
     payload = Deposit(
-        new_area_name=area_name,
+        area_name=area_name,
         old_area_name=old_area_name
     )
 

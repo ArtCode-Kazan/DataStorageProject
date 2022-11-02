@@ -32,6 +32,5 @@ class Deposit(BaseModel):
         area_name: deposit name for adding
 
     """
-    area_name: str = DEFAULT_STRING
-    # new_area_name: str = DEFAULT_STRING
+    area_name: str
     old_area_name: str = DEFAULT_STRING
