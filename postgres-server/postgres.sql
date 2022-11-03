@@ -10,6 +10,10 @@ CREATE TABLE IF NOT EXISTS works(
     work_type VARCHAR(20) NOT NULL,
     deposit_id INTEGER NOT NULL,
     FOREIGN KEY(deposit_id) REFERENCES deposits(id) ON DELETE CASCADE
+    CONSTRAINT unique_fields UNIQUE (well_name,
+                                     start_time,
+                                     work_type,
+                                     deposit_id)
 );
 
 CREATE TABLE IF NOT EXISTS stations(
