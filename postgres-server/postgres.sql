@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS works(
     start_time TIMESTAMP NOT NULL,
     work_type VARCHAR(20) NOT NULL,
     deposit_id INTEGER NOT NULL,
-    FOREIGN KEY(deposit_id) REFERENCES deposits(id) ON DELETE CASCADE
+    FOREIGN KEY(deposit_id) REFERENCES deposits(id) ON DELETE CASCADE,
     CONSTRAINT unique_fields UNIQUE (well_name,
                                      start_time,
                                      work_type,

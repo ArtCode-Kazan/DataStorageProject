@@ -95,7 +95,3 @@ class WorksTableParams:
     start_time: datetime
     work_type: str
     deposit_id: int
-    updated_well_name: str
-    updated_start_time: datetime
-    updated_work_type: str
-    updated_deposit_id: int
