@@ -202,9 +202,28 @@ class StorageDBase:
         updated_well_name = params.updated_well_name.lower()
 
         table = Table('works')
-
         query = str(
             Query.update(table).set(table.well_name, updated_well_name).where(
+                table.well_name == params.well_name).where(
+                table.start_time == params.start_time).where(
+                table.work_type == params.work_type).where(
+                table.deposit_id == params.deposit_id)
+        )
+        return self.is_success_changing_query(query=query)
+
+    def update_works_start_time(self, params: WorksTableParams) -> bool:
+        """Method for updating start time.
+
+        Args:
+            params: container with parameters
+
+        Returns: True if name updated success, False - if not.
+
+        """
+        table = Table('works')
+        query = str(
+            Query.update(table).set(
+                table.well_name, params.updated_well_name).where(
                 table.well_name == params.well_name).where(
                 table.start_time == params.start_time).where(
                 table.work_type == params.work_type).where(
