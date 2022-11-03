@@ -28,7 +28,8 @@ from psycopg.errors import (CheckViolation, StringDataRightTruncation,
                             UniqueViolation)
 from pypika import Query, Table
 
-from dbase_api_server.containers import PostgresConnectionParams
+from dbase_api_server.containers import (PostgresConnectionParams,
+                                         WorksTableParams)
 
 DEFAULT_PORT = 5432
 DEFAULT_PATH = '/var/lib/postgresql/data'
@@ -166,6 +167,25 @@ class StorageDBase:
             Query.update(table).set(
                 table.area_name, new_area_name).where(
                 table.area_name == old_area_name
+            )
+        )
+        return self.is_success_changing_query(query=query)
+
+    def add_works_info(self, params: WorksTableParams) -> bool:
+        """Add works info to database.
+
+        Args:
+            params: container with works params
+
+        """
+        lower_well_name, lower_work_type = (params.well_name.lower(),
+                                            params.work_type.lower())
+        table = Table('works')
+        query = str(
+            Query.into(table).columns(
+                'well_name', 'start_time', 'work_type', 'deposit_id').insert(
+                lower_well_name, params.start_time,
+                lower_work_type, params.deposit_id
             )
         )
         return self.is_success_changing_query(query=query)
