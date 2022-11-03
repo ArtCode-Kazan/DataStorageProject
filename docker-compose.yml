@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+    postgres-server:
+        build:
+            context: ./postgres-server
+            dockerfile: Dockerfile
+        image: compose-pg-server-image
+        container_name: compose-pg-server-container
+        environment:
+            - POSTGRES_HOST=postgres-server
+            - POSTGRES_PORT=5678
+            - POSTGRES_USER=mikko
+            - POSTGRES_PASSWORD=masterkey
+            - POSTGRES_DB=test-dbase
+        volumes:
+            - ./db:/var/lib/postgresql/data
+        ports:
+            - "5555:5678"
+        command: -p 5678
+        healthcheck:
+            test: [ "CMD-SHELL", "pg_isready -h postgres-server -p 5678 -d test-dbase -U mikko" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    dbase-api-server:
+        build:
+            context: ./dbase-api-server
+            dockerfile: Dockerfile
+        image: compose-dbase-api-server-image
+        container_name: compose-dbase-api-server-container
+        environment:
+            - POSTGRES_HOST=postgres-server
+            - POSTGRES_PORT=5678
+            - POSTGRES_USER=mikko
+            - POSTGRES_PASSWORD=masterkey
+            - POSTGRES_DB=test-dbase
+            - APP_HOST=dbase-api-server
+            - APP_PORT=8133
+        ports:
+            - "8253:8133"
+        command: -p 8133
+        depends_on:
+            postgres-server:
+                condition: service_healthy

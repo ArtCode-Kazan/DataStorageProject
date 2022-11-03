@@ -355,7 +355,8 @@ class TestStorageDBase:
         ['passed_value', 'expected_value', 'expected_records_count'],
         [('a', True, 1), ('a' * 100, True, 1), ('a' * 111, False, 0)]
     )
-    def test_field_deposit_name_lengh(self, up_test_dbase, passed_value,
+    def test_field_deposit_name_lengh(self, up_test_dbase,
+                                      clear_deposits_table, passed_value,
                                       expected_value, expected_records_count):
         is_success = up_test_dbase.add_deposit_info(passed_value)
         assert_that(

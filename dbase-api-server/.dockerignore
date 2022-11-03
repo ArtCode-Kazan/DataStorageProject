@@ -1,0 +1,7 @@
+# Folders
+tests
+__pycache__
+
+# Files
+poetry.lock
+.env
