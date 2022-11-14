@@ -87,28 +87,28 @@ def add_new_deposit(deposit: Deposit) -> dict:
 
 
 @app.post('/update-deposit')
-def update_deposit(deposit: Deposit) -> dict:
+def update_deposit(old_deposit: Deposit, new_deposit: Deposit) -> dict:
     """Update deposit name.
 
     Args:
-        deposit: deposit area name and updated deposit area name
-
+        old_deposit: deposit area name
+        new_deposit: updated deposit area name
     Returns: dict object with request status, message with
     action discription and updated deposit area name.
     """
     is_added = dbase_adapter.update_deposit_name(
-        old_area_name=deposit.old_area_name,
-        new_area_name=deposit.area_name
+        old_area_name=old_deposit.area_name,
+        new_area_name=new_deposit.area_name
     )
     if is_added:
         message = (
-            f'Deposit "{deposit.old_area_name}" successfully '
-            f'renamed to "{deposit.area_name}"'
+            f'Deposit "{old_deposit.area_name}" successfully '
+            f'renamed to "{new_deposit.area_name}"'
         )
     else:
         message = (
-            f'Cant rename "{deposit.old_area_name} to '
-            f'"{deposit.area_name}"'
+            f'Cant rename "{old_deposit.area_name} to '
+            f'"{new_deposit.area_name}"'
         )
 
     returned_info = Response(
