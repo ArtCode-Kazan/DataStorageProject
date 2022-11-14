@@ -190,85 +190,28 @@ class StorageDBase:
         )
         return self.is_success_changing_query(query=query)
 
-    def update_works_well_name(self, params: WorksTableParams) -> bool:
-        """Method for updating well name.
-
-        Args:
-            params: container with parameters
-
-        Returns: True if name updated success, False - if not.
-
-        """
-        updated_well_name = params.updated_well_name.lower()
-
-        table = Table('works')
-        query = str(
-            Query.update(table).set(table.well_name, updated_well_name).where(
-                table.well_name == params.well_name).where(
-                table.start_time == params.start_time).where(
-                table.work_type == params.work_type).where(
-                table.deposit_id == params.deposit_id)
-        )
-        return self.is_success_changing_query(query=query)
-
-    def update_works_start_time(self, params: WorksTableParams) -> bool:
-        """Method for updating start time.
-
-        Args:
-            params: container with parameters
-
-        Returns: True if name updated success, False - if not.
-
-        """
-        table = Table('works')
-        query = str(
-            Query.update(table).set(
-                table.well_name, params.updated_well_name).where(
-                table.well_name == params.well_name).where(
-                table.start_time == params.start_time).where(
-                table.work_type == params.work_type).where(
-                table.deposit_id == params.deposit_id)
-        )
-        return self.is_success_changing_query(query=query)
-
-    def update_works_work_type(self, params: WorksTableParams) -> bool:
-        """Method for updating work type.
-
-        Args:
-            params: container with parameters
-
-        Returns: True if name updated success, False - if not.
-
-        """
-        updated_work_type = params.work_type.lower()
-
-        table = Table('works')
-        query = str(
-            Query.update(table).set(
-                table.well_name, updated_work_type).where(
-                table.well_name == params.well_name).where(
-                table.start_time == params.start_time).where(
-                table.work_type == params.work_type).where(
-                table.deposit_id == params.deposit_id)
-        )
-        return self.is_success_changing_query(query=query)
-
-    def update_works_deposit_id(self, params: WorksTableParams) -> bool:
+    def update_works_info(self, params: WorksTableParams,
+                          updated_params: WorksTableParams) -> bool:
         """Method for updating deposit id.
 
         Args:
             params: container with parameters
+            updated_params: container with updated params
 
         Returns: True if name updated success, False - if not.
 
         """
-        table = Table('works')
-        query = str(
-            Query.update(table).set(
-                table.well_name, params.updated_deposit_id).where(
-                table.well_name == params.well_name).where(
-                table.start_time == params.start_time).where(
-                table.work_type == params.work_type).where(
-                table.deposit_id == params.deposit_id)
-        )
+        well_name = params.well_name.lower()
+        updated_well_name = updated_params.well_name.lower()
+        work_type = params.work_type.lower()
+        updated_work_type = updated_params.work_type.lower()
+        query = f"""UPDATE works SET well_name = '{updated_well_name}',
+                    start_time = '{updated_params.start_time}',
+                    work_type = '{updated_work_type}',
+                    deposit_id = '{updated_params.deposit_id}'
+                    WHERE well_name = '{well_name}'
+                    AND start_time = '{params.start_time}'
+                    AND work_type = '{work_type}'
+                    AND deposit_id = '{params.deposit_id}'
+        """
         return self.is_success_changing_query(query=query)
