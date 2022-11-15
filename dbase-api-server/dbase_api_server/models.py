@@ -4,6 +4,7 @@ This module contains models with database fields.
 
 """
 
+from datetime import datetime
 from typing import Union
 
 from pydantic import BaseModel
@@ -33,3 +34,19 @@ class Deposit(BaseModel):
 
     """
     area_name: str
+
+
+class Works(BaseModel):
+    """Model with parameters for acting with works table.
+
+    Args:
+        well_name: well name
+        start_time: time of works starting
+        work_type: type of works
+        deposit_id: id of deposit associated with well
+
+    """
+    well_name: str
+    start_time: datetime
+    work_type: str
+    deposit_id: int
