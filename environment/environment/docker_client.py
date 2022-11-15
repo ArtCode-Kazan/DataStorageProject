@@ -51,15 +51,31 @@ class CustomDockerClient:
 
     @property
     def images_tags(self) -> Set[str]:
-        """Return all unique image names in docker.
+        """Return all (not none) unique image names in docker.
 
         Returns: collections of image names
 
         """
         image_names = set()
         for image in self.client.images.list(all=True):
+            if not image.tags:
+                continue
             image_names.add(image.tags[0].split(':')[0])
         return image_names
+
+    @property
+    def empty_image_ids(self) -> List[str]:
+        """Return ids for all images with None name in docker system.
+
+        Returns: list with short images ids
+
+        """
+        ids = []
+        for image in self.client.images.list(all=True):
+            if image.tags:
+                continue
+            ids.append(image.short_id.split(':')[1])
+        return ids
 
     def is_image_exist(self, image_name: str) -> bool:
         """Return image existing by image name.
@@ -72,16 +88,16 @@ class CustomDockerClient:
         """
         return image_name in self.images_tags
 
-    def remove_image(self, image_name: str):
-        """Remove image by image name.
+    def remove_image(self, image_name_or_short_id: str):
+        """Remove image by image name or short id.
 
         Args:
-            image_name: target image name
+            image_name_or_short_id: target image name or short id
 
         Returns: None
 
         """
-        self.client.images.remove(image=image_name)
+        self.client.images.remove(image=image_name_or_short_id)
 
     def create_image(self, docker_root: str, image_name: str):
         """Create image from dockerfile with target name.
@@ -140,13 +156,31 @@ class CustomDockerClient:
         """
         return self.client.containers.get(container_id=name)
 
-    def clear_system(self):
-        """Clear docker from unused inactive containers.
+    def remove_unused_containers(self):
+        """Remove unused inactive containers from docker system.
 
         Returns: None
 
         """
         self.client.containers.prune()
+
+    def remove_images_without_tag(self):
+        """Remove images without tags.
+
+        Returns: None
+
+        """
+        for short_id in self.empty_image_ids:
+            self.remove_image(image_name_or_short_id=short_id)
+
+    def clear_system(self):
+        """Clear docker from unused inactive containers and none images.
+
+        Returns: None
+
+        """
+        self.remove_unused_containers()
+        self.remove_images_without_tag()
 
     def remove_container(self, container_name: str):
         """Remove container from docker with image by container name.
@@ -159,4 +193,4 @@ class CustomDockerClient:
         """
         container = self.get_container_by_name(name=container_name)
         container.stop()
-        self.clear_system()
+        self.remove_unused_containers()

@@ -115,6 +115,7 @@ def test_update_deposit(up_test_dbase, clear_deposits_table):
     }
     url = (f'{URL}/update-deposit')
     response = requests.post(url, json=payload)
+
     assert_that(
         actual_or_assertion=response.json(),
         matcher=equal_to(expected_value)

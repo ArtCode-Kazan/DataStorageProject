@@ -93,6 +93,7 @@ def update_deposit_info(old_deposit: Deposit, new_deposit: Deposit) -> dict:
     Args:
         old_deposit: deposit area name
         new_deposit: updated deposit area name
+
     Returns: dict object with request status, message with
     action discription and updated deposit area name.
     """
