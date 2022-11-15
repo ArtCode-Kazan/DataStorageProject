@@ -5,7 +5,6 @@ This module organize information about objects.
 """
 
 from dataclasses import dataclass
-from datetime import datetime
 from typing import List
 
 __all__ = [
@@ -78,20 +77,3 @@ class UvicornConnectionParams:
 
         """
         return f'http://{self.host}:{self.port}'
-
-
-@dataclass
-class WorksTableParams:
-    """Container with parameters for acting with works table.
-
-    Args:
-        well_name: well name
-        start_time: time of works starting
-        work_type: type of works
-        deposit_id: id of deposit associated with well
-
-    """
-    well_name: str
-    start_time: datetime
-    work_type: str
-    deposit_id: int
