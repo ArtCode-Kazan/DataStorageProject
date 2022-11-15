@@ -90,5 +90,5 @@ my_client.remove_container(container_name='my-container')
 _Удаление образа из системы:_
 
 ```python
-my_client.remove_image(image_name=image_name)
+my_client.remove_image(image_name_or_short_id=image_name)
 ```

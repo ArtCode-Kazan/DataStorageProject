@@ -100,7 +100,8 @@ class TestCustomDockerClient:
 
     @patch.object(ImageCollection, 'remove')
     def test_remove_image(self, remove_mock: Mock):
-        _ = self.create_object().remove_image(image_name=self.some_value)
+        _ = self.create_object().remove_image(
+            image_name_or_short_id=self.some_value)
         remove_mock.assert_called_once_with(image=self.some_value)
 
     @patch.object(ImageCollection, 'build')
@@ -135,14 +136,37 @@ class TestCustomDockerClient:
         get_mock.assert_called_once_with(container_id=self.some_value)
 
     @patch.object(ContainerCollection, 'prune')
-    def test_get_clear_system(self, prune_mock: Mock):
-        _ = self.create_object().clear_system()
+    def test_remove_unused_containers(self, prune_mock: Mock):
+        _ = self.create_object().remove_unused_containers()
         prune_mock.assert_called_once()
 
-    @patch.object(CustomDockerClient, 'clear_system')
+    @patch.object(CustomDockerClient, 'remove_image')
+    @patch.object(CustomDockerClient, 'empty_image_ids',
+                  new_callable=PropertyMock)
+    def test_remove_images_without_tag(self, empty_image_ids_mock: Mock,
+                                       remove_images_mock: Mock):
+        empty_ids = ['1', '2', '3', '4']
+        empty_image_ids_mock.return_value = empty_ids
+
+        _ = self.create_object().remove_images_without_tag()
+
+        assert_that(
+            actual_or_assertion=remove_images_mock.call_count,
+            matcher=equal_to(len(empty_ids))
+        )
+
+    @patch.object(CustomDockerClient, 'remove_images_without_tag')
+    @patch.object(CustomDockerClient, 'remove_unused_containers')
+    def test_clear_system(self, remove_unused_containers_mock: Mock,
+                          remove_images_without_tag_mock: Mock):
+        _ = self.create_object().clear_system()
+        remove_unused_containers_mock.assert_called_once()
+        remove_images_without_tag_mock.assert_called_once()
+
+    @patch.object(CustomDockerClient, 'remove_unused_containers')
     @patch.object(CustomDockerClient, 'get_container_by_name')
     def test_remove_container(self, get_container_mock: Mock,
-                              clear_system_mock: Mock):
+                              remove_unused_containers_mock: Mock):
         stop_mock = Mock(stop=Mock(return_value=True))
         get_container_mock.return_value = stop_mock
         obj = self.create_object()
@@ -151,4 +175,4 @@ class TestCustomDockerClient:
 
         stop_mock.stop.assert_called_once()
         get_container_mock.assert_called_once_with(name=self.some_value)
-        clear_system_mock.assert_called_once()
+        remove_unused_containers_mock.assert_called_once()

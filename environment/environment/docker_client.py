@@ -88,16 +88,16 @@ class CustomDockerClient:
         """
         return image_name in self.images_tags
 
-    def remove_image(self, image_name: str):
-        """Remove image by image name.
+    def remove_image(self, image_name_or_short_id: str):
+        """Remove image by image name or short id.
 
         Args:
-            image_name: target image name
+            image_name_or_short_id: target image name or short id
 
         Returns: None
 
         """
-        self.client.images.remove(image=image_name)
+        self.client.images.remove(image=image_name_or_short_id)
 
     def create_image(self, docker_root: str, image_name: str):
         """Create image from dockerfile with target name.
@@ -156,13 +156,31 @@ class CustomDockerClient:
         """
         return self.client.containers.get(container_id=name)
 
-    def clear_system(self):
-        """Clear docker from unused inactive containers.
+    def remove_unused_containers(self):
+        """Remove unused inactive containers from docker system.
 
         Returns: None
 
         """
         self.client.containers.prune()
+
+    def remove_images_without_tag(self):
+        """Remove images without tags.
+
+        Returns: None
+
+        """
+        for short_id in self.empty_image_ids:
+            self.remove_image(image_name_or_short_id=short_id)
+
+    def clear_system(self):
+        """Clear docker from unused inactive containers and none images.
+
+        Returns: None
+
+        """
+        self.remove_unused_containers()
+        self.remove_images_without_tag()
 
     def remove_container(self, container_name: str):
         """Remove container from docker with image by container name.
@@ -175,11 +193,4 @@ class CustomDockerClient:
         """
         container = self.get_container_by_name(name=container_name)
         container.stop()
-        self.clear_system()
-
-
-if __name__ == '__main__':
-    client = CustomDockerClient()
-    for id_val in client.empty_image_ids:
-        client.remove_image(image_name=id_val)
-    print(client.empty_image_ids)
+        self.remove_unused_containers()

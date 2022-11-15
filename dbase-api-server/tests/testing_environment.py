@@ -318,7 +318,8 @@ class TestEnvironment:
         all_images = self.docker_client.images_tags
         for image_name in all_images:
             if IMAGE_PREFIX in image_name:
-                self.docker_client.remove_image(image_name=image_name)
+                self.docker_client.remove_image(
+                    image_name_or_short_id=image_name)
         self.docker_client.clear_system()
 
     def unblock_folder(self):
@@ -330,6 +331,8 @@ class TestEnvironment:
 
     def finalize(self):
         self.down_docker_compose()
+        self.docker_client.clear_system()
+
         self.unblock_folder()
         self.storage.clear()
         os.remove(path=os.path.join(self.tmp_root, DOCKER_COMPOSE_FILENAME))
