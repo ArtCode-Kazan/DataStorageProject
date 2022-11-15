@@ -7,9 +7,13 @@ CREATE TABLE IF NOT EXISTS works(
     id SERIAL PRIMARY KEY,
     well_name VARCHAR(10) DEFAULT 'NULL',
     start_time TIMESTAMP NOT NULL,
-    work_type TEXT NOT NULL,
+    work_type VARCHAR(20) NOT NULL,
     deposit_id INTEGER NOT NULL,
-    FOREIGN KEY(deposit_id) REFERENCES deposits(id) ON DELETE CASCADE
+    FOREIGN KEY(deposit_id) REFERENCES deposits(id) ON DELETE CASCADE,
+    CONSTRAINT unique_fields UNIQUE (well_name,
+                                     start_time,
+                                     work_type,
+                                     deposit_id)
 );
 
 CREATE TABLE IF NOT EXISTS stations(

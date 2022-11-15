@@ -332,7 +332,6 @@ class TestEnvironment:
     def finalize(self):
         self.down_docker_compose()
         self.docker_client.clear_system()
-
         self.unblock_folder()
         self.storage.clear()
         os.remove(path=os.path.join(self.tmp_root, DOCKER_COMPOSE_FILENAME))

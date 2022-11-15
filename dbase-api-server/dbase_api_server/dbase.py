@@ -29,6 +29,7 @@ from psycopg.errors import (CheckViolation, StringDataRightTruncation,
 from pypika import Query, Table
 
 from dbase_api_server.containers import PostgresConnectionParams
+from dbase_api_server.models import WorkInfo
 
 DEFAULT_PORT = 5432
 DEFAULT_PATH = '/var/lib/postgresql/data'
@@ -168,4 +169,49 @@ class StorageDBase:
                 table.area_name == old_area_name
             )
         )
+        return self.is_success_changing_query(query=query)
+
+    def add_works_info(self, work_info: WorkInfo) -> bool:
+        """Add works info to database.
+
+        Args:
+            work_info: container with works params
+
+        """
+        lower_well_name = work_info.well_name.lower()
+        lower_work_type = work_info.work_type.lower()
+        table = Table('works')
+        query = str(
+            Query.into(table).columns(
+                'well_name', 'start_time', 'work_type', 'deposit_id').insert(
+                lower_well_name, work_info.start_time,
+                lower_work_type, work_info.deposit_id
+            )
+        )
+        return self.is_success_changing_query(query=query)
+
+    def update_works_info(self, old_work_info: WorkInfo,
+                          new_work_info: WorkInfo) -> bool:
+        """Method for updating works info.
+
+        Args:
+            old_work_info: container with parameters
+            new_work_info: container with updated params
+
+        Returns: True if name updated success, False - if not.
+
+        """
+        well_name = old_work_info.well_name.lower()
+        updated_well_name = new_work_info.well_name.lower()
+        work_type = old_work_info.work_type.lower()
+        updated_work_type = new_work_info.work_type.lower()
+        query = f"""UPDATE works SET well_name = '{updated_well_name}',
+                    start_time = '{new_work_info.start_time}',
+                    work_type = '{updated_work_type}',
+                    deposit_id = '{new_work_info.deposit_id}'
+                    WHERE well_name = '{well_name}'
+                    AND start_time = '{old_work_info.start_time}'
+                    AND work_type = '{work_type}'
+                    AND deposit_id = '{old_work_info.deposit_id}'
+        """
         return self.is_success_changing_query(query=query)
