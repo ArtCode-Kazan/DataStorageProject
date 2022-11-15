@@ -51,15 +51,31 @@ class CustomDockerClient:
 
     @property
     def images_tags(self) -> Set[str]:
-        """Return all unique image names in docker.
+        """Return all (not none) unique image names in docker.
 
         Returns: collections of image names
 
         """
         image_names = set()
         for image in self.client.images.list(all=True):
+            if not image.tags:
+                continue
             image_names.add(image.tags[0].split(':')[0])
         return image_names
+
+    @property
+    def empty_image_ids(self) -> List[str]:
+        """Return ids for all images with None name in docker system.
+
+        Returns: list with short images ids
+
+        """
+        ids = []
+        for image in self.client.images.list(all=True):
+            if image.tags:
+                continue
+            ids.append(image.short_id.split(':')[1])
+        return ids
 
     def is_image_exist(self, image_name: str) -> bool:
         """Return image existing by image name.
@@ -160,3 +176,10 @@ class CustomDockerClient:
         container = self.get_container_by_name(name=container_name)
         container.stop()
         self.clear_system()
+
+
+if __name__ == '__main__':
+    client = CustomDockerClient()
+    for id_val in client.empty_image_ids:
+        client.remove_image(image_name=id_val)
+    print(client.empty_image_ids)

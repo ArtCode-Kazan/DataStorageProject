@@ -22,8 +22,10 @@ class TestCustomDockerClient:
         docker_obj = self.create_object()
         docker_mock.assert_called_once()
 
-        assert_that(actual_or_assertion=docker_obj.client,
-                    matcher=equal_to(self.some_value))
+        assert_that(
+            actual_or_assertion=docker_obj.client,
+            matcher=equal_to(self.some_value)
+        )
 
     @patch.object(ImageCollection, 'list')
     def test_images_tags(self, list_mock: Mock):
@@ -32,7 +34,8 @@ class TestCustomDockerClient:
             ('a:v2', 'v2'),
             ('b:v0', 'v0'),
             ('c:v0', 'v0'),
-            ('d:v', 'v')
+            ('d:v', 'v'),
+            ()
         ]
 
         test_images = []
@@ -44,8 +47,36 @@ class TestCustomDockerClient:
         tags = self.create_object().images_tags
 
         list_mock.assert_called_once_with(all=True)
-        assert_that(actual_or_assertion=tags,
-                    matcher=equal_to({'a', 'b', 'c', 'd'}))
+        assert_that(
+            actual_or_assertion=tags,
+            matcher=equal_to({'a', 'b', 'c', 'd'})
+        )
+
+    @patch.object(ImageCollection, 'list')
+    def test_empty_image_ids(self, list_mock: Mock):
+        test_tags = [
+            [('a:v1', 'v1'), 'sha256:1'],
+            [('a:v2', 'v2'), 'sha256:2'],
+            [('b:v0', 'v0'), 'sha256:3'],
+            [('c:v0', 'v0'), 'sha256:4'],
+            [('d:v', 'v'), 'sha256:5'],
+            [(), 'sha256:6'],
+            [(), 'sha256:7']
+        ]
+
+        test_images = []
+        for tag, short_id in test_tags:
+            image = Mock(tags=tag, short_id=short_id)
+            test_images.append(image)
+
+        list_mock.return_value = test_images
+        ids = self.create_object().empty_image_ids
+
+        list_mock.assert_called_once_with(all=True)
+        assert_that(
+            actual_or_assertion=ids,
+            matcher=equal_to(['6', '7'])
+        )
 
     @patch.object(CustomDockerClient, 'images_tags', new_callable=PropertyMock)
     def test_is_image_exist(self, images_tags_mock: Mock):
