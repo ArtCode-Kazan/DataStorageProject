@@ -178,8 +178,8 @@ class StorageDBase:
             work_info: container with works params
 
         """
-        lower_well_name, lower_work_type = (work_info.well_name.lower(),
-                                            work_info.work_type.lower())
+        lower_well_name = work_info.well_name.lower()
+        lower_work_type = work_info.work_type.lower()
         table = Table('works')
         query = str(
             Query.into(table).columns(
