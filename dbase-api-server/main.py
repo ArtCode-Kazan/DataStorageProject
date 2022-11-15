@@ -87,7 +87,7 @@ def add_new_deposit(deposit: Deposit) -> dict:
 
 
 @app.post('/update-deposit')
-def update_deposit(old_deposit: Deposit, new_deposit: Deposit) -> dict:
+def update_deposit_info(old_deposit: Deposit, new_deposit: Deposit) -> dict:
     """Update deposit name.
 
     Args:
