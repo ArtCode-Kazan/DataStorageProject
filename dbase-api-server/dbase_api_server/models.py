@@ -36,7 +36,7 @@ class Deposit(BaseModel):
     area_name: str
 
 
-class Work(BaseModel):
+class WorkInfo(BaseModel):
     """Model with parameters for acting with works table.
 
     Args:

@@ -29,7 +29,7 @@ from psycopg.errors import (CheckViolation, StringDataRightTruncation,
 from pypika import Query, Table
 
 from dbase_api_server.containers import PostgresConnectionParams
-from dbase_api_server.models import Work
+from dbase_api_server.models import WorkInfo
 
 DEFAULT_PORT = 5432
 DEFAULT_PATH = '/var/lib/postgresql/data'
@@ -171,47 +171,47 @@ class StorageDBase:
         )
         return self.is_success_changing_query(query=query)
 
-    def add_works_info(self, params: Work) -> bool:
+    def add_works_info(self, work_info: WorkInfo) -> bool:
         """Add works info to database.
 
         Args:
-            params: container with works params
+            work_info: container with works params
 
         """
-        lower_well_name, lower_work_type = (params.well_name.lower(),
-                                            params.work_type.lower())
+        lower_well_name, lower_work_type = (work_info.well_name.lower(),
+                                            work_info.work_type.lower())
         table = Table('works')
         query = str(
             Query.into(table).columns(
                 'well_name', 'start_time', 'work_type', 'deposit_id').insert(
-                lower_well_name, params.start_time,
-                lower_work_type, params.deposit_id
+                lower_well_name, work_info.start_time,
+                lower_work_type, work_info.deposit_id
             )
         )
         return self.is_success_changing_query(query=query)
 
-    def update_works_info(self, params: Work,
-                          updated_params: Work) -> bool:
+    def update_works_info(self, old_work_info: WorkInfo,
+                          new_work_info: WorkInfo) -> bool:
         """Method for updating works info.
 
         Args:
-            params: container with parameters
-            updated_params: container with updated params
+            old_work_info: container with parameters
+            new_work_info: container with updated params
 
         Returns: True if name updated success, False - if not.
 
         """
-        well_name = params.well_name.lower()
-        updated_well_name = updated_params.well_name.lower()
-        work_type = params.work_type.lower()
-        updated_work_type = updated_params.work_type.lower()
+        well_name = old_work_info.well_name.lower()
+        updated_well_name = new_work_info.well_name.lower()
+        work_type = old_work_info.work_type.lower()
+        updated_work_type = new_work_info.work_type.lower()
         query = f"""UPDATE works SET well_name = '{updated_well_name}',
-                    start_time = '{updated_params.start_time}',
+                    start_time = '{new_work_info.start_time}',
                     work_type = '{updated_work_type}',
-                    deposit_id = '{updated_params.deposit_id}'
+                    deposit_id = '{new_work_info.deposit_id}'
                     WHERE well_name = '{well_name}'
-                    AND start_time = '{params.start_time}'
+                    AND start_time = '{old_work_info.start_time}'
                     AND work_type = '{work_type}'
-                    AND deposit_id = '{params.deposit_id}'
+                    AND deposit_id = '{old_work_info.deposit_id}'
         """
         return self.is_success_changing_query(query=query)
