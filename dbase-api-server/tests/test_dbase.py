@@ -11,6 +11,7 @@ from pypika.functions import Count
 
 from dbase_api_server.containers import PostgresConnectionParams
 from dbase_api_server.dbase import StorageDBase
+from dbase_api_server.models import WorkInfo
 
 
 class TestStorageDBase:
@@ -375,3 +376,42 @@ class TestStorageDBase:
             actual_or_assertion=is_added,
             matcher=equal_to(expected_records_count)
         )
+
+    def test_add_work_info(self, up_test_dbase, clear_deposits_table):
+        up_test_dbase.add_deposit_info('test-area')
+
+        table = Table('deposits')
+        query = str(
+            Query.from_(table).select('id').where(
+                table.area_name == 'test-area'
+            )
+        )
+        cursor = up_test_dbase.connection.cursor()
+        cursor.execute(query)
+        area_id = cursor.fetchone()[0]
+
+        well_name = 'test-name'
+        start_time = '2022-11-15 12:12:12'
+        work_type = 'test-work'
+        deposit_id = area_id
+
+        work_info = WorkInfo(well_name=well_name,
+                             start_time=start_time,
+                             work_type=work_type,
+                             deposit_id=deposit_id)
+        is_success = up_test_dbase.add_works_info(work_info=work_info)
+        assert_that(actual_or_assertion=is_success, matcher=is_(True))
+
+        table = Table('works')
+        query = str(
+            Query.from_(table).select(Count(1)).where(
+                table.well_name == well_name).where(
+                table.start_time == start_time).where(
+                table.work_type == work_type). where(
+                table.deposit_id == deposit_id
+            )
+        )
+        cursor = up_test_dbase.connection.cursor()
+        cursor.execute(query)
+        records_count = cursor.fetchone()[0]
+        assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
