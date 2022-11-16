@@ -415,3 +415,55 @@ class TestStorageDBase:
         cursor.execute(query)
         records_count = cursor.fetchone()[0]
         assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
+
+    def test_duplicate_and_lower_upper_work_fields(self, up_test_dbase,
+                                                   clear_deposits_table):
+        up_test_dbase.add_deposit_info('test-area')
+
+        table = Table('deposits')
+        query = str(
+            Query.from_(table).select('id').where(
+                table.area_name == 'test-area'
+            )
+        )
+        cursor = up_test_dbase.connection.cursor()
+        cursor.execute(query)
+        area_id = cursor.fetchone()[0]
+
+        well_name = 'test-name'
+        start_time = '2022-11-15 12:12:12'
+        work_type = 'test-work'
+        deposit_id = area_id
+
+        work_info = WorkInfo(well_name=well_name,
+                             start_time=start_time,
+                             work_type=work_type,
+                             deposit_id=deposit_id)
+        is_success = up_test_dbase.add_works_info(work_info=work_info)
+        assert_that(actual_or_assertion=is_success, matcher=is_(True))
+
+        well_name = 'TEST-NAME'
+        start_time = '2022-11-15 12:12:12'
+        work_type = 'TEST-WORK'
+        deposit_id = area_id
+
+        work_info = WorkInfo(well_name=well_name,
+                             start_time=start_time,
+                             work_type=work_type,
+                             deposit_id=deposit_id)
+        is_success = up_test_dbase.add_works_info(work_info=work_info)
+        assert_that(actual_or_assertion=is_success, matcher=is_(False))
+
+        table = Table('works')
+        query = str(
+            Query.from_(table).select(Count(1)).where(
+                table.well_name == well_name.lower()).where(
+                table.start_time == start_time).where(
+                table.work_type == work_type.lower()). where(
+                table.deposit_id == deposit_id
+            )
+        )
+        cursor = up_test_dbase.connection.cursor()
+        cursor.execute(query)
+        records_count = cursor.fetchone()[0]
+        assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
