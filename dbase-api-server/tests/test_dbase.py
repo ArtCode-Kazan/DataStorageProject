@@ -11,6 +11,7 @@ from pypika.functions import Count
 
 from dbase_api_server.containers import PostgresConnectionParams
 from dbase_api_server.dbase import StorageDBase
+from dbase_api_server.models import WorkInfo
 
 
 class TestStorageDBase:
@@ -375,3 +376,279 @@ class TestStorageDBase:
             actual_or_assertion=is_added,
             matcher=equal_to(expected_records_count)
         )
+
+    def test_add_work_info(self, up_test_dbase, clear_deposits_table):
+        up_test_dbase.add_deposit_info('test-area')
+
+        table = Table('deposits')
+        query = str(
+            Query.from_(table).select('id').where(
+                table.area_name == 'test-area'
+            )
+        )
+        cursor = up_test_dbase.connection.cursor()
+        cursor.execute(query)
+        area_id = cursor.fetchone()[0]
+
+        well_name = 'test-name'
+        start_time = '2022-11-15 12:12:12'
+        work_type = 'test-work'
+        deposit_id = area_id
+
+        work_info = WorkInfo(
+            well_name=well_name,
+            start_time=start_time,
+            work_type=work_type,
+            deposit_id=deposit_id
+        )
+        is_success = up_test_dbase.add_works_info(work_info=work_info)
+        assert_that(actual_or_assertion=is_success, matcher=is_(True))
+
+        table = Table('works')
+        query = str(
+            Query.from_(table).select(Count(1)).where(
+                table.well_name == well_name).where(
+                table.start_time == start_time).where(
+                table.work_type == work_type). where(
+                table.deposit_id == deposit_id
+            )
+        )
+        cursor = up_test_dbase.connection.cursor()
+        cursor.execute(query)
+        records_count = cursor.fetchone()[0]
+        assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
+
+    def test_duplicate_and_lower_upper_work_fields(self, up_test_dbase,
+                                                   clear_deposits_table):
+        up_test_dbase.add_deposit_info('test-area')
+
+        table = Table('deposits')
+        query = str(
+            Query.from_(table).select('id').where(
+                table.area_name == 'test-area'
+            )
+        )
+        cursor = up_test_dbase.connection.cursor()
+        cursor.execute(query)
+        area_id = cursor.fetchone()[0]
+
+        well_name = 'test-name'
+        start_time = '2022-11-15 12:12:12'
+        work_type = 'test-work'
+        deposit_id = area_id
+
+        work_info = WorkInfo(
+            well_name=well_name,
+            start_time=start_time,
+            work_type=work_type,
+            deposit_id=deposit_id
+        )
+        is_success = up_test_dbase.add_works_info(work_info=work_info)
+        assert_that(actual_or_assertion=is_success, matcher=is_(True))
+
+        well_name = 'TEST-NAME'
+        start_time = '2022-11-15 12:12:12'
+        work_type = 'TEST-WORK'
+        deposit_id = area_id
+
+        work_info = WorkInfo(
+            well_name=well_name,
+            start_time=start_time,
+            work_type=work_type,
+            deposit_id=deposit_id
+        )
+        is_success = up_test_dbase.add_works_info(work_info=work_info)
+        assert_that(actual_or_assertion=is_success, matcher=is_(False))
+
+        table = Table('works')
+        query = str(
+            Query.from_(table).select(Count(1)).where(
+                table.well_name == well_name.lower()).where(
+                table.start_time == start_time).where(
+                table.work_type == work_type.lower()). where(
+                table.deposit_id == deposit_id
+            )
+        )
+        cursor = up_test_dbase.connection.cursor()
+        cursor.execute(query)
+        records_count = cursor.fetchone()[0]
+        assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
+
+    @pytest.mark.parametrize(
+        ['passed_well_name',
+         'passed_work_type',
+         'expected_value',
+         'expected_records_count'],
+        [('a', 'b', True, 1),
+         ('a' * 10, 'b' * 20, True, 1),
+         ('a' * 11, 'b' * 22, False, 0)]
+    )
+    def test_work_fields_name_lengh(self, up_test_dbase,
+                                    clear_deposits_table, passed_well_name,
+                                    passed_work_type, expected_value,
+                                    expected_records_count):
+        up_test_dbase.add_deposit_info('test-area')
+
+        table = Table('deposits')
+        query = str(
+            Query.from_(table).select('id').where(
+                table.area_name == 'test-area'
+            )
+        )
+        cursor = up_test_dbase.connection.cursor()
+        cursor.execute(query)
+        area_id = cursor.fetchone()[0]
+
+        well_name = passed_well_name
+        start_time = '2022-11-15 12:12:12'
+        work_type = passed_work_type
+        deposit_id = area_id
+
+        work_info = WorkInfo(
+            well_name=well_name,
+            start_time=start_time,
+            work_type=work_type,
+            deposit_id=deposit_id
+        )
+
+        is_success = up_test_dbase.add_works_info(work_info)
+        assert_that(
+            actual_or_assertion=is_success,
+            matcher=is_(expected_value)
+        )
+
+        table = Table('works')
+        query = str(
+            Query.from_(table).select(Count(1)).where(
+                table.well_name == passed_well_name.lower()).where(
+                table.start_time == start_time).where(
+                table.work_type == passed_work_type.lower()). where(
+                table.deposit_id == deposit_id
+            )
+        )
+        cursor = up_test_dbase.connection.cursor()
+        cursor.execute(query)
+        records_count = cursor.fetchone()[0]
+        assert_that(
+            actual_or_assertion=records_count,
+            matcher=equal_to(expected_records_count)
+        )
+
+    def test_update_works_info(self, up_test_dbase, clear_deposits_table):
+        up_test_dbase.add_deposit_info('test-area')
+
+        table = Table('deposits')
+        query = str(
+            Query.from_(table).select('id').where(
+                table.area_name == 'test-area'
+            )
+        )
+        cursor = up_test_dbase.connection.cursor()
+        cursor.execute(query)
+        area_id = cursor.fetchone()[0]
+
+        old_well_name = 'test-name'
+        old_start_time = '2022-11-15 12:12:12'
+        old_work_type = 'test-work'
+        old_deposit_id = area_id
+
+        old_work_info = WorkInfo(
+            well_name=old_well_name,
+            start_time=old_start_time,
+            work_type=old_work_type,
+            deposit_id=old_deposit_id
+        )
+        up_test_dbase.add_works_info(old_work_info)
+
+        new_well_name = 'test-name2'
+        new_start_time = '2000-01-24 11:12:13'
+        new_work_type = 'test-work2'
+        new_deposit_id = area_id
+
+        new_work_info = WorkInfo(
+            well_name=new_well_name,
+            start_time=new_start_time,
+            work_type=new_work_type,
+            deposit_id=new_deposit_id
+        )
+        is_success = up_test_dbase.update_works_info(
+            old_work_info=old_work_info,
+            new_work_info=new_work_info
+        )
+        assert_that(
+            actual_or_assertion=is_success,
+            matcher=is_(True)
+        )
+
+        table = Table('works')
+        query = str(
+            Query.from_(table).select(Count(1)).where(
+                table.well_name == new_well_name).where(
+                table.start_time == new_start_time).where(
+                table.work_type == new_work_type). where(
+                table.deposit_id == new_deposit_id
+            )
+        )
+        cursor = up_test_dbase.connection.cursor()
+        cursor.execute(query)
+        records_count = cursor.fetchone()[0]
+        assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
+
+    def test_update_duplicate_lower_upper_work(self, up_test_dbase,
+                                               clear_deposits_table):
+        up_test_dbase.add_deposit_info('test-area')
+
+        table = Table('deposits')
+        query = str(
+            Query.from_(table).select('id').where(
+                table.area_name == 'test-area'
+            )
+        )
+        cursor = up_test_dbase.connection.cursor()
+        cursor.execute(query)
+        area_id = cursor.fetchone()[0]
+
+        old_well_name = 'test-name'
+        old_start_time = '2022-11-15 12:12:12'
+        old_work_type = 'test-work'
+        old_deposit_id = area_id
+
+        old_work_info = WorkInfo(
+            well_name=old_well_name,
+            start_time=old_start_time,
+            work_type=old_work_type,
+            deposit_id=old_deposit_id
+        )
+        up_test_dbase.add_works_info(old_work_info)
+
+        new_well_name = 'TEST-NAME'
+        new_start_time = '2022-11-15 12:12:12'
+        new_work_type = 'TEST-WORK'
+        new_deposit_id = area_id
+
+        new_work_info = WorkInfo(well_name=new_well_name,
+                                 start_time=new_start_time,
+                                 work_type=new_work_type,
+                                 deposit_id=new_deposit_id)
+        is_success = up_test_dbase.update_works_info(
+            old_work_info=old_work_info,
+            new_work_info=new_work_info
+        )
+        assert_that(
+            actual_or_assertion=is_success,
+            matcher=is_(True)
+        )
+
+        table = Table('works')
+        query = str(
+            Query.from_(table).select(Count(1)).where(
+                table.well_name == new_well_name.lower()).where(
+                table.start_time == new_start_time).where(
+                table.work_type == new_work_type.lower()). where(
+                table.deposit_id == new_deposit_id
+            )
+        )
+        cursor = up_test_dbase.connection.cursor()
+        cursor.execute(query)
+        records_count = cursor.fetchone()[0]
+        assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
