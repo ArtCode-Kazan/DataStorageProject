@@ -8,7 +8,7 @@ from fastapi import FastAPI
 
 from dbase_api_server.containers import PostgresConnectionParams
 from dbase_api_server.dbase import StorageDBase
-from dbase_api_server.models import Deposit, Response
+from dbase_api_server.models import Deposit, Response, WorkInfo
 
 dotenv.load_dotenv()
 
@@ -118,6 +118,33 @@ def update_deposit_info(old_deposit: Deposit, new_deposit: Deposit) -> dict:
         data={}
     )
     return returned_info.dict()
+
+
+@app.post('/add-work')
+def add_work(work: WorkInfo) -> dict:
+    """Add work info to database.
+
+    Args:
+        work: works fields (well_name, start_time,
+        work_type, deposit_id)
+
+    """
+    is_added = dbase_adapter.add_works_info(
+        work_info=work
+    )
+    if is_added:
+        message = (f'Successfully added work info: {work.well_name}, '
+                   f'{work.start_time}, {work.work_type}, {work.deposit_id}')
+    else:
+        message = (f'Cant add work info: {work.well_name}, '
+                   f'{work.start_time}, {work.work_type}, {work.deposit_id}')
+
+    returned_info = Response(
+        status=is_added,
+        message=message,
+        data={}
+    )
+    return returned_info
 
 
 if __name__ == '__main__':

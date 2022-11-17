@@ -18,7 +18,7 @@ Examples:
         my_adapter = StorageDBase(params=connection_params)
 
 """
-
+import datetime
 import logging
 from typing import Union
 
@@ -180,11 +180,15 @@ class StorageDBase:
         """
         lower_well_name = work_info.well_name.lower()
         lower_work_type = work_info.work_type.lower()
+        datetime_value = datetime.datetime.strptime(
+            work_info.start_time,
+            '%Y-%m-%d %H:%M:%S'
+        )
         table = Table('works')
         query = str(
             Query.into(table).columns(
                 'well_name', 'start_time', 'work_type', 'deposit_id').insert(
-                lower_well_name, work_info.start_time,
+                lower_well_name, datetime_value,
                 lower_work_type, work_info.deposit_id
             )
         )

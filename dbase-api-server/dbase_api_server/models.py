@@ -4,7 +4,6 @@ This module contains models with database fields.
 
 """
 
-from datetime import datetime
 from typing import Union
 
 from pydantic import BaseModel
@@ -47,6 +46,6 @@ class WorkInfo(BaseModel):
 
     """
     well_name: str
-    start_time: datetime
+    start_time: str
     work_type: str
     deposit_id: int
