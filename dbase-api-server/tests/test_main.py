@@ -3,8 +3,9 @@ import os
 import requests
 from dotenv import load_dotenv
 from hamcrest import assert_that, equal_to
+from pypika import Query, Table
 
-from dbase_api_server.models import Deposit
+from dbase_api_server.models import Deposit, WorkInfo
 
 load_dotenv()
 
@@ -151,6 +152,92 @@ def test_update_blank_deposit_name(up_test_dbase, clear_deposits_table):
     url = (f'{URL}/update-deposit')
     response = requests.post(url, json=payload)
 
+    assert_that(
+        actual_or_assertion=response.json(),
+        matcher=equal_to(expected_value)
+    )
+    assert_that(
+        actual_or_assertion=response.status_code,
+        matcher=equal_to(requests.codes.ok)
+    )
+
+
+def test_add_new_work(up_test_dbase, clear_deposits_table):
+    up_test_dbase.add_deposit_info('test-area')
+
+    table = Table('deposits')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.area_name == 'test-area'
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    area_id = cursor.fetchone()[0]
+
+    well_name = 'test-name'
+    datetime_start_str = '2022-11-15 12:12:12'
+    work_type = 'test-work'
+    deposit_id = area_id
+
+    url = f'{URL}/add-work-info'
+    payload = WorkInfo(
+        well_name=well_name,
+        datetime_start_str=datetime_start_str,
+        work_type=work_type,
+        deposit_id=deposit_id
+    )
+    expected_value = {
+        'status': True,
+        'message': (f'Successfully added work info: {well_name}, '
+                    f'{datetime_start_str}, {work_type}, {deposit_id}'),
+        'data': {}
+    }
+    response = requests.post(url, json=payload.dict())
+    assert_that(
+        actual_or_assertion=response.json(),
+        matcher=equal_to(expected_value)
+    )
+    assert_that(
+        actual_or_assertion=response.status_code,
+        matcher=equal_to(requests.codes.ok)
+    )
+
+
+def test_add_duplicate_work(up_test_dbase, clear_deposits_table):
+    up_test_dbase.add_deposit_info('test-area')
+
+    table = Table('deposits')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.area_name == 'test-area'
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    area_id = cursor.fetchone()[0]
+
+    well_name = 'test-name'
+    datetime_start_str = '2022-11-15 12:12:12'
+    work_type = 'test-work'
+    deposit_id = area_id
+
+    url = f'{URL}/add-work-info'
+    payload = WorkInfo(
+        well_name=well_name,
+        datetime_start_str=datetime_start_str,
+        work_type=work_type,
+        deposit_id=deposit_id
+    )
+    requests.post(url, json=payload.dict())
+
+    expected_value = {
+        'status': False,
+        'message': (f'Cant add work info: {well_name}, '
+                    f'{datetime_start_str}, {work_type}, {deposit_id}'),
+        'data': {}
+    }
+    response = requests.post(url, json=payload.dict())
     assert_that(
         actual_or_assertion=response.json(),
         matcher=equal_to(expected_value)

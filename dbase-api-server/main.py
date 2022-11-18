@@ -8,7 +8,7 @@ from fastapi import FastAPI
 
 from dbase_api_server.containers import PostgresConnectionParams
 from dbase_api_server.dbase import StorageDBase
-from dbase_api_server.models import Deposit, Response
+from dbase_api_server.models import Deposit, Response, WorkInfo
 
 dotenv.load_dotenv()
 
@@ -31,12 +31,12 @@ def check_service_alive() -> dict:
     Returns: dict object with status and message
 
     """
-    returned_info = Response(
+    returning_info = Response(
         status=True,
         message='Service is alive',
         data={}
     )
-    return returned_info.dict()
+    return returning_info.dict()
 
 
 @app.get('/get-all-deposits')
@@ -50,14 +50,14 @@ def get_all_deposits() -> dict:
     if area_names is None:
         area_names = []
 
-    returned_info = Response(
+    returning_info = Response(
         status=True,
         message='All deposits name returns successfully',
         data={
             'area_names': area_names
         }
     )
-    return returned_info.dict()
+    return returning_info.dict()
 
 
 @app.post('/add-deposit')
@@ -78,12 +78,12 @@ def add_new_deposit(deposit: Deposit) -> dict:
     else:
         message = f'Cant add deposit name "{deposit.area_name}"'
 
-    returned_info = Response(
+    returning_info = Response(
         status=is_added,
         message=message,
         data={}
     )
-    return returned_info.dict()
+    return returning_info.dict()
 
 
 @app.post('/update-deposit')
@@ -112,12 +112,43 @@ def update_deposit_info(old_deposit: Deposit, new_deposit: Deposit) -> dict:
             f'"{new_deposit.area_name}"'
         )
 
-    returned_info = Response(
+    returning_info = Response(
         status=is_added,
         message=message,
         data={}
     )
-    return returned_info.dict()
+    return returning_info.dict()
+
+
+@app.post('/add-work-info')
+def add_work_info(work_info: WorkInfo) -> dict:
+    """Add work info to database.
+
+    Args:
+        work_info: works fields (well_name, datetime_start_str,
+        work_type, deposit_id)
+
+    """
+    is_added = dbase_adapter.add_work_info(work_info=work_info)
+    if is_added:
+        message = (
+            f'Successfully added work info: {work_info.well_name}, '
+            f'{work_info.datetime_start_str}, '
+            f'{work_info.work_type}, {work_info.deposit_id}'
+        )
+    else:
+        message = (
+            f'Cant add work info: {work_info.well_name}, '
+            f'{work_info.datetime_start_str}, '
+            f'{work_info.work_type}, {work_info.deposit_id}'
+        )
+
+    returning_info = Response(
+        status=is_added,
+        message=message,
+        data={}
+    )
+    return returning_info.dict()
 
 
 if __name__ == '__main__':
