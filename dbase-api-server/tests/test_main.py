@@ -175,22 +175,22 @@ def test_add_new_work(up_test_dbase, clear_deposits_table):
     cursor.execute(query)
     area_id = cursor.fetchone()[0]
 
-    name = 'test-name'
+    well_name = 'test-name'
     datetime_start_str = '2022-11-15 12:12:12'
-    type = 'test-work'
+    work_type = 'test-work'
     deposit_id = area_id
 
     url = f'{URL}/add-work-info'
     payload = WorkInfo(
-        name=name,
+        well_name=well_name,
         datetime_start_str=datetime_start_str,
-        type=type,
+        work_type=work_type,
         deposit_id=deposit_id
     )
     expected_value = {
         'status': True,
-        'message': (f'Successfully added work info: {name}, '
-                    f'{datetime_start_str}, {type}, {deposit_id}'),
+        'message': (f'Successfully added work info: {well_name}, '
+                    f'{datetime_start_str}, {work_type}, {deposit_id}'),
         'data': {}
     }
     response = requests.post(url, json=payload.dict())
@@ -217,24 +217,24 @@ def test_add_duplicate_work(up_test_dbase, clear_deposits_table):
     cursor.execute(query)
     area_id = cursor.fetchone()[0]
 
-    name = 'test-name'
+    well_name = 'test-name'
     datetime_start_str = '2022-11-15 12:12:12'
-    type = 'test-work'
+    work_type = 'test-work'
     deposit_id = area_id
 
     url = f'{URL}/add-work-info'
     payload = WorkInfo(
-        name=name,
+        well_name=well_name,
         datetime_start_str=datetime_start_str,
-        type=type,
+        work_type=work_type,
         deposit_id=deposit_id
     )
     requests.post(url, json=payload.dict())
 
     expected_value = {
         'status': False,
-        'message': (f'Cant add work info: {name}, '
-                    f'{datetime_start_str}, {type}, {deposit_id}'),
+        'message': (f'Cant add work info: {well_name}, '
+                    f'{datetime_start_str}, {work_type}, {deposit_id}'),
         'data': {}
     }
     response = requests.post(url, json=payload.dict())

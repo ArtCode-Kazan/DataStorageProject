@@ -41,7 +41,7 @@ def check_service_alive() -> dict:
 
 @app.get('/get-all-deposits')
 def get_all_deposits() -> dict:
-    """Return all deposits name from deposit table.
+    """Return all depositsfrom deposit table.
 
     Returns: dict object with operation status, message with
     operation discription and all deposit area names.
@@ -125,22 +125,22 @@ def add_work_info(work_info: WorkInfo) -> dict:
     """Add work info to database.
 
     Args:
-        work_info: works fields (name, datetime_start_str,
-        type, deposit_id)
+        work_info: works fields (well_name, datetime_start_str,
+        work_type, deposit_id)
 
     """
-    is_added = dbase_adapter.add_works_info(work_info=work_info)
+    is_added = dbase_adapter.add_work_info(work_info=work_info)
     if is_added:
         message = (
-            f'Successfully added work info: {work_info.name}, '
+            f'Successfully added work info: {work_info.well_name}, '
             f'{work_info.datetime_start_str}, '
-            f'{work_info.type}, {work_info.deposit_id}'
+            f'{work_info.work_type}, {work_info.deposit_id}'
         )
     else:
         message = (
-            f'Cant add work info: {work_info.name}, '
+            f'Cant add work info: {work_info.well_name}, '
             f'{work_info.datetime_start_str}, '
-            f'{work_info.type}, {work_info.deposit_id}'
+            f'{work_info.work_type}, {work_info.deposit_id}'
         )
 
     returning_info = Response(
