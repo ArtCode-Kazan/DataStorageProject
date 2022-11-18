@@ -391,13 +391,13 @@ class TestStorageDBase:
         area_id = cursor.fetchone()[0]
 
         well_name = 'test-name'
-        start_time = '2022-11-15 12:12:12'
+        work_start = '2022-11-15 12:12:12'
         work_type = 'test-work'
         deposit_id = area_id
 
         work_info = WorkInfo(
             well_name=well_name,
-            start_time=start_time,
+            work_start=work_start,
             work_type=work_type,
             deposit_id=deposit_id
         )
@@ -408,7 +408,7 @@ class TestStorageDBase:
         query = str(
             Query.from_(table).select(Count(1)).where(
                 table.well_name == well_name).where(
-                table.start_time == start_time).where(
+                table.start_time == work_start).where(
                 table.work_type == work_type). where(
                 table.deposit_id == deposit_id
             )
@@ -433,13 +433,13 @@ class TestStorageDBase:
         area_id = cursor.fetchone()[0]
 
         well_name = 'test-name'
-        start_time = '2022-11-15 12:12:12'
+        work_start = '2022-11-15 12:12:12'
         work_type = 'test-work'
         deposit_id = area_id
 
         work_info = WorkInfo(
             well_name=well_name,
-            start_time=start_time,
+            work_start=work_start,
             work_type=work_type,
             deposit_id=deposit_id
         )
@@ -447,13 +447,13 @@ class TestStorageDBase:
         assert_that(actual_or_assertion=is_success, matcher=is_(True))
 
         well_name = 'TEST-NAME'
-        start_time = '2022-11-15 12:12:12'
+        work_start = '2022-11-15 12:12:12'
         work_type = 'TEST-WORK'
         deposit_id = area_id
 
         work_info = WorkInfo(
             well_name=well_name,
-            start_time=start_time,
+            work_start=work_start,
             work_type=work_type,
             deposit_id=deposit_id
         )
@@ -464,7 +464,7 @@ class TestStorageDBase:
         query = str(
             Query.from_(table).select(Count(1)).where(
                 table.well_name == well_name.lower()).where(
-                table.start_time == start_time).where(
+                table.start_time == work_start).where(
                 table.work_type == work_type.lower()). where(
                 table.deposit_id == deposit_id
             )
@@ -500,13 +500,13 @@ class TestStorageDBase:
         area_id = cursor.fetchone()[0]
 
         well_name = passed_well_name
-        start_time = '2022-11-15 12:12:12'
+        work_start = '2022-11-15 12:12:12'
         work_type = passed_work_type
         deposit_id = area_id
 
         work_info = WorkInfo(
             well_name=well_name,
-            start_time=start_time,
+            work_start=work_start,
             work_type=work_type,
             deposit_id=deposit_id
         )
@@ -521,7 +521,7 @@ class TestStorageDBase:
         query = str(
             Query.from_(table).select(Count(1)).where(
                 table.well_name == passed_well_name.lower()).where(
-                table.start_time == start_time).where(
+                table.start_time == work_start).where(
                 table.work_type == passed_work_type.lower()). where(
                 table.deposit_id == deposit_id
             )
@@ -548,26 +548,26 @@ class TestStorageDBase:
         area_id = cursor.fetchone()[0]
 
         old_well_name = 'test-name'
-        old_start_time = '2022-11-15 12:12:12'
+        old_work_start = '2022-11-15 12:12:12'
         old_work_type = 'test-work'
         old_deposit_id = area_id
 
         old_work_info = WorkInfo(
             well_name=old_well_name,
-            start_time=old_start_time,
+            work_start=old_work_start,
             work_type=old_work_type,
             deposit_id=old_deposit_id
         )
         up_test_dbase.add_works_info(old_work_info)
 
         new_well_name = 'test-name2'
-        new_start_time = '2000-01-24 11:12:13'
+        new_work_start = '2000-01-24 11:12:13'
         new_work_type = 'test-work2'
         new_deposit_id = area_id
 
         new_work_info = WorkInfo(
             well_name=new_well_name,
-            start_time=new_start_time,
+            work_start=new_work_start,
             work_type=new_work_type,
             deposit_id=new_deposit_id
         )
@@ -584,7 +584,7 @@ class TestStorageDBase:
         query = str(
             Query.from_(table).select(Count(1)).where(
                 table.well_name == new_well_name).where(
-                table.start_time == new_start_time).where(
+                table.start_time == new_work_start).where(
                 table.work_type == new_work_type). where(
                 table.deposit_id == new_deposit_id
             )
@@ -609,25 +609,25 @@ class TestStorageDBase:
         area_id = cursor.fetchone()[0]
 
         old_well_name = 'test-name'
-        old_start_time = '2022-11-15 12:12:12'
+        old_work_start = '2022-11-15 12:12:12'
         old_work_type = 'test-work'
         old_deposit_id = area_id
 
         old_work_info = WorkInfo(
             well_name=old_well_name,
-            start_time=old_start_time,
+            work_start=old_work_start,
             work_type=old_work_type,
             deposit_id=old_deposit_id
         )
         up_test_dbase.add_works_info(old_work_info)
 
         new_well_name = 'TEST-NAME'
-        new_start_time = '2022-11-15 12:12:12'
+        new_work_start = '2022-11-15 12:12:12'
         new_work_type = 'TEST-WORK'
         new_deposit_id = area_id
 
         new_work_info = WorkInfo(well_name=new_well_name,
-                                 start_time=new_start_time,
+                                 work_start=new_work_start,
                                  work_type=new_work_type,
                                  deposit_id=new_deposit_id)
         is_success = up_test_dbase.update_works_info(
@@ -643,7 +643,7 @@ class TestStorageDBase:
         query = str(
             Query.from_(table).select(Count(1)).where(
                 table.well_name == new_well_name.lower()).where(
-                table.start_time == new_start_time).where(
+                table.start_time == new_work_start).where(
                 table.work_type == new_work_type.lower()). where(
                 table.deposit_id == new_deposit_id
             )

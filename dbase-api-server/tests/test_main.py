@@ -176,21 +176,21 @@ def test_add_new_work(up_test_dbase, clear_deposits_table):
     area_id = cursor.fetchone()[0]
 
     well_name = 'test-name'
-    start_time = '2022-11-15 12:12:12'
+    work_start = '2022-11-15 12:12:12'
     work_type = 'test-work'
     deposit_id = area_id
 
-    url = f'{URL}/add-work'
+    url = f'{URL}/add-work-info'
     payload = WorkInfo(
         well_name=well_name,
-        start_time=start_time,
+        work_start=work_start,
         work_type=work_type,
         deposit_id=deposit_id
     )
     expected_value = {
         'status': True,
         'message': (f'Successfully added work info: {well_name}, '
-                    f'{start_time}, {work_type}, {deposit_id}'),
+                    f'{work_start}, {work_type}, {deposit_id}'),
         'data': {}
     }
     response = requests.post(url, json=payload.dict())
@@ -203,17 +203,16 @@ def test_add_new_work(up_test_dbase, clear_deposits_table):
         matcher=equal_to(requests.codes.ok)
     )
 
-    url = f'{URL}/add-work'
     payload = WorkInfo(
         well_name=well_name,
-        start_time=start_time,
+        work_start=work_start,
         work_type=work_type,
         deposit_id=deposit_id
     )
     expected_value = {
         'status': False,
         'message': (f'Cant add work info: {well_name}, '
-                    f'{start_time}, {work_type}, {deposit_id}'),
+                    f'{work_start}, {work_type}, {deposit_id}'),
         'data': {}
     }
     response = requests.post(url, json=payload.dict())

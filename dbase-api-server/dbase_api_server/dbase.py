@@ -29,7 +29,7 @@ from psycopg.errors import (CheckViolation, StringDataRightTruncation,
 from pypika import Query, Table
 
 from dbase_api_server.containers import PostgresConnectionParams
-from dbase_api_server.models import WorkInfo
+from dbase_api_server.models import DATETIME_FORMAT, WorkInfo
 
 DEFAULT_PORT = 5432
 DEFAULT_PATH = '/var/lib/postgresql/data'
@@ -181,8 +181,8 @@ class StorageDBase:
         lower_well_name = work_info.well_name.lower()
         lower_work_type = work_info.work_type.lower()
         datetime_value = datetime.datetime.strptime(
-            work_info.start_time,
-            '%Y-%m-%d %H:%M:%S'
+            work_info.work_start,
+            DATETIME_FORMAT
         )
         table = Table('works')
         query = str(
@@ -210,11 +210,11 @@ class StorageDBase:
         work_type = old_work_info.work_type.lower()
         updated_work_type = new_work_info.work_type.lower()
         query = f"""UPDATE works SET well_name = '{updated_well_name}',
-                    start_time = '{new_work_info.start_time}',
+                    start_time = '{new_work_info.work_start}',
                     work_type = '{updated_work_type}',
                     deposit_id = '{new_work_info.deposit_id}'
                     WHERE well_name = '{well_name}'
-                    AND start_time = '{old_work_info.start_time}'
+                    AND start_time = '{old_work_info.work_start}'
                     AND work_type = '{work_type}'
                     AND deposit_id = '{old_work_info.deposit_id}'
         """

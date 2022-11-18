@@ -8,7 +8,7 @@ from typing import Union
 
 from pydantic import BaseModel
 
-DEFAULT_STRING = 'default_string'
+DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
 class Response(BaseModel):
@@ -40,12 +40,12 @@ class WorkInfo(BaseModel):
 
     Args:
         well_name: well name
-        start_time: time of works starting
+        work_start: time of works starting
         work_type: type of works
         deposit_id: id of deposit associated with well
 
     """
     well_name: str
-    start_time: str
+    work_start: str
     work_type: str
     deposit_id: int

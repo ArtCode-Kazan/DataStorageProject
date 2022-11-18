@@ -31,12 +31,12 @@ def check_service_alive() -> dict:
     Returns: dict object with status and message
 
     """
-    returned_info = Response(
+    returning_info = Response(
         status=True,
         message='Service is alive',
         data={}
     )
-    return returned_info.dict()
+    return returning_info.dict()
 
 
 @app.get('/get-all-deposits')
@@ -50,14 +50,14 @@ def get_all_deposits() -> dict:
     if area_names is None:
         area_names = []
 
-    returned_info = Response(
+    returning_info = Response(
         status=True,
         message='All deposits name returns successfully',
         data={
             'area_names': area_names
         }
     )
-    return returned_info.dict()
+    return returning_info.dict()
 
 
 @app.post('/add-deposit')
@@ -78,12 +78,12 @@ def add_new_deposit(deposit: Deposit) -> dict:
     else:
         message = f'Cant add deposit name "{deposit.area_name}"'
 
-    returned_info = Response(
+    returning_info = Response(
         status=is_added,
         message=message,
         data={}
     )
-    return returned_info.dict()
+    return returning_info.dict()
 
 
 @app.post('/update-deposit')
@@ -112,39 +112,41 @@ def update_deposit_info(old_deposit: Deposit, new_deposit: Deposit) -> dict:
             f'"{new_deposit.area_name}"'
         )
 
-    returned_info = Response(
+    returning_info = Response(
         status=is_added,
         message=message,
         data={}
     )
-    return returned_info.dict()
+    return returning_info.dict()
 
 
-@app.post('/add-work')
-def add_work(work: WorkInfo) -> dict:
+@app.post('/add-work-info')
+def add_work_info(work: WorkInfo) -> dict:
     """Add work info to database.
 
     Args:
-        work: works fields (well_name, start_time,
+        work: works fields (well_name, work_start,
         work_type, deposit_id)
 
     """
-    is_added = dbase_adapter.add_works_info(
-        work_info=work
-    )
+    is_added = dbase_adapter.add_works_info(work_info=work)
     if is_added:
-        message = (f'Successfully added work info: {work.well_name}, '
-                   f'{work.start_time}, {work.work_type}, {work.deposit_id}')
+        message = (
+            f'Successfully added work info: {work.well_name}, '
+            f'{work.work_start}, {work.work_type}, {work.deposit_id}'
+        )
     else:
-        message = (f'Cant add work info: {work.well_name}, '
-                   f'{work.start_time}, {work.work_type}, {work.deposit_id}')
+        message = (
+            f'Cant add work info: {work.well_name}, '
+            f'{work.work_start}, {work.work_type}, {work.deposit_id}'
+        )
 
-    returned_info = Response(
+    returning_info = Response(
         status=is_added,
         message=message,
         data={}
     )
-    return returned_info
+    return returning_info.dict()
 
 
 if __name__ == '__main__':
