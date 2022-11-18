@@ -390,15 +390,15 @@ class TestStorageDBase:
         cursor.execute(query)
         area_id = cursor.fetchone()[0]
 
-        well_name = 'test-name'
-        work_start = '2022-11-15 12:12:12'
-        work_type = 'test-work'
+        name = 'test-name'
+        datetime_start_str = '2022-11-15 12:12:12'
+        type = 'test-work'
         deposit_id = area_id
 
         work_info = WorkInfo(
-            well_name=well_name,
-            work_start=work_start,
-            work_type=work_type,
+            name=name,
+            datetime_start_str=datetime_start_str,
+            type=type,
             deposit_id=deposit_id
         )
         is_success = up_test_dbase.add_works_info(work_info=work_info)
@@ -407,9 +407,9 @@ class TestStorageDBase:
         table = Table('works')
         query = str(
             Query.from_(table).select(Count(1)).where(
-                table.well_name == well_name).where(
-                table.start_time == work_start).where(
-                table.work_type == work_type). where(
+                table.well_name == name).where(
+                table.start_time == datetime_start_str).where(
+                table.work_type == type). where(
                 table.deposit_id == deposit_id
             )
         )
@@ -432,29 +432,29 @@ class TestStorageDBase:
         cursor.execute(query)
         area_id = cursor.fetchone()[0]
 
-        well_name = 'test-name'
-        work_start = '2022-11-15 12:12:12'
-        work_type = 'test-work'
+        name = 'test-name'
+        datetime_start_str = '2022-11-15 12:12:12'
+        type = 'test-work'
         deposit_id = area_id
 
         work_info = WorkInfo(
-            well_name=well_name,
-            work_start=work_start,
-            work_type=work_type,
+            name=name,
+            datetime_start_str=datetime_start_str,
+            type=type,
             deposit_id=deposit_id
         )
         is_success = up_test_dbase.add_works_info(work_info=work_info)
         assert_that(actual_or_assertion=is_success, matcher=is_(True))
 
-        well_name = 'TEST-NAME'
-        work_start = '2022-11-15 12:12:12'
-        work_type = 'TEST-WORK'
+        name = 'TEST-NAME'
+        datetime_start_str = '2022-11-15 12:12:12'
+        type = 'TEST-WORK'
         deposit_id = area_id
 
         work_info = WorkInfo(
-            well_name=well_name,
-            work_start=work_start,
-            work_type=work_type,
+            name=name,
+            datetime_start_str=datetime_start_str,
+            type=type,
             deposit_id=deposit_id
         )
         is_success = up_test_dbase.add_works_info(work_info=work_info)
@@ -463,9 +463,9 @@ class TestStorageDBase:
         table = Table('works')
         query = str(
             Query.from_(table).select(Count(1)).where(
-                table.well_name == well_name.lower()).where(
-                table.start_time == work_start).where(
-                table.work_type == work_type.lower()). where(
+                table.well_name == name.lower()).where(
+                table.start_time == datetime_start_str).where(
+                table.work_type == type.lower()). where(
                 table.deposit_id == deposit_id
             )
         )
@@ -475,8 +475,8 @@ class TestStorageDBase:
         assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
 
     @pytest.mark.parametrize(
-        ['passed_well_name',
-         'passed_work_type',
+        ['passed_name',
+         'passed_type',
          'expected_value',
          'expected_records_count'],
         [('a', 'b', True, 1),
@@ -484,8 +484,8 @@ class TestStorageDBase:
          ('a' * 11, 'b' * 22, False, 0)]
     )
     def test_work_fields_name_lengh(self, up_test_dbase,
-                                    clear_deposits_table, passed_well_name,
-                                    passed_work_type, expected_value,
+                                    clear_deposits_table, passed_name,
+                                    passed_type, expected_value,
                                     expected_records_count):
         up_test_dbase.add_deposit_info('test-area')
 
@@ -499,15 +499,15 @@ class TestStorageDBase:
         cursor.execute(query)
         area_id = cursor.fetchone()[0]
 
-        well_name = passed_well_name
-        work_start = '2022-11-15 12:12:12'
-        work_type = passed_work_type
+        name = passed_name
+        datetime_start_str = '2022-11-15 12:12:12'
+        type = passed_type
         deposit_id = area_id
 
         work_info = WorkInfo(
-            well_name=well_name,
-            work_start=work_start,
-            work_type=work_type,
+            name=name,
+            datetime_start_str=datetime_start_str,
+            type=type,
             deposit_id=deposit_id
         )
 
@@ -520,9 +520,9 @@ class TestStorageDBase:
         table = Table('works')
         query = str(
             Query.from_(table).select(Count(1)).where(
-                table.well_name == passed_well_name.lower()).where(
-                table.start_time == work_start).where(
-                table.work_type == passed_work_type.lower()). where(
+                table.well_name == passed_name.lower()).where(
+                table.start_time == datetime_start_str).where(
+                table.work_type == passed_type.lower()). where(
                 table.deposit_id == deposit_id
             )
         )
@@ -547,28 +547,28 @@ class TestStorageDBase:
         cursor.execute(query)
         area_id = cursor.fetchone()[0]
 
-        old_well_name = 'test-name'
-        old_work_start = '2022-11-15 12:12:12'
-        old_work_type = 'test-work'
+        old_name = 'test-name'
+        old_datetime_start_str = '2022-11-15 12:12:12'
+        old_type = 'test-work'
         old_deposit_id = area_id
 
         old_work_info = WorkInfo(
-            well_name=old_well_name,
-            work_start=old_work_start,
-            work_type=old_work_type,
+            name=old_name,
+            datetime_start_str=old_datetime_start_str,
+            type=old_type,
             deposit_id=old_deposit_id
         )
         up_test_dbase.add_works_info(old_work_info)
 
-        new_well_name = 'test-name2'
-        new_work_start = '2000-01-24 11:12:13'
-        new_work_type = 'test-work2'
+        new_name = 'test-name2'
+        new_datetime_start_str = '2000-01-24 11:12:13'
+        new_type = 'test-work2'
         new_deposit_id = area_id
 
         new_work_info = WorkInfo(
-            well_name=new_well_name,
-            work_start=new_work_start,
-            work_type=new_work_type,
+            name=new_name,
+            datetime_start_str=new_datetime_start_str,
+            type=new_type,
             deposit_id=new_deposit_id
         )
         is_success = up_test_dbase.update_works_info(
@@ -583,9 +583,9 @@ class TestStorageDBase:
         table = Table('works')
         query = str(
             Query.from_(table).select(Count(1)).where(
-                table.well_name == new_well_name).where(
-                table.start_time == new_work_start).where(
-                table.work_type == new_work_type). where(
+                table.well_name == new_name).where(
+                table.start_time == new_datetime_start_str).where(
+                table.work_type == new_type). where(
                 table.deposit_id == new_deposit_id
             )
         )
@@ -608,27 +608,27 @@ class TestStorageDBase:
         cursor.execute(query)
         area_id = cursor.fetchone()[0]
 
-        old_well_name = 'test-name'
-        old_work_start = '2022-11-15 12:12:12'
-        old_work_type = 'test-work'
+        old_name = 'test-name'
+        old_datetime_start_str = '2022-11-15 12:12:12'
+        old_type = 'test-work'
         old_deposit_id = area_id
 
         old_work_info = WorkInfo(
-            well_name=old_well_name,
-            work_start=old_work_start,
-            work_type=old_work_type,
+            name=old_name,
+            datetime_start_str=old_datetime_start_str,
+            type=old_type,
             deposit_id=old_deposit_id
         )
         up_test_dbase.add_works_info(old_work_info)
 
-        new_well_name = 'TEST-NAME'
-        new_work_start = '2022-11-15 12:12:12'
-        new_work_type = 'TEST-WORK'
+        new_name = 'TEST-NAME'
+        new_datetime_start_str = '2022-11-15 12:12:12'
+        new_type = 'TEST-WORK'
         new_deposit_id = area_id
 
-        new_work_info = WorkInfo(well_name=new_well_name,
-                                 work_start=new_work_start,
-                                 work_type=new_work_type,
+        new_work_info = WorkInfo(name=new_name,
+                                 datetime_start_str=new_datetime_start_str,
+                                 type=new_type,
                                  deposit_id=new_deposit_id)
         is_success = up_test_dbase.update_works_info(
             old_work_info=old_work_info,
@@ -642,9 +642,9 @@ class TestStorageDBase:
         table = Table('works')
         query = str(
             Query.from_(table).select(Count(1)).where(
-                table.well_name == new_well_name.lower()).where(
-                table.start_time == new_work_start).where(
-                table.work_type == new_work_type.lower()). where(
+                table.well_name == new_name.lower()).where(
+                table.start_time == new_datetime_start_str).where(
+                table.work_type == new_type.lower()). where(
                 table.deposit_id == new_deposit_id
             )
         )

@@ -39,13 +39,13 @@ class WorkInfo(BaseModel):
     """Model with parameters for acting with works table.
 
     Args:
-        well_name: well name
-        work_start: time of works starting
-        work_type: type of works
+        name: well name
+        datetime_start_str: time of works starting
+        type: type of works
         deposit_id: id of deposit associated with well
 
     """
-    well_name: str
-    work_start: str
-    work_type: str
+    name: str
+    datetime_start_str: str
+    type: str
     deposit_id: int

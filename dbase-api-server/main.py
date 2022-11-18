@@ -121,24 +121,26 @@ def update_deposit_info(old_deposit: Deposit, new_deposit: Deposit) -> dict:
 
 
 @app.post('/add-work-info')
-def add_work_info(work: WorkInfo) -> dict:
+def add_work_info(work_info: WorkInfo) -> dict:
     """Add work info to database.
 
     Args:
-        work: works fields (well_name, work_start,
-        work_type, deposit_id)
+        work_info: works fields (name, datetime_start_str,
+        type, deposit_id)
 
     """
-    is_added = dbase_adapter.add_works_info(work_info=work)
+    is_added = dbase_adapter.add_works_info(work_info=work_info)
     if is_added:
         message = (
-            f'Successfully added work info: {work.well_name}, '
-            f'{work.work_start}, {work.work_type}, {work.deposit_id}'
+            f'Successfully added work info: {work_info.name}, '
+            f'{work_info.datetime_start_str}, '
+            f'{work_info.type}, {work_info.deposit_id}'
         )
     else:
         message = (
-            f'Cant add work info: {work.well_name}, '
-            f'{work.work_start}, {work.work_type}, {work.deposit_id}'
+            f'Cant add work info: {work_info.name}, '
+            f'{work_info.datetime_start_str}, '
+            f'{work_info.type}, {work_info.deposit_id}'
         )
 
     returning_info = Response(

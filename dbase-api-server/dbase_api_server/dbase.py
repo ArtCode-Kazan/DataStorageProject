@@ -18,8 +18,8 @@ Examples:
         my_adapter = StorageDBase(params=connection_params)
 
 """
-import datetime
 import logging
+from datetime import datetime
 from typing import Union
 
 from psycopg import OperationalError
@@ -178,18 +178,18 @@ class StorageDBase:
             work_info: container with works params
 
         """
-        lower_well_name = work_info.well_name.lower()
-        lower_work_type = work_info.work_type.lower()
-        datetime_value = datetime.datetime.strptime(
-            work_info.work_start,
+        lower_name = work_info.name.lower()
+        lower_type = work_info.type.lower()
+        datetime_value = datetime.strptime(
+            work_info.datetime_start_str,
             DATETIME_FORMAT
         )
         table = Table('works')
         query = str(
             Query.into(table).columns(
                 'well_name', 'start_time', 'work_type', 'deposit_id').insert(
-                lower_well_name, datetime_value,
-                lower_work_type, work_info.deposit_id
+                lower_name, datetime_value,
+                lower_type, work_info.deposit_id
             )
         )
         return self.is_success_changing_query(query=query)
@@ -205,17 +205,17 @@ class StorageDBase:
         Returns: True if name updated success, False - if not.
 
         """
-        well_name = old_work_info.well_name.lower()
-        updated_well_name = new_work_info.well_name.lower()
-        work_type = old_work_info.work_type.lower()
-        updated_work_type = new_work_info.work_type.lower()
-        query = f"""UPDATE works SET well_name = '{updated_well_name}',
-                    start_time = '{new_work_info.work_start}',
-                    work_type = '{updated_work_type}',
+        name = old_work_info.name.lower()
+        updated_name = new_work_info.name.lower()
+        type = old_work_info.type.lower()
+        updated_type = new_work_info.type.lower()
+        query = f"""UPDATE works SET well_name = '{updated_name}',
+                    start_time = '{new_work_info.datetime_start_str}',
+                    work_type = '{updated_type}',
                     deposit_id = '{new_work_info.deposit_id}'
-                    WHERE well_name = '{well_name}'
-                    AND start_time = '{old_work_info.work_start}'
-                    AND work_type = '{work_type}'
+                    WHERE well_name = '{name}'
+                    AND start_time = '{old_work_info.datetime_start_str}'
+                    AND work_type = '{type}'
                     AND deposit_id = '{old_work_info.deposit_id}'
         """
         return self.is_success_changing_query(query=query)
