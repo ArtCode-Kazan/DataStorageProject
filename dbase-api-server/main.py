@@ -41,7 +41,7 @@ def check_service_alive() -> dict:
 
 @app.get('/get-all-deposits')
 def get_all_deposits() -> dict:
-    """Return all depositsfrom deposit table.
+    """Return all deposits name from deposit table.
 
     Returns: dict object with operation status, message with
     operation discription and all deposit area names.
