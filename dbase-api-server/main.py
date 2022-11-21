@@ -151,6 +151,48 @@ def add_work_info(work_info: WorkInfo) -> dict:
     return returning_info.dict()
 
 
+@app.post('/update-work-info')
+def update_work_info(old_work_info: WorkInfo,
+                     new_work_info: WorkInfo) -> dict:
+    """Update work info in database.
+
+    Args:
+        old_work_info: works fields (well_name, datetime_start_str,
+        work_type, deposit_id)
+        new_work_info: updated works fields (well_name, datetime_start_str,
+        work_type, deposit_id)
+
+    """
+    is_added = dbase_adapter.update_work_info(
+        old_work_info=old_work_info,
+        new_work_info=new_work_info
+    )
+    if is_added:
+        message = (
+            f'Work info "{old_work_info.well_name}", '
+            f'"{old_work_info.datetime_start_str}", '
+            f'"{old_work_info.work_type}","{old_work_info.deposit_id}" '
+            f'successfully changed to "{new_work_info.well_name}", '
+            f'"{new_work_info.datetime_start_str}", '
+            f'"{new_work_info.work_type}", "{new_work_info.deposit_id}".'
+        )
+    else:
+        message = (
+            f'Cant change "{old_work_info.well_name}", '
+            f'"{old_work_info.datetime_start_str}", '
+            f'"{old_work_info.work_type}","{old_work_info.deposit_id}" '
+            f'to "{new_work_info.well_name}", '
+            f'"{new_work_info.datetime_start_str}", '
+            f'"{new_work_info.work_type}", "{new_work_info.deposit_id}".'
+        )
+    returning_info = Response(
+        status=is_added,
+        message=message,
+        data={}
+    )
+    return returning_info.dict()
+
+
 if __name__ == '__main__':
     uvicorn.run(
         'main:app',
