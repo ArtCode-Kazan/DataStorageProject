@@ -292,6 +292,26 @@ def get_stations_info(work_id: int) -> Response:
     return returning_info
 
 
+@app.post('/get-work-info')
+def get_work_info(deposit: Deposit) -> dict:
+    """Return works info from works table.
+
+    Returns: dict object with operation status, message with
+    operation discription and works related to deposit.
+    """
+    work_info = dbase_adapter.get_work_info(deposit.area_name)
+
+    returning_info = Response(
+        status=True,
+        message=f'All works related to deposit "{deposit.area_name}" '
+                f'returend successfully',
+        data={
+            'work_info': work_info
+        }
+    )
+    return returning_info.dict()
+
+
 if __name__ == '__main__':
     uvicorn.run(
         'main:app',
