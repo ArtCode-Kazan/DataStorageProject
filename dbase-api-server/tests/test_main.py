@@ -390,6 +390,84 @@ def test_update_duplicate_work_info(up_test_dbase,
     )
 
 
+def test_get_work_info(up_test_dbase, clear_deposits_table):
+    area_name = 'test-area'
+    up_test_dbase.add_deposit_info(area_name)
+
+    table = Table('deposits')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.area_name == 'test-area'
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    area_id = cursor.fetchone()[0]
+
+    first_well_name = 'test-name'
+    first_datetime_start_str = '2022-11-15 12:12:12'
+    first_work_type = 'test-work'
+    first_deposit_id = area_id
+
+    first_work_info = WorkInfo(
+        well_name=first_well_name,
+        datetime_start_str=first_datetime_start_str,
+        work_type=first_work_type,
+        deposit_id=first_deposit_id
+    )
+    up_test_dbase.add_work_info(first_work_info)
+
+    second_well_name = 'test-name2'
+    second_datetime_start_str = '2000-01-24 11:12:13'
+    second_work_type = 'test-work2'
+    second_deposit_id = area_id
+
+    second_work_info = WorkInfo(
+        well_name=second_well_name,
+        datetime_start_str=second_datetime_start_str,
+        work_type=second_work_type,
+        deposit_id=second_deposit_id
+    )
+    up_test_dbase.add_work_info(second_work_info)
+
+    payload = Deposit(area_name=area_name)
+    url = f'{URL}/get-work-info'
+    response = requests.post(url, json=payload.dict())
+
+    expected_value = {
+        'status': True,
+        'message': (
+            f'All works related to deposit '
+            f'"{area_name}" returend successfully'
+        ),
+        'data': {
+            'work_info': [
+                [
+                    first_well_name,
+                    '2022-11-15T12:12:12',
+                    first_work_type,
+                    area_id
+                ],
+                [
+                    second_well_name,
+                    '2000-01-24T11:12:13',
+                    second_work_type,
+                    area_id
+                ]
+            ]
+
+        }
+    }
+    assert_that(
+        actual_or_assertion=response.json(),
+        matcher=equal_to(expected_value)
+    )
+    assert_that(
+        actual_or_assertion=response.status_code,
+        matcher=equal_to(requests.codes.ok)
+    )
+
+
 def test_add_station_info(up_test_dbase, clear_deposits_table):
     up_test_dbase.add_deposit_info(area_name='test-area')
     table = Table('deposits')
