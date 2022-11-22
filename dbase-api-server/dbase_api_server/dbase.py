@@ -219,3 +219,30 @@ class StorageDBase:
                     AND deposit_id = '{old_work_info.deposit_id}'
         """
         return self.is_success_changing_query(query=query)
+
+    def get_work_info(self, area_name: str) -> Union[None, list]:
+        """Get all works info by deposit name.
+
+        Args:
+            area_name: deposit name
+
+        Returns: list of selected rows. If no records - return None.
+        """
+        table = Table('deposits')
+        query = str(
+            Query.from_(table).select('id').where(
+                table.area_name == area_name
+            )
+        )
+        cursor = self.connection.cursor()
+        cursor.execute(query)
+        area_id = cursor.fetchone()[0]
+
+        table = Table('works')
+        query = str(
+            Query.from_(table).select(
+                'well_name', 'start_time',
+                'work_type', 'deposit_id'
+            ).where(table.deposit_id == area_id)
+        )
+        return self.select_many_records(query=query)
