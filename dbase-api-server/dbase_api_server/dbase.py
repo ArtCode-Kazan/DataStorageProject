@@ -29,7 +29,7 @@ from psycopg.errors import (CheckViolation, StringDataRightTruncation,
 from pypika import Query, Table
 
 from dbase_api_server.containers import PostgresConnectionParams
-from dbase_api_server.models import DATETIME_FORMAT, WorkInfo
+from dbase_api_server.models import DATETIME_FORMAT, StationInfo, WorkInfo
 
 DEFAULT_PORT = 5432
 DEFAULT_PATH = '/var/lib/postgresql/data'
@@ -218,4 +218,24 @@ class StorageDBase:
                     AND work_type = '{work_type}'
                     AND deposit_id = '{old_work_info.deposit_id}'
         """
+        return self.is_success_changing_query(query=query)
+
+    def add_station_info(self, station_info: StationInfo) -> bool:
+        """Add station info to database.
+
+        Args:
+            station_info: container with station params
+
+        Returns: True if info was added success, False - if not.
+        """
+        table = Table('stations')
+        query = str(
+            Query.into(table).columns(
+                'station_number', 'x_wgs84', 'y_wgs84', 'altitude', 'work_id'
+            ).insert(
+                station_info.station_number, station_info.x_wgs84,
+                station_info.y_wgs84, station_info.altitude,
+                station_info.work_id
+            )
+        )
         return self.is_success_changing_query(query=query)
