@@ -8,7 +8,7 @@ from fastapi import FastAPI
 
 from dbase_api_server.containers import PostgresConnectionParams
 from dbase_api_server.dbase import StorageDBase
-from dbase_api_server.models import Deposit, Response, WorkInfo
+from dbase_api_server.models import Deposit, Response, StationInfo, WorkInfo
 
 dotenv.load_dotenv()
 
@@ -127,7 +127,6 @@ def add_work_info(work_info: WorkInfo) -> dict:
     Args:
         work_info: works fields (well_name, datetime_start_str,
         work_type, deposit_id)
-
     """
     is_added = dbase_adapter.add_work_info(work_info=work_info)
     if is_added:
@@ -141,6 +140,41 @@ def add_work_info(work_info: WorkInfo) -> dict:
             f'Cant add work info: {work_info.well_name}, '
             f'{work_info.datetime_start_str}, '
             f'{work_info.work_type}, {work_info.deposit_id}'
+        )
+
+    returning_info = Response(
+        status=is_added,
+        message=message,
+        data={}
+    )
+    return returning_info.dict()
+
+
+@app.post('/add-station-info')
+def add_station_info(station_info: StationInfo) -> dict:
+    """Add station info to database.
+
+    Args:
+        station_info: station fields (station_number, x_wgs84,
+        y_wgs84, altitude, work_id)
+
+    Returns: dict object with request status and message with
+    action discription.
+    """
+    is_added = dbase_adapter.add_station_info(station_info=station_info)
+    if is_added:
+        message = (
+            f'Successfully added station info: '
+            f'{station_info.station_number}, {station_info.x_wgs84},'
+            f'{station_info.y_wgs84}, {station_info.altitude}, '
+            f'{station_info.work_id}'
+        )
+    else:
+        message = (
+            f'Cant add station info: '
+            f'{station_info.station_number}, {station_info.x_wgs84},'
+            f'{station_info.y_wgs84}, {station_info.altitude}, '
+            f'{station_info.work_id}'
         )
 
     returning_info = Response(
