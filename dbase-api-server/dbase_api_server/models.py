@@ -49,3 +49,21 @@ class WorkInfo(BaseModel):
     datetime_start_str: str
     work_type: str
     deposit_id: int
+
+
+class StationInfo(BaseModel):
+    """Model with parameters for acting with stations table.
+
+    Args:
+        station_number: number of station
+        x_wgs84: x-coordinate
+        y_wgs84: y - coordinate
+        altitude: z - coordinate
+        work_id: id of work associated with station
+
+    """
+    station_number: int
+    x_wgs84: float
+    y_wgs84: float
+    altitude: float
+    work_id: int
