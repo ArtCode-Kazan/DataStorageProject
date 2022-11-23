@@ -314,7 +314,6 @@ def test_update_work_info(up_test_dbase, clear_deposits_table):
 
 def test_update_duplicate_work_info(up_test_dbase,
                                     clear_deposits_table):
-
     up_test_dbase.add_deposit_info('test-area')
     table = Table('deposits')
     query = str(
@@ -391,7 +390,7 @@ def test_update_duplicate_work_info(up_test_dbase,
     )
 
 
-def test_get_work_info(up_test_dbase, clear_deposits_table):
+def test_get_works_info(up_test_dbase, clear_deposits_table):
     area_name = 'test-area'
     up_test_dbase.add_deposit_info(area_name)
 
@@ -443,18 +442,14 @@ def test_get_work_info(up_test_dbase, clear_deposits_table):
         ),
         'data': {
             'work_info': [
-                [
-                    first_well_name,
-                    '2022-11-15T12:12:12',
-                    first_work_type,
-                    area_id
-                ],
-                [
-                    second_well_name,
-                    '2000-01-24T11:12:13',
-                    second_work_type,
-                    area_id
-                ]
+                ['well_name', first_well_name],
+                ['datetime_start_str', '2022-11-15 12:12:12'],
+                ['work_type', first_work_type],
+                ['deposit_id', area_id],
+                ['well_name', second_well_name],
+                ['datetime_start_str', '2000-01-24 11:12:13'],
+                ['work_type', second_work_type],
+                ['deposit_id', area_id],
             ]
 
         }

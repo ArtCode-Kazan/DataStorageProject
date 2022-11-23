@@ -1,4 +1,3 @@
-from datetime import datetime
 from unittest.mock import Mock, call, patch
 
 import pytest
@@ -12,7 +11,7 @@ from pypika.functions import Count
 
 from dbase_api_server.containers import PostgresConnectionParams
 from dbase_api_server.dbase import StorageDBase
-from dbase_api_server.models import DATETIME_FORMAT, WorkInfo
+from dbase_api_server.models import WorkInfo
 
 
 class TestStorageDBase:
@@ -654,7 +653,7 @@ class TestStorageDBase:
         records_count = cursor.fetchone()[0]
         assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
 
-    def test_get_work_info(self, up_test_dbase, clear_deposits_table):
+    def test_get_works_info(self, up_test_dbase, clear_deposits_table):
         area_name = 'test-area'
         up_test_dbase.add_deposit_info(area_name)
 
@@ -694,28 +693,24 @@ class TestStorageDBase:
         )
         up_test_dbase.add_work_info(second_work_info)
 
-        records = up_test_dbase.get_work_info(area_name)
+        records = up_test_dbase.get_works_info(area_name)
         assert_that(
             actual_or_assertion=len(records),
-            matcher=equal_to(2)
+            matcher=equal_to(8)
         )
         assert_that(
             actual_or_assertion=isinstance(records, list),
             matcher=is_(True)
         )
         record_check = [
-            (
-                first_well_name,
-                datetime.strptime('2022-11-15 12:12:12', DATETIME_FORMAT),
-                first_work_type,
-                first_deposit_id
-            ),
-            (
-                second_well_name,
-                datetime.strptime('2000-01-24 11:12:13', DATETIME_FORMAT),
-                second_work_type,
-                second_deposit_id
-            )
+            ('well_name', first_well_name),
+            ('datetime_start_str', '2022-11-15 12:12:12'),
+            ('work_type', first_work_type),
+            ('deposit_id', first_deposit_id),
+            ('well_name', second_well_name),
+            ('datetime_start_str', '2000-01-24 11:12:13'),
+            ('work_type', second_work_type),
+            ('deposit_id', second_deposit_id)
         ]
         assert_that(
             actual_or_assertion=records,
