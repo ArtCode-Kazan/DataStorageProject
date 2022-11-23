@@ -1,4 +1,3 @@
-from datetime import datetime
 from unittest.mock import Mock, call, patch
 
 import pytest
@@ -12,7 +11,6 @@ from pypika.functions import Count
 
 from dbase_api_server.containers import PostgresConnectionParams
 from dbase_api_server.dbase import StorageDBase
-from dbase_api_server.models import DATETIME_FORMAT
 from dbase_api_server.models import StationInfo, WorkInfo
 
 
