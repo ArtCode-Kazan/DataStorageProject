@@ -185,6 +185,50 @@ def add_station_info(station_info: StationInfo) -> dict:
     return returning_info.dict()
 
 
+@app.post('/update-station-info')
+def update_station_info(old_station_info: StationInfo,
+                        new_station_info: StationInfo) -> dict:
+    """Update station info.
+
+    Args:
+        old_station_info: container with station columns
+        new_station_info: container with updated station columns
+
+    Returns: dict object with request status, message with
+    action discription.
+    """
+    is_added = dbase_adapter.update_station_info(
+        old_station_info=old_station_info,
+        new_station_info=new_station_info
+    )
+    if is_added:
+        message = (
+            f'Successfully changed station info: '
+            f'{old_station_info.station_number}, '
+            f'{old_station_info.x_wgs84}, {old_station_info.y_wgs84}, '
+            f'{old_station_info.altitude}, {old_station_info.work_id} '
+            f'to {new_station_info.station_number}, '
+            f'{new_station_info.x_wgs84}, {new_station_info.y_wgs84}, '
+            f'{new_station_info.altitude}, {new_station_info.work_id}.'
+        )
+    else:
+        message = (
+            f'Cant change station info: '
+            f'{old_station_info.station_number}, '
+            f'{old_station_info.x_wgs84}, {old_station_info.y_wgs84}, '
+            f'{old_station_info.altitude}, {old_station_info.work_id} '
+            f'to {new_station_info.station_number}, '
+            f'{new_station_info.x_wgs84}, {new_station_info.y_wgs84}, '
+            f'{new_station_info.altitude}, {new_station_info.work_id}.'
+        )
+    returning_info = Response(
+        status=is_added,
+        message=message,
+        data={}
+    )
+    return returning_info.dict()
+
+
 if __name__ == '__main__':
     uvicorn.run(
         'main:app',
