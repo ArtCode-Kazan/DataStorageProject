@@ -390,7 +390,7 @@ def test_update_duplicate_work_info(up_test_dbase,
     )
 
 
-def test_get_work_info(up_test_dbase, clear_deposits_table):
+def test_get_works_info(up_test_dbase, clear_deposits_table):
     area_name = 'test-area'
     up_test_dbase.add_deposit_info(area_name)
 

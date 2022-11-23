@@ -222,7 +222,7 @@ class StorageDBase:
         """
         return self.is_success_changing_query(query=query)
 
-    def get_work_info(self, area_name: str) -> Union[None, list]:
+    def get_works_info(self, area_name: str) -> Union[None, list]:
         """Get all works info by deposit name.
 
         Args:
@@ -247,7 +247,17 @@ class StorageDBase:
                 'work_type', 'deposit_id'
             ).where(table.deposit_id == area_id)
         )
-        return self.select_many_records(query=query)
+        records = self.select_many_records(query=query)
+        work_list = []
+        for record in records:
+            work_info = WorkInfo(
+                well_name=record[0],
+                datetime_start_str=str(record[1]),
+                work_type=record[2],
+                deposit_id=record[3]
+            )
+            work_list += work_info
+        return work_list
 
     def add_station_info(self, station_info: StationInfo) -> bool:
         """Add station info to database.

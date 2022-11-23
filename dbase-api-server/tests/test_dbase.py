@@ -12,8 +12,7 @@ from pypika.functions import Count
 
 from dbase_api_server.containers import PostgresConnectionParams
 from dbase_api_server.dbase import StorageDBase
-from dbase_api_server.models import DATETIME_FORMAT, WorkInfo
-from dbase_api_server.models import StationInfo, WorkInfo
+from dbase_api_server.models import DATETIME_FORMAT, StationInfo, WorkInfo
 
 
 class TestStorageDBase:
@@ -655,7 +654,7 @@ class TestStorageDBase:
         records_count = cursor.fetchone()[0]
         assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
 
-    def test_get_work_info(self, up_test_dbase, clear_deposits_table):
+    def test_get_works_info(self, up_test_dbase, clear_deposits_table):
         area_name = 'test-area'
         up_test_dbase.add_deposit_info(area_name)
 
@@ -695,7 +694,7 @@ class TestStorageDBase:
         )
         up_test_dbase.add_work_info(second_work_info)
 
-        records = up_test_dbase.get_work_info(area_name)
+        records = up_test_dbase.get_works_info(area_name=area_name)
         assert_that(
             actual_or_assertion=len(records),
             matcher=equal_to(2)
