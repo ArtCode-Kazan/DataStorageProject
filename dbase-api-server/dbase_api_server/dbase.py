@@ -239,3 +239,28 @@ class StorageDBase:
             )
         )
         return self.is_success_changing_query(query=query)
+
+    def update_station_info(self, old_station_info: StationInfo,
+                            new_station_info: StationInfo) -> bool:
+        """Method for updating statiom info.
+
+        Args:
+            old_station_info: container with parameters
+            new_station_info: container with updated params
+
+        Returns: True if name updated success, False - if not.
+
+        """
+        query = f"""UPDATE stations SET
+        station_number = {new_station_info.station_number},
+        x_wgs84 = {new_station_info.x_wgs84},
+        y_wgs84 = {new_station_info.y_wgs84},
+        altitude = {new_station_info.altitude},
+        work_id = {new_station_info.work_id}
+        WHERE station_number = {old_station_info.station_number}
+        AND x_wgs84 = {old_station_info.x_wgs84}
+        AND y_wgs84 = {old_station_info.y_wgs84}
+        AND altitude = {old_station_info.altitude}
+        AND work_id = {old_station_info.work_id}
+        """
+        return self.is_success_changing_query(query=query)
