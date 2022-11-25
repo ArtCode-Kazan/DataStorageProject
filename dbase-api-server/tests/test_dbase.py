@@ -11,7 +11,7 @@ from pypika.functions import Count
 
 from dbase_api_server.containers import PostgresConnectionParams
 from dbase_api_server.dbase import StorageDBase
-from dbase_api_server.models import WorkInfo
+from dbase_api_server.models import StationInfo, WorkInfo
 
 
 class TestStorageDBase:
@@ -652,3 +652,539 @@ class TestStorageDBase:
         cursor.execute(query)
         records_count = cursor.fetchone()[0]
         assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
+
+
+def test_add_station_info(self, up_test_dbase, clear_deposits_table):
+    area_name = 'test-area'
+    up_test_dbase.add_deposit_info(area_name=area_name)
+    table = Table('deposits')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.area_name == area_name
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    area_id = cursor.fetchone()[0]
+
+    well_name = 'test-name'
+    datetime_start_str = '2022-11-15 12:12:12'
+    work_type = 'test-work'
+    deposit_id = area_id
+
+    work_info = WorkInfo(
+        well_name=well_name,
+        datetime_start_str=datetime_start_str,
+        work_type=work_type,
+        deposit_id=deposit_id
+    )
+    up_test_dbase.add_work_info(work_info=work_info)
+
+    table = Table('works')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.well_name == well_name).where(
+            table.start_time == datetime_start_str).where(
+            table.work_type == work_type).where(
+            table.deposit_id == deposit_id
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    work_id_value = cursor.fetchone()[0]
+
+    station_number = 666
+    x_wgs84 = 11.11111111
+    y_wgs84 = 22.22222222
+    altitude = 33.333333
+    work_id = work_id_value
+
+    station_info = StationInfo(
+        station_number=station_number,
+        x_wgs84=x_wgs84,
+        y_wgs84=y_wgs84,
+        altitude=altitude,
+        work_id=work_id
+    )
+    is_success = up_test_dbase.add_station_info(
+        station_info=station_info
+    )
+    assert_that(
+        actual_or_assertion=is_success,
+        matcher=is_(True)
+    )
+    table = Table('stations')
+    query = str(
+        Query.from_(table).select(Count(1)).where(
+            table.station_number == station_number).where(
+            table.x_wgs84 == x_wgs84).where(
+            table.y_wgs84 == y_wgs84).where(
+            table.altitude == altitude).where(
+            table.work_id == work_id
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    records_count = cursor.fetchone()[0]
+    assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
+
+
+def test_duplicate_station_fields(self, up_test_dbase,
+                                  clear_deposits_table):
+    area_name = 'test-area'
+    up_test_dbase.add_deposit_info(area_name=area_name)
+    table = Table('deposits')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.area_name == area_name
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    area_id = cursor.fetchone()[0]
+
+    well_name = 'test-name'
+    datetime_start_str = '2022-11-15 12:12:12'
+    work_type = 'test-work'
+    deposit_id = area_id
+
+    work_info = WorkInfo(
+        well_name=well_name,
+        datetime_start_str=datetime_start_str,
+        work_type=work_type,
+        deposit_id=deposit_id
+    )
+    up_test_dbase.add_work_info(work_info=work_info)
+
+    table = Table('works')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.well_name == well_name).where(
+            table.start_time == datetime_start_str).where(
+            table.work_type == work_type).where(
+            table.deposit_id == deposit_id
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    work_id_value = cursor.fetchone()[0]
+
+    station_number = 666
+    x_wgs84 = 11.11111111
+    y_wgs84 = 22.22222222
+    altitude = 33.333333
+    work_id = work_id_value
+
+    station_info = StationInfo(
+        station_number=station_number,
+        x_wgs84=x_wgs84,
+        y_wgs84=y_wgs84,
+        altitude=altitude,
+        work_id=work_id
+    )
+    up_test_dbase.add_station_info(station_info=station_info)
+
+    station_number = 666
+    x_wgs84 = 11.11111111
+    y_wgs84 = 22.22222222
+    altitude = 33.333333
+    work_id = work_id_value
+
+    station_info = StationInfo(
+        station_number=station_number,
+        x_wgs84=x_wgs84,
+        y_wgs84=y_wgs84,
+        altitude=altitude,
+        work_id=work_id
+    )
+    is_success = up_test_dbase.add_station_info(
+        station_info=station_info
+    )
+    assert_that(
+        actual_or_assertion=is_success,
+        matcher=is_(False)
+    )
+    table = Table('stations')
+    query = str(
+        Query.from_(table).select(Count(1)).where(
+            table.station_number == station_number).where(
+            table.x_wgs84 == x_wgs84).where(
+            table.y_wgs84 == y_wgs84).where(
+            table.altitude == altitude).where(
+            table.work_id == work_id
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    records_count = cursor.fetchone()[0]
+    assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
+
+
+def test_correct_field_value(self, up_test_dbase,
+                             clear_deposits_table):
+    area_name = 'test-area'
+    up_test_dbase.add_deposit_info(area_name=area_name)
+    table = Table('deposits')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.area_name == area_name
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    area_id = cursor.fetchone()[0]
+
+    well_name = 'test-name'
+    datetime_start_str = '2022-11-15 12:12:12'
+    work_type = 'test-work'
+    deposit_id = area_id
+
+    work_info = WorkInfo(
+        well_name=well_name,
+        datetime_start_str=datetime_start_str,
+        work_type=work_type,
+        deposit_id=deposit_id
+    )
+    up_test_dbase.add_work_info(work_info=work_info)
+
+    table = Table('works')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.well_name == well_name).where(
+            table.start_time == datetime_start_str).where(
+            table.work_type == work_type).where(
+            table.deposit_id == deposit_id
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    work_id_value = cursor.fetchone()[0]
+
+    station_number = 666
+    x_wgs84 = 11111111.11
+    y_wgs84 = 22222222.22
+    altitude = 333333.33
+    work_id = work_id_value
+
+    station_info = StationInfo(
+        station_number=station_number,
+        x_wgs84=x_wgs84,
+        y_wgs84=y_wgs84,
+        altitude=altitude,
+        work_id=work_id
+    )
+    is_success = up_test_dbase.add_station_info(
+        station_info=station_info
+    )
+    assert_that(
+        actual_or_assertion=is_success,
+        matcher=is_(False)
+    )
+    table = Table('stations')
+    query = str(
+        Query.from_(table).select(Count(1)).where(
+            table.station_number == station_number).where(
+            table.x_wgs84 == x_wgs84).where(
+            table.y_wgs84 == y_wgs84).where(
+            table.altitude == altitude).where(
+            table.work_id == work_id
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    records_count = cursor.fetchone()[0]
+    assert_that(actual_or_assertion=records_count, matcher=equal_to(0))
+
+
+def test_update_station_info(self, up_test_dbase, clear_deposits_table):
+    area_name = 'test-area'
+    up_test_dbase.add_deposit_info(area_name=area_name)
+    table = Table('deposits')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.area_name == area_name
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    area_id = cursor.fetchone()[0]
+
+    well_name = 'test-name'
+    datetime_start_str = '2022-11-15 12:12:12'
+    work_type = 'test-work'
+    deposit_id = area_id
+
+    work_info = WorkInfo(
+        well_name=well_name,
+        datetime_start_str=datetime_start_str,
+        work_type=work_type,
+        deposit_id=deposit_id
+    )
+    up_test_dbase.add_work_info(work_info=work_info)
+
+    table = Table('works')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.well_name == well_name).where(
+            table.start_time == datetime_start_str).where(
+            table.work_type == work_type).where(
+            table.deposit_id == deposit_id
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    work_id_value = cursor.fetchone()[0]
+
+    old_station_number = 666
+    old_x_wgs84 = 11.111111
+    old_y_wgs84 = 22.222222
+    old_altitude = 33.3
+    old_work_id = work_id_value
+
+    old_station_info = StationInfo(
+        station_number=old_station_number,
+        x_wgs84=old_x_wgs84,
+        y_wgs84=old_y_wgs84,
+        altitude=old_altitude,
+        work_id=old_work_id
+    )
+    up_test_dbase.add_station_info(station_info=old_station_info)
+
+    new_station_number = 777
+    new_x_wgs84 = 55.111222
+    new_y_wgs84 = 66.222222
+    new_altitude = 77.3
+    new_work_id = work_id_value
+
+    new_station_info = StationInfo(
+        station_number=new_station_number,
+        x_wgs84=new_x_wgs84,
+        y_wgs84=new_y_wgs84,
+        altitude=new_altitude,
+        work_id=new_work_id
+    )
+    is_success = up_test_dbase.update_station_info(
+        old_station_info=old_station_info,
+        new_station_info=new_station_info
+    )
+    assert_that(
+        actual_or_assertion=is_success,
+        matcher=is_(True)
+    )
+    table = Table('stations')
+    query = str(
+        Query.from_(table).select(Count(1)).where(
+            table.station_number == new_station_number).where(
+            table.x_wgs84 == new_x_wgs84).where(
+            table.y_wgs84 == new_y_wgs84).where(
+            table.altitude == new_altitude).where(
+            table.work_id == new_work_id
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    records_count = cursor.fetchone()[0]
+    assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
+
+
+def test_update_duplicate_station_info(self, up_test_dbase,
+                                       clear_deposits_table):
+    area_name = 'test-area'
+    up_test_dbase.add_deposit_info(area_name=area_name)
+    table = Table('deposits')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.area_name == area_name
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    area_id = cursor.fetchone()[0]
+
+    well_name = 'test-name'
+    datetime_start_str = '2022-11-15 12:12:12'
+    work_type = 'test-work'
+    deposit_id = area_id
+
+    work_info = WorkInfo(
+        well_name=well_name,
+        datetime_start_str=datetime_start_str,
+        work_type=work_type,
+        deposit_id=deposit_id
+    )
+    up_test_dbase.add_work_info(work_info=work_info)
+
+    table = Table('works')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.well_name == well_name).where(
+            table.start_time == datetime_start_str).where(
+            table.work_type == work_type).where(
+            table.deposit_id == deposit_id
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    work_id_value = cursor.fetchone()[0]
+
+    station_number = 666
+    x_wgs84 = 11.111111
+    y_wgs84 = 22.222222
+    altitude = 33.3
+    work_id = work_id_value
+
+    station_info = StationInfo(
+        station_number=station_number,
+        x_wgs84=x_wgs84,
+        y_wgs84=y_wgs84,
+        altitude=altitude,
+        work_id=work_id
+    )
+    up_test_dbase.add_station_info(station_info=station_info)
+
+    old_station_number = 777
+    old_x_wgs84 = 55.111111
+    old_y_wgs84 = 66.222222
+    old_altitude = 77.3
+    old_work_id = work_id_value
+
+    old_station_info = StationInfo(
+        station_number=old_station_number,
+        x_wgs84=old_x_wgs84,
+        y_wgs84=old_y_wgs84,
+        altitude=old_altitude,
+        work_id=old_work_id
+    )
+    up_test_dbase.add_station_info(station_info=old_station_info)
+
+    new_station_number = 666
+    new_x_wgs84 = 11.111111
+    new_y_wgs84 = 22.222222
+    new_altitude = 33.3
+    new_work_id = work_id_value
+
+    new_station_info = StationInfo(
+        station_number=new_station_number,
+        x_wgs84=new_x_wgs84,
+        y_wgs84=new_y_wgs84,
+        altitude=new_altitude,
+        work_id=new_work_id
+    )
+    is_success = up_test_dbase.update_station_info(
+        old_station_info=old_station_info,
+        new_station_info=new_station_info
+    )
+    assert_that(
+        actual_or_assertion=is_success,
+        matcher=is_(False)
+    )
+    table = Table('stations')
+    query = str(
+        Query.from_(table).select(Count(1)).where(
+            table.station_number == station_number).where(
+            table.x_wgs84 == x_wgs84).where(
+            table.y_wgs84 == y_wgs84).where(
+            table.altitude == altitude).where(
+            table.work_id == work_id
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    records_count = cursor.fetchone()[0]
+    assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
+
+
+def test_get_stations_info(self, up_test_dbase, clear_deposits_table):
+    area_name = 'test-area'
+    up_test_dbase.add_deposit_info(area_name=area_name)
+    table = Table('deposits')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.area_name == area_name
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    area_id = cursor.fetchone()[0]
+
+    well_name = 'test-name'
+    datetime_start_str = '2022-11-15 12:12:12'
+    work_type = 'test-work'
+    deposit_id = area_id
+
+    work_info = WorkInfo(
+        well_name=well_name,
+        datetime_start_str=datetime_start_str,
+        work_type=work_type,
+        deposit_id=deposit_id
+    )
+    up_test_dbase.add_work_info(work_info=work_info)
+
+    table = Table('works')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.well_name == well_name).where(
+            table.start_time == datetime_start_str).where(
+            table.work_type == work_type).where(
+            table.deposit_id == deposit_id
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    work_id_value = cursor.fetchone()[0]
+
+    first_station_number = 666
+    first_x_wgs84 = 11.111111
+    first_y_wgs84 = 22.222222
+    first_altitude = 33.3
+    first_work_id = work_id_value
+
+    first_station_info = StationInfo(
+        station_number=first_station_number,
+        x_wgs84=first_x_wgs84,
+        y_wgs84=first_y_wgs84,
+        altitude=first_altitude,
+        work_id=first_work_id
+    )
+    up_test_dbase.add_station_info(station_info=first_station_info)
+
+    second_station_number = 777
+    second_x_wgs84 = 88.111111
+    second_y_wgs84 = 66.222222
+    second_altitude = 44.3
+    second_work_id = work_id_value
+
+    second_station_info = StationInfo(
+        station_number=second_station_number,
+        x_wgs84=second_x_wgs84,
+        y_wgs84=second_y_wgs84,
+        altitude=second_altitude,
+        work_id=second_work_id
+    )
+    up_test_dbase.add_station_info(station_info=second_station_info)
+
+    records = up_test_dbase.get_stations_info(work_id=work_id_value)
+    assert_that(
+        actual_or_assertion=len(records),
+        matcher=equal_to(10)
+    )
+    assert_that(
+        actual_or_assertion=isinstance(records, list),
+        matcher=is_(True)
+    )
+    record_check = [
+        ('station_number', first_station_number),
+        ('x_wgs84', first_x_wgs84),
+        ('y_wgs84', first_y_wgs84),
+        ('altitude', first_altitude),
+        ('work_id', first_work_id),
+        ('station_number', second_station_number),
+        ('x_wgs84', second_x_wgs84),
+        ('y_wgs84', second_y_wgs84),
+        ('altitude', second_altitude),
+        ('work_id', second_work_id)
+    ]
+    assert_that(
+        actual_or_assertion=records,
+        matcher=equal_to(record_check)
+    )
