@@ -24,8 +24,8 @@ from typing import Union
 
 from psycopg import OperationalError
 from psycopg.connection import Connection
-from psycopg.errors import (CheckViolation, StringDataRightTruncation,
-                            UniqueViolation)
+from psycopg.errors import (CheckViolation, NumericValueOutOfRange,
+                            StringDataRightTruncation, UniqueViolation)
 from pypika import Query, Table
 
 from dbase_api_server.containers import PostgresConnectionParams
@@ -119,6 +119,8 @@ class StorageDBase:
             logging.error('field(s) dont pass dbase check condition(s)')
         except StringDataRightTruncation:
             logging.error('field(s) longer than allowed')
+        except NumericValueOutOfRange:
+            logging.error('uncorrect numeric field(s) format')
 
         self.connection.rollback()
         return False
