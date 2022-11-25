@@ -264,3 +264,30 @@ class StorageDBase:
         AND work_id = {old_station_info.work_id}
         """
         return self.is_success_changing_query(query=query)
+
+    def get_stations_info(self, work_id: str) -> Union[None, list]:
+        """Get station info by well name.
+
+        Args:
+            work_id: associated with station id
+
+        Returns: list of selected rows. If no records - return None.
+        """
+        table = Table('stations')
+        query = str(
+            Query.from_(table).select(
+                'station_number', 'x_wgs84', 'y_wgs84', 'altitude',
+                'work_id').where(table.work_id == work_id)
+        )
+        records = self.select_many_records(query=query)
+        station_list = []
+        for record in records:
+            station_info = StationInfo(
+                station_number=record[0],
+                x_wgs84=record[1],
+                y_wgs84=record[2],
+                altitude=record[3],
+                work_id=record[4]
+            )
+            station_list += station_info
+        return station_list
