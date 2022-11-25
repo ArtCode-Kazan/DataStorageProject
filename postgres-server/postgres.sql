@@ -19,9 +19,9 @@ CREATE TABLE IF NOT EXISTS works(
 CREATE TABLE IF NOT EXISTS stations(
     id SERIAL PRIMARY KEY,
     station_number INTEGER NOT NULL,
-    x_wgs84 NUMERIC(8, 2) NOT NULL,
-    y_wgs84 NUMERIC(8, 2) NOT NULL,
-    altitude NUMERIC(6, 2) NOT NULL,
+    x_wgs84 NUMERIC(8, 6) NOT NULL,
+    y_wgs84 NUMERIC(8, 6) NOT NULL,
+    altitude NUMERIC(6, 1) NOT NULL,
     work_id INTEGER NOT NULL,
     FOREIGN KEY(work_id) REFERENCES works(id) ON DELETE CASCADE
     CONSTRAINT unique_fields UNIQUE (station_number, work_id)
