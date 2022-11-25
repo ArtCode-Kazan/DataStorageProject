@@ -229,6 +229,26 @@ def update_station_info(old_station_info: StationInfo,
     return returning_info.dict()
 
 
+@app.get('/get-stations-info/{work_id}')
+def get_works_info(work_id: int) -> dict:
+    """Return stations info from table.
+
+    Returns: dict object with operation status, message with
+    operation discription and stations related to work.
+    """
+    station_info = dbase_adapter.get_stations_info(work_id)
+
+    returning_info = Response(
+        status=True,
+        message=f'All works related to work with id:"{work_id}" '
+                f'returend successfully',
+        data={
+            'work_info': station_info
+        }
+    )
+    return returning_info.dict()
+
+
 if __name__ == '__main__':
     uvicorn.run(
         'main:app',
