@@ -242,7 +242,7 @@ class StorageDBase:
 
     def update_station_info(self, old_station_info: StationInfo,
                             new_station_info: StationInfo) -> bool:
-        """Method for updating statiom info.
+        """Method for updating station info.
 
         Args:
             old_station_info: container with parameters

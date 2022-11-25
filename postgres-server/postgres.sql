@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS stations(
     altitude NUMERIC(6, 2) NOT NULL,
     work_id INTEGER NOT NULL,
     FOREIGN KEY(work_id) REFERENCES works(id) ON DELETE CASCADE
+    CONSTRAINT unique_fields UNIQUE (station_number, work_id)
 );
 
 CREATE TABLE IF NOT EXISTS seismic_records(
