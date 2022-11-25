@@ -230,7 +230,7 @@ def update_station_info(old_station_info: StationInfo,
 
 
 @app.get('/get-stations-info/{work_id}')
-def get_works_info(work_id: int) -> dict:
+def get_stations_info(work_id: int) -> dict:
     """Return stations info from table.
 
     Returns: dict object with operation status, message with
