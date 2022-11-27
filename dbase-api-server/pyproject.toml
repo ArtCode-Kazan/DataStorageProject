@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["Michael <mihail.tchernov@yandex.ru>"]
 readme = "README.md"
-packages = [{include = "dbase_api_server"}]
+#packages = [{include = "dbase_api_server"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
