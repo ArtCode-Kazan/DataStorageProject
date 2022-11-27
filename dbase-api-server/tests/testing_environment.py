@@ -196,8 +196,7 @@ class TestEnvironment:
             raise KeyError('Unknown OS platform')
 
         self.__docker_client = CustomDockerClient()
-        if is_update_images:
-            self.remove_images()
+        self.is_update_images = is_update_images
 
     @property
     def dbase_connection_params(self) -> PostgresConnectionParams:
@@ -256,7 +255,10 @@ class TestEnvironment:
     def start_docker_compose(self):
         if not os.path.exists(self.docker_compose_file_path):
             raise OSError('Docker compose file not found')
-        command = ['docker', 'compose', 'up', '--detach', '--build']
+        command = ['docker', 'compose', 'up', '--detach']
+        if self.is_update_images:
+            command += ['--build']
+
         is_success, messages = get_cmd_output(
             root=self.tmp_root, command=command
         )
