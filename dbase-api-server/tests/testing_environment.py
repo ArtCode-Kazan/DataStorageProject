@@ -66,6 +66,8 @@ services:
             - POSTGRES_DB={POSTGRES_DB}
             - APP_HOST=dbase-api-server
             - APP_PORT=8133
+        volumes:
+            - {dbase-api-server-folder}:/server            
         ports:
             - "{APP_PORT}:8133"
         command: -p 8133
