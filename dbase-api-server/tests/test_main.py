@@ -441,20 +441,7 @@ def test_get_works_info(up_test_dbase, clear_deposits_table):
             f'"{area_name}" returend successfully'
         ),
         'data': {
-            'work_info': [
-                [
-                    first_well_name,
-                    '2022-11-15T12:12:12',
-                    first_work_type,
-                    area_id
-                ],
-                [
-                    second_well_name,
-                    '2000-01-24T11:12:13',
-                    second_work_type,
-                    area_id
-                ]
-            ]
+            'work_info': [first_work_info, second_work_info]
 
         }
     }

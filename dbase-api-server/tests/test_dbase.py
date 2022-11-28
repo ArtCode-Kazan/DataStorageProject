@@ -704,20 +704,8 @@ class TestStorageDBase:
             actual_or_assertion=isinstance(records, list),
             matcher=is_(True)
         )
-        record_check = [
-            (
-                first_well_name,
-                datetime.strptime('2022-11-15 12:12:12', DATETIME_FORMAT),
-                first_work_type,
-                first_deposit_id
-            ),
-            (
-                second_well_name,
-                datetime.strptime('2000-01-24 11:12:13', DATETIME_FORMAT),
-                second_work_type,
-                second_deposit_id
-            )
-        ]
+        record_check = [first_work_info, second_work_info]
+
         assert_that(
             actual_or_assertion=records,
             matcher=equal_to(record_check)
