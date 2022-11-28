@@ -11,7 +11,7 @@ from requests.exceptions import ConnectionError
 
 from dbase_api_server.containers import (PostgresConnectionParams,
                                          UvicornConnectionParams)
-from environment import CustomDockerClient, Storage
+from environment import CustomDockerClient
 
 LINUX_PLATFORM, WINDOWS_PLATFORM = 'linux', 'windows'
 
@@ -37,8 +37,6 @@ services:
             - POSTGRES_USER={POSTGRES_USER}
             - POSTGRES_PASSWORD={POSTGRES_PASSWORD}
             - POSTGRES_DB={POSTGRES_DB}
-        volumes:
-            - {temp-storage-folder}:/var/lib/postgresql/data
         ports:
             - "{POSTGRES_PORT}:5678"
         command: -p 5678
@@ -68,6 +66,8 @@ services:
             - POSTGRES_DB={POSTGRES_DB}
             - APP_HOST=dbase-api-server
             - APP_PORT=8133
+        volumes:
+            - {dbase-api-server-folder}:/server            
         ports:
             - "{APP_PORT}:8133"
         command: -p 8133
@@ -79,8 +79,6 @@ services:
 
 
 DOCKER_COMPOSE_FILENAME = 'docker-compose.yaml'
-
-TMP_FOLDER_NAME = 'test-postgres'
 
 POSTGRES_SERVER_FOLDER_NAME = 'postgres-server'
 DBASE_API_SERVER_FOLDER_NAME = 'dbase-api-server'
@@ -159,12 +157,6 @@ class DockerComposeFileTemplate:
             new_substring=params.dbname
         )
 
-    def add_inner_volume_path(self, path: str):
-        self.replace(
-            old_substring='{temp-storage-folder}',
-            new_substring=path
-        )
-
     def add_uvicorn_app_folder_path(self, path: str):
         self.replace(
             old_substring='{dbase-api-server-folder}',
@@ -205,13 +197,8 @@ class TestEnvironment:
         except KeyError:
             raise KeyError('Unknown OS platform')
 
-        self.__storage = Storage(
-            root=self.__temp_root, folder_name=TMP_FOLDER_NAME
-        )
-
         self.__docker_client = CustomDockerClient()
-        if is_update_images:
-            self.remove_images()
+        self.is_update_images = is_update_images
 
     @property
     def dbase_connection_params(self) -> PostgresConnectionParams:
@@ -228,10 +215,6 @@ class TestEnvironment:
     @property
     def tmp_root(self) -> str:
         return self.__temp_root
-
-    @property
-    def storage(self) -> Storage:
-        return self.__storage
 
     @property
     def docker_client(self) -> CustomDockerClient:
@@ -261,8 +244,6 @@ class TestEnvironment:
             path=os.path.join(self.root_folder, DBASE_API_SERVER_FOLDER_NAME)
         )
 
-        file_template.add_inner_volume_path(path=self.storage.path)
-
         file_template.add_postgres_connection_params(
             params=self.dbase_connection_params
         )
@@ -276,7 +257,10 @@ class TestEnvironment:
     def start_docker_compose(self):
         if not os.path.exists(self.docker_compose_file_path):
             raise OSError('Docker compose file not found')
-        command = ['docker', 'compose', 'up', '--detach', '--build']
+        command = ['docker', 'compose', 'up', '--detach']
+        if self.is_update_images:
+            command += ['--build']
+
         is_success, messages = get_cmd_output(
             root=self.tmp_root, command=command
         )
@@ -307,31 +291,13 @@ class TestEnvironment:
 
     def initialize(self):
         self.create_docker_compose_file()
-        self.storage.create()
 
         self.start_docker_compose()
         if not self.is_dbase_api_server_exists():
             self.finalize()
             raise RuntimeError('Environment creation is failed')
 
-    def remove_images(self):
-        all_images = self.docker_client.images_tags
-        for image_name in all_images:
-            if IMAGE_PREFIX in image_name:
-                self.docker_client.remove_image(
-                    image_name_or_short_id=image_name)
-        self.docker_client.clear_system()
-
-    def unblock_folder(self):
-        if self.platform_name == LINUX_PLATFORM:
-            login, password = os.getlogin(), os.getenv('SYSTEM_PASSWORD')
-            path = self.storage.path
-            command = f'echo {password} | sudo -S chown -R {login} {path}'
-            subprocess.call(command, shell=True)
-
     def finalize(self):
         self.down_docker_compose()
         self.docker_client.clear_system()
-        self.unblock_folder()
-        self.storage.clear()
         os.remove(path=os.path.join(self.tmp_root, DOCKER_COMPOSE_FILENAME))
