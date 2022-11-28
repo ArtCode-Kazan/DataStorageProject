@@ -220,7 +220,7 @@ class StorageDBase:
         """
         return self.is_success_changing_query(query=query)
 
-    def get_works_info(self, area_id: str) -> List[WorkInfo]:
+    def get_works_info(self, area_id: int) -> List[WorkInfo]:
         """Get all works info by deposit name.
 
         Args:

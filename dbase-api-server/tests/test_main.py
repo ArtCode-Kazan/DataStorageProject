@@ -440,8 +440,8 @@ def test_get_works_info(up_test_dbase, clear_deposits_table):
             f'{area_id} returend successfully'
         ),
         'data': {
-            'work_info': [
-                first_work_info.dict(), second_work_info.dict()
+            'works_info': [
+                first_work_info, second_work_info
             ]
 
         }

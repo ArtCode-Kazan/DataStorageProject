@@ -655,7 +655,7 @@ class TestStorageDBase:
 
     def test_get_works_info(self, up_test_dbase, clear_deposits_table):
         area_name = 'test-area'
-        up_test_dbase.add_deposit_info(area_name)
+        up_test_dbase.add_deposit_info(area_name=area_name)
 
         table = Table('deposits')
         query = str(
@@ -678,7 +678,7 @@ class TestStorageDBase:
             work_type=first_work_type,
             deposit_id=first_deposit_id
         )
-        up_test_dbase.add_work_info(first_work_info)
+        up_test_dbase.add_work_info(work_info=first_work_info)
 
         second_well_name = 'test-name2'
         second_datetime_start_str = '2000-01-24 11:12:13'
@@ -691,9 +691,9 @@ class TestStorageDBase:
             work_type=second_work_type,
             deposit_id=second_deposit_id
         )
-        up_test_dbase.add_work_info(second_work_info)
+        up_test_dbase.add_work_info(work_info=second_work_info)
 
-        records = up_test_dbase.get_works_info(area_id)
+        records = up_test_dbase.get_works_info(area_id=area_id)
         assert_that(
             actual_or_assertion=len(records),
             matcher=equal_to(2)
