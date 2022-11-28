@@ -248,6 +248,148 @@ def test_add_duplicate_work(up_test_dbase, clear_deposits_table):
     )
 
 
+def test_update_work_info(up_test_dbase, clear_deposits_table):
+    up_test_dbase.add_deposit_info('test-area')
+    table = Table('deposits')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.area_name == 'test-area'
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    area_id = cursor.fetchone()[0]
+
+    old_well_name = 'test-name'
+    old_datetime_start_str = '2022-11-15 12:12:12'
+    old_work_type = 'test-work'
+    old_deposit_id = area_id
+
+    old_work_info = WorkInfo(
+        well_name=old_well_name,
+        datetime_start_str=old_datetime_start_str,
+        work_type=old_work_type,
+        deposit_id=old_deposit_id
+    )
+    up_test_dbase.add_work_info(old_work_info)
+
+    new_well_name = 'test-name2'
+    new_datetime_start_str = '2022-11-20 10:10:10'
+    new_work_type = 'test-work2'
+    new_deposit_id = area_id
+
+    new_work_info = WorkInfo(
+        well_name=new_well_name,
+        datetime_start_str=new_datetime_start_str,
+        work_type=new_work_type,
+        deposit_id=new_deposit_id
+    )
+    payload = {
+        'old_work_info': old_work_info.dict(),
+        'new_work_info': new_work_info.dict()
+    }
+    excepted_value = {
+        'status': True,
+        'message': (
+            f'Work info "{old_work_info.well_name}", '
+            f'"{old_work_info.datetime_start_str}", '
+            f'"{old_work_info.work_type}","{old_work_info.deposit_id}" '
+            f'successfully changed to "{new_work_info.well_name}", '
+            f'"{new_work_info.datetime_start_str}", '
+            f'"{new_work_info.work_type}", "{new_work_info.deposit_id}".'
+        ),
+        'data': {}
+    }
+    url = f'{URL}/update-work-info'
+    response = requests.post(url, json=payload)
+    assert_that(
+        actual_or_assertion=response.json(),
+        matcher=equal_to(excepted_value)
+    )
+    assert_that(
+        actual_or_assertion=response.status_code,
+        matcher=equal_to(requests.codes.ok)
+    )
+
+
+def test_update_duplicate_work_info(up_test_dbase,
+                                    clear_deposits_table):
+    up_test_dbase.add_deposit_info('test-area')
+    table = Table('deposits')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.area_name == 'test-area'
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    area_id = cursor.fetchone()[0]
+
+    well_name = 'test-name'
+    datetime_start_str = '2022-11-15 12:12:12'
+    work_type = 'test-work'
+    deposit_id = area_id
+
+    work_info = WorkInfo(
+        well_name=well_name,
+        datetime_start_str=datetime_start_str,
+        work_type=work_type,
+        deposit_id=deposit_id
+    )
+    up_test_dbase.add_work_info(work_info)
+
+    old_well_name = 'test-name1'
+    old_datetime_start_str = '2022-11-21 12:12:12'
+    old_work_type = 'test-work1'
+    old_deposit_id = area_id
+
+    old_work_info = WorkInfo(
+        well_name=old_well_name,
+        datetime_start_str=old_datetime_start_str,
+        work_type=old_work_type,
+        deposit_id=old_deposit_id
+    )
+    up_test_dbase.add_work_info(old_work_info)
+
+    new_well_name = 'test-name'
+    new_datetime_start_str = '2022-11-15 12:12:12'
+    new_work_type = 'test-work'
+    new_deposit_id = area_id
+
+    new_work_info = WorkInfo(
+        well_name=new_well_name,
+        datetime_start_str=new_datetime_start_str,
+        work_type=new_work_type,
+        deposit_id=new_deposit_id
+    )
+    payload = {
+        'old_work_info': old_work_info.dict(),
+        'new_work_info': new_work_info.dict()
+    }
+    excepted_value = {
+        'status': False,
+        'message': (
+            f'Cant change "{old_work_info.well_name}", '
+            f'"{old_work_info.datetime_start_str}", '
+            f'"{old_work_info.work_type}","{old_work_info.deposit_id}" '
+            f'to "{new_work_info.well_name}", '
+            f'"{new_work_info.datetime_start_str}", '
+            f'"{new_work_info.work_type}", "{new_work_info.deposit_id}".'
+        ),
+        'data': {}
+    }
+    url = f'{URL}/update-work-info'
+    response = requests.post(url, json=payload)
+    assert_that(
+        actual_or_assertion=response.json(),
+        matcher=equal_to(excepted_value)
+    )
+    assert_that(
+        actual_or_assertion=response.status_code,
+        matcher=equal_to(requests.codes.ok)
+    )
+
+
 def test_add_station_info(up_test_dbase, clear_deposits_table):
     area_name = 'test-area'
     up_test_dbase.add_deposit_info(area_name=area_name)
