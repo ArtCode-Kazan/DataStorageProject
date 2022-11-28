@@ -399,7 +399,6 @@ def test_get_works_info(up_test_dbase, clear_deposits_table):
             'works_info': [
                 first_work_info, second_work_info
             ]
-
         }
     }
     assert_that(
