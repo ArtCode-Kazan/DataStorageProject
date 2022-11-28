@@ -244,7 +244,7 @@ class StorageDBase:
                 datetime_start_str=str(record[1]),
                 work_type=record[2],
                 deposit_id=record[3]
-            ).dict()
+            )
             works_list.append(work_info)
         return works_list
 
