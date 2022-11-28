@@ -429,25 +429,20 @@ def test_add_station_info(up_test_dbase, clear_deposits_table):
     cursor.execute(query)
     work_id_value = cursor.fetchone()[0]
 
-    station_number = 666
-    x_wgs84 = 11.11111111
-    y_wgs84 = 22.22222222
-    altitude = 33.333333
-    work_id = work_id_value
-
     payload = StationInfo(
-        station_number=station_number,
-        x_wgs84=x_wgs84,
-        y_wgs84=y_wgs84,
-        altitude=altitude,
-        work_id=work_id
+        station_number=666,
+        x_wgs84=11.11111111,
+        y_wgs84=22.22222222,
+        altitude=33.333333,
+        work_id=work_id_value
     )
     url = f'{URL}/add-station-info'
     expected_value = {
         'status': True,
         'message': (
-            f'Successfully added station info: {station_number}, '
-            f'{x_wgs84}, {y_wgs84}, {altitude}, {work_id}'
+            f'Successfully added station info: {payload.station_number}, '
+            f'{payload.x_wgs84}, {payload.y_wgs84}, '
+            f'{payload.altitude}, {payload.work_id}'
         ),
         'data': {}
     }
@@ -520,7 +515,7 @@ def test_add_duplicate_station_info(up_test_dbase, clear_deposits_table):
     expected_value = {
         'status': True,
         'message': (
-            f'Cant add station info:  {station_number}, '
+            f'Successfully added station info: {station_number}, '
             f'{x_wgs84}, {y_wgs84}, {altitude}, {work_id}'
         ),
         'data': {}
@@ -581,7 +576,7 @@ def test_update_station_info(up_test_dbase, clear_deposits_table):
     old_altitude = 33.333333
     old_work_id = work_id_value
 
-    payload = StationInfo(
+    old_station_info = StationInfo(
         station_number=old_station_number,
         x_wgs84=old_x_wgs84,
         y_wgs84=old_y_wgs84,
@@ -589,7 +584,7 @@ def test_update_station_info(up_test_dbase, clear_deposits_table):
         work_id=old_work_id
     )
     url = f'{URL}/add-station-info'
-    requests.post(url, json=payload.dict())
+    requests.post(url, json=old_station_info.dict())
 
     new_station_number = 777
     new_x_wgs84 = 55.11111111
@@ -597,7 +592,7 @@ def test_update_station_info(up_test_dbase, clear_deposits_table):
     new_altitude = 77.333333
     new_work_id = work_id_value
 
-    payload = StationInfo(
+    new_station_info = StationInfo(
         station_number=new_station_number,
         x_wgs84=new_x_wgs84,
         y_wgs84=new_y_wgs84,
@@ -615,8 +610,12 @@ def test_update_station_info(up_test_dbase, clear_deposits_table):
         ),
         'data': {}
     }
+    payload = {
+        'old_station_info': old_station_info.dict(),
+        'new_station_info': new_station_info.dict()
+    }
     url = f'{URL}/update-station-info'
-    response = requests.post(url, json=payload.dict())
+    response = requests.post(url, json=payload)
     assert_that(
         actual_or_assertion=response.json(),
         matcher=equal_to(expected_value)
@@ -667,9 +666,9 @@ def test_update_duplicate_station_info(up_test_dbase, clear_deposits_table):
     work_id_value = cursor.fetchone()[0]
 
     station_number = 666
-    x_wgs84 = 11.11111111
-    y_wgs84 = 22.22222222
-    altitude = 33.333333
+    x_wgs84 = 11.111111
+    y_wgs84 = 22.222222
+    altitude = 33.3
     work_id = work_id_value
 
     payload = StationInfo(
@@ -683,12 +682,12 @@ def test_update_duplicate_station_info(up_test_dbase, clear_deposits_table):
     requests.post(url, json=payload.dict())
 
     old_station_number = 777
-    old_x_wgs84 = 55.11111111
-    old_y_wgs84 = 99.22222222
-    old_altitude = 66.333333
+    old_x_wgs84 = 55.111111
+    old_y_wgs84 = 99.222222
+    old_altitude = 66.3
     old_work_id = work_id_value
 
-    payload = StationInfo(
+    old_station_info = StationInfo(
         station_number=old_station_number,
         x_wgs84=old_x_wgs84,
         y_wgs84=old_y_wgs84,
@@ -699,12 +698,12 @@ def test_update_duplicate_station_info(up_test_dbase, clear_deposits_table):
     requests.post(url, json=payload.dict())
 
     new_station_number = 666
-    new_x_wgs84 = 11.11111111
-    new_y_wgs84 = 22.22222222
-    new_altitude = 33.333333
+    new_x_wgs84 = 11.111111
+    new_y_wgs84 = 22.222222
+    new_altitude = 33.3
     new_work_id = work_id_value
 
-    payload = StationInfo(
+    new_station_info = StationInfo(
         station_number=new_station_number,
         x_wgs84=new_x_wgs84,
         y_wgs84=new_y_wgs84,
@@ -714,7 +713,7 @@ def test_update_duplicate_station_info(up_test_dbase, clear_deposits_table):
     expected_value = {
         'status': True,
         'message': (
-            f'Cant change station info: {old_station_number}, '
+            f'Successfully changed station info: {old_station_number}, '
             f'{old_x_wgs84}, {old_y_wgs84}, '
             f'{old_altitude}, {old_work_id} '
             f'to {new_station_number}, {new_x_wgs84}, {new_y_wgs84}, '
@@ -722,8 +721,12 @@ def test_update_duplicate_station_info(up_test_dbase, clear_deposits_table):
         ),
         'data': {}
     }
+    payload = {
+        'old_station_info': old_station_info.dict(),
+        'new_station_info': new_station_info.dict()
+    }
     url = f'{URL}/update-station-info'
-    response = requests.post(url, json=payload.dict())
+    response = requests.post(url, json=payload)
     assert_that(
         actual_or_assertion=response.json(),
         matcher=equal_to(expected_value)

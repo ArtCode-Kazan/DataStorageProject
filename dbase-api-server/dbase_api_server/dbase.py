@@ -282,7 +282,7 @@ class StorageDBase:
                 'work_id').where(table.work_id == work_id)
         )
         records = self.select_many_records(query=query)
-        station_list = []
+        stations_list = []
         for record in records:
             station_info = StationInfo(
                 station_number=record[0],
@@ -291,5 +291,5 @@ class StorageDBase:
                 altitude=record[3],
                 work_id=record[4]
             )
-            station_list += station_info
-        return station_list
+            stations_list.append(station_info)
+        return stations_list

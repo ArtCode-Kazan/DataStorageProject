@@ -207,7 +207,7 @@ def add_station_info(station_info: StationInfo) -> dict:
     if is_added:
         message = (
             f'Successfully added station info: '
-            f'{station_info.station_number}, {station_info.x_wgs84},'
+            f'{station_info.station_number}, {station_info.x_wgs84}, '
             f'{station_info.y_wgs84}, {station_info.altitude}, '
             f'{station_info.work_id}'
         )

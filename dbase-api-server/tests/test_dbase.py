@@ -693,18 +693,12 @@ def test_add_station_info(self, up_test_dbase, clear_deposits_table):
     cursor.execute(query)
     work_id_value = cursor.fetchone()[0]
 
-    station_number = 666
-    x_wgs84 = 11.11111111
-    y_wgs84 = 22.22222222
-    altitude = 33.333333
-    work_id = work_id_value
-
     station_info = StationInfo(
-        station_number=station_number,
-        x_wgs84=x_wgs84,
-        y_wgs84=y_wgs84,
-        altitude=altitude,
-        work_id=work_id
+        station_number=666,
+        x_wgs84=11.11111111,
+        y_wgs84=22.22222222,
+        altitude=33.333333,
+        work_id=work_id_value
     )
     is_success = up_test_dbase.add_station_info(
         station_info=station_info
@@ -716,11 +710,11 @@ def test_add_station_info(self, up_test_dbase, clear_deposits_table):
     table = Table('stations')
     query = str(
         Query.from_(table).select(Count(1)).where(
-            table.station_number == station_number).where(
-            table.x_wgs84 == x_wgs84).where(
-            table.y_wgs84 == y_wgs84).where(
-            table.altitude == altitude).where(
-            table.work_id == work_id
+            table.station_number == station_info.station_number).where(
+            table.x_wgs84 == station_info.x_wgs84).where(
+            table.y_wgs84 == station_info.y_wgs84).where(
+            table.altitude == station_info.altitude).where(
+            table.work_id == station_info.work_id
         )
     )
     cursor = up_test_dbase.connection.cursor()
