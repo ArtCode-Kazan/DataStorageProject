@@ -292,21 +292,21 @@ def get_stations_info(work_id: int) -> Response:
     return returning_info
 
 
-@app.post('/get-work-info')
+@app.post('/get-works-info')
 def get_works_info(deposit: Deposit) -> dict:
     """Return works info from works table.
 
     Returns: dict object with operation status, message with
     operation discription and works related to deposit.
     """
-    work_info = dbase_adapter.get_works_info(deposit.area_name)
+    works_info = dbase_adapter.get_works_info(deposit.area_name)
 
     returning_info = Response(
         status=True,
         message=f'All works related to deposit "{deposit.area_name}" '
                 f'returend successfully',
         data={
-            'work_info': work_info
+            'work_info': works_info
         }
     )
     return returning_info.dict()

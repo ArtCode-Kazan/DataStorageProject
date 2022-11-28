@@ -247,17 +247,16 @@ class StorageDBase:
                 'work_type', 'deposit_id'
             ).where(table.deposit_id == area_id)
         )
-        records = self.select_many_records(query=query)
-        work_list = []
-        for record in records:
+        works_list = []
+        for record in self.select_many_records(query=query):
             work_info = WorkInfo(
                 well_name=record[0],
                 datetime_start_str=str(record[1]),
                 work_type=record[2],
                 deposit_id=record[3]
             )
-            work_list += work_info
-        return work_list
+            works_list += work_info
+        return works_list
 
     def add_station_info(self, station_info: StationInfo) -> bool:
         """Add station info to database.
