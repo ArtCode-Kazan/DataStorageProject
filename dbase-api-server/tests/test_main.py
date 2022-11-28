@@ -431,7 +431,7 @@ def test_get_works_info(up_test_dbase, clear_deposits_table):
     up_test_dbase.add_work_info(second_work_info)
 
     payload = Deposit(area_name=area_name)
-    url = f'{URL}/get-work-info'
+    url = f'{URL}/get-works-info'
     response = requests.post(url, json=payload.dict())
 
     expected_value = {
