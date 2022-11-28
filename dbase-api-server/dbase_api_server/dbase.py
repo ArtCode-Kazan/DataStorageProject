@@ -222,24 +222,14 @@ class StorageDBase:
         """
         return self.is_success_changing_query(query=query)
 
-    def get_works_info(self, area_name: str) -> list:
+    def get_works_info(self, area_id: str) -> List[WorkInfo]:
         """Get all works info by deposit name.
 
         Args:
-            area_name: deposit name
+            area_id: deposit id
 
         Returns: list of selected rows. If no records - return None.
         """
-        table = Table('deposits')
-        query = str(
-            Query.from_(table).select('id').where(
-                table.area_name == area_name
-            )
-        )
-        cursor = self.connection.cursor()
-        cursor.execute(query)
-        area_id = cursor.fetchone()[0]
-
         table = Table('works')
         query = str(
             Query.from_(table).select(
