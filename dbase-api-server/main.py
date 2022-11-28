@@ -36,7 +36,7 @@ def check_service_alive() -> dict:
         message='Service is alive',
         data={}
     )
-    return returning_info.dict()
+    return returning_info
 
 
 @app.get('/get-all-deposits')
@@ -57,7 +57,7 @@ def get_all_deposits() -> dict:
             'area_names': area_names
         }
     )
-    return returning_info.dict()
+    return returning_info
 
 
 @app.post('/add-deposit')
@@ -83,7 +83,7 @@ def add_new_deposit(deposit: Deposit) -> dict:
         message=message,
         data={}
     )
-    return returning_info.dict()
+    return returning_info
 
 
 @app.post('/update-deposit')
@@ -117,7 +117,7 @@ def update_deposit_info(old_deposit: Deposit, new_deposit: Deposit) -> dict:
         message=message,
         data={}
     )
-    return returning_info.dict()
+    return returning_info
 
 
 @app.post('/add-work-info')
@@ -148,7 +148,7 @@ def add_work_info(work_info: WorkInfo) -> dict:
         message=message,
         data={}
     )
-    return returning_info.dict()
+    return returning_info
 
 
 @app.post('/update-work-info')
@@ -190,7 +190,7 @@ def update_work_info(old_work_info: WorkInfo,
         message=message,
         data={}
     )
-    return returning_info.dict()
+    return returning_info
 
 
 @app.get('/get-works-info/{area_id}')
@@ -210,7 +210,7 @@ def get_works_info(area_id: int) -> dict:
             'works_info': works_info
         }
     )
-    return returning_info.dict()
+    return returning_info
 
 
 if __name__ == '__main__':
