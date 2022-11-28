@@ -193,6 +193,26 @@ def update_work_info(old_work_info: WorkInfo,
     return returning_info
 
 
+@app.get('/get-works-info/{area_id}')
+def get_works_info(area_id: int) -> Response:
+    """Return works info from works table.
+
+    Returns: dict object with operation status, message with
+    operation discription and works related to deposit.
+    """
+    works_info = dbase_adapter.get_works_info(area_id)
+
+    returning_info = Response(
+        status=True,
+        message=f'All works related to deposit with id:{area_id} '
+                f'returend successfully',
+        data={
+            'works_info': works_info
+        }
+    )
+    return returning_info
+
+
 @app.post('/add-station-info')
 def add_station_info(station_info: StationInfo) -> Response:
     """Add station info to database.
@@ -290,26 +310,6 @@ def get_stations_info(work_id: int) -> Response:
         }
     )
     return returning_info
-
-
-@app.get('/get-works-info/{area_id}')
-def get_works_info(area_id: int) -> dict:
-    """Return works info from works table.
-
-    Returns: dict object with operation status, message with
-    operation discription and works related to deposit.
-    """
-    works_info = dbase_adapter.get_works_info(area_id)
-
-    returning_info = Response(
-        status=True,
-        message=f'All works related to deposit with id:{area_id} '
-                f'returend successfully',
-        data={
-            'works_info': works_info
-        }
-    )
-    return returning_info.dict()
 
 
 if __name__ == '__main__':
