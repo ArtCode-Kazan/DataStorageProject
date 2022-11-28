@@ -222,7 +222,7 @@ class StorageDBase:
         """
         return self.is_success_changing_query(query=query)
 
-    def get_works_info(self, area_name: str) -> Union[None, list]:
+    def get_works_info(self, area_name: str) -> list:
         """Get all works info by deposit name.
 
         Args:
@@ -254,8 +254,8 @@ class StorageDBase:
                 datetime_start_str=str(record[1]),
                 work_type=record[2],
                 deposit_id=record[3]
-            )
-            works_list += work_info
+            ).dict()
+            works_list.append(work_info)
         return works_list
 
     def add_station_info(self, station_info: StationInfo) -> bool:
