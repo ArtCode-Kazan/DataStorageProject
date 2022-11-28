@@ -306,7 +306,7 @@ def get_works_info(area_id: int) -> dict:
         message=f'All works related to deposit with id:{area_id} '
                 f'returend successfully',
         data={
-            'work_info': works_info
+            'works_info': works_info
         }
     )
     return returning_info.dict()
