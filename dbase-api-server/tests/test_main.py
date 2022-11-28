@@ -430,18 +430,19 @@ def test_get_works_info(up_test_dbase, clear_deposits_table):
     )
     up_test_dbase.add_work_info(second_work_info)
 
-    payload = Deposit(area_name=area_name)
-    url = f'{URL}/get-works-info'
-    response = requests.post(url, json=payload.dict())
+    url = f'{URL}/get-works-info/{area_id}'
+    response = requests.get(url)
 
     expected_value = {
         'status': True,
         'message': (
-            f'All works related to deposit '
-            f'"{area_name}" returend successfully'
+            f'All works related to deposit with id:'
+            f'{area_id} returend successfully'
         ),
         'data': {
-            'work_info': [first_work_info, second_work_info]
+            'work_info': [
+                first_work_info.dict(), second_work_info.dict()
+            ]
 
         }
     }

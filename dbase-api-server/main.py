@@ -193,18 +193,18 @@ def update_work_info(old_work_info: WorkInfo,
     return returning_info.dict()
 
 
-@app.post('/get-works-info')
-def get_works_info(deposit: Deposit) -> dict:
+@app.get('/get-works-info/{area_id}')
+def get_works_info(area_id: int) -> dict:
     """Return works info from works table.
 
     Returns: dict object with operation status, message with
     operation discription and works related to deposit.
     """
-    works_info = dbase_adapter.get_works_info(deposit.area_name)
+    works_info = dbase_adapter.get_works_info(area_id)
 
     returning_info = Response(
         status=True,
-        message=f'All works related to deposit "{deposit.area_name}" '
+        message=f'All works related to deposit with id:{area_id} '
                 f'returend successfully',
         data={
             'work_info': works_info

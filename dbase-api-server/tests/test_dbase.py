@@ -693,7 +693,7 @@ class TestStorageDBase:
         )
         up_test_dbase.add_work_info(second_work_info)
 
-        records = up_test_dbase.get_works_info(area_name)
+        records = up_test_dbase.get_works_info(area_id)
         assert_that(
             actual_or_assertion=len(records),
             matcher=equal_to(2)
