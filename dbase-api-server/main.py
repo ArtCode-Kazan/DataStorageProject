@@ -329,7 +329,7 @@ def get_works_info(area_id: int) -> dict:
             'works_info': works_info
         }
     )
-    return returning_info.dict()
+    return returning_info
 
 
 if __name__ == '__main__':
