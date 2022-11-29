@@ -270,6 +270,8 @@ def test_update_work_info(up_test_dbase, clear_deposits_table):
         'old_work_info': old_work_info.dict(),
         'new_work_info': new_work_info.dict()
     }
+    url = f'{URL}/update-work-info'
+    response = requests.post(url, json=payload)
     excepted_value = {
         'status': True,
         'message': (
@@ -282,8 +284,6 @@ def test_update_work_info(up_test_dbase, clear_deposits_table):
         ),
         'data': {}
     }
-    url = f'{URL}/update-work-info'
-    response = requests.post(url, json=payload)
     assert_that(
         actual_or_assertion=response.json(),
         matcher=equal_to(excepted_value)
