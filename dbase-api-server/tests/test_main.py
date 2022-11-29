@@ -315,7 +315,7 @@ def test_update_work_info(up_test_dbase, clear_deposits_table):
 def test_update_duplicate_work_info(up_test_dbase,
                                     clear_deposits_table):
     area_name = 'test-area'
-    up_test_dbase.add_deposit_info(area_name)
+    up_test_dbase.add_deposit_info(area_name=area_name)
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
