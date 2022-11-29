@@ -313,7 +313,7 @@ def get_stations_info(work_id: int) -> Response:
 
 
 @app.get('/get-works-info/{area_id}')
-def get_works_info(area_id: int) -> dict:
+def get_works_info(area_id: int) -> Response:
     """Return works info from works table.
 
     Returns: dict object with operation status, message with
