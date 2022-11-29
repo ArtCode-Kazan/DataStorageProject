@@ -654,7 +654,7 @@ class TestStorageDBase:
         assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
 
 
-def test_add_station_info(self, up_test_dbase, clear_deposits_table):
+def test_add_station_info(up_test_dbase, clear_deposits_table):
     area_name = 'test-area'
     up_test_dbase.add_deposit_info(area_name=area_name)
     table = Table('deposits')
@@ -695,9 +695,9 @@ def test_add_station_info(self, up_test_dbase, clear_deposits_table):
 
     station_info = StationInfo(
         station_number=666,
-        x_wgs84=11.11111111,
-        y_wgs84=22.22222222,
-        altitude=33.333333,
+        x_wgs84=11.111111,
+        y_wgs84=22.222222,
+        altitude=33.3,
         work_id=work_id_value
     )
     is_success = up_test_dbase.add_station_info(
@@ -723,7 +723,7 @@ def test_add_station_info(self, up_test_dbase, clear_deposits_table):
     assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
 
 
-def test_duplicate_station_fields(self, up_test_dbase,
+def test_duplicate_station_fields(up_test_dbase,
                                   clear_deposits_table):
     area_name = 'test-area'
     up_test_dbase.add_deposit_info(area_name=area_name)
@@ -814,8 +814,8 @@ def test_duplicate_station_fields(self, up_test_dbase,
     assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
 
 
-def test_correct_field_value(self, up_test_dbase,
-                             clear_deposits_table):
+def correct_station_field_value(up_test_dbase,
+                                clear_deposits_table):
     area_name = 'test-area'
     up_test_dbase.add_deposit_info(area_name=area_name)
     table = Table('deposits')
@@ -890,7 +890,7 @@ def test_correct_field_value(self, up_test_dbase,
     assert_that(actual_or_assertion=records_count, matcher=equal_to(0))
 
 
-def test_update_station_info(self, up_test_dbase, clear_deposits_table):
+def test_update_station_info(up_test_dbase, clear_deposits_table):
     area_name = 'test-area'
     up_test_dbase.add_deposit_info(area_name=area_name)
     table = Table('deposits')
@@ -981,7 +981,7 @@ def test_update_station_info(self, up_test_dbase, clear_deposits_table):
     assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
 
 
-def test_update_duplicate_station_info(self, up_test_dbase,
+def test_update_duplicate_station_info(up_test_dbase,
                                        clear_deposits_table):
     area_name = 'test-area'
     up_test_dbase.add_deposit_info(area_name=area_name)
@@ -1088,7 +1088,7 @@ def test_update_duplicate_station_info(self, up_test_dbase,
     assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
 
 
-def test_get_stations_info(self, up_test_dbase, clear_deposits_table):
+def test_get_stations_info(up_test_dbase, clear_deposits_table):
     area_name = 'test-area'
     up_test_dbase.add_deposit_info(area_name=area_name)
     table = Table('deposits')
@@ -1160,7 +1160,7 @@ def test_get_stations_info(self, up_test_dbase, clear_deposits_table):
     records = up_test_dbase.get_stations_info(work_id=work_id_value)
     assert_that(
         actual_or_assertion=len(records),
-        matcher=equal_to(10)
+        matcher=equal_to(2)
     )
     assert_that(
         actual_or_assertion=isinstance(records, list),
