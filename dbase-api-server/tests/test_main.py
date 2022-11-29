@@ -391,38 +391,32 @@ def test_update_duplicate_work_info(up_test_dbase,
 
 
 def test_add_station_info(up_test_dbase, clear_deposits_table):
-    area_name = 'test-area'
-    up_test_dbase.add_deposit_info(area_name=area_name)
+    up_test_dbase.add_deposit_info('test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
-            table.area_name == area_name
+            table.area_name == 'test-area'
         )
     )
     cursor = up_test_dbase.connection.cursor()
     cursor.execute(query)
     area_id = cursor.fetchone()[0]
 
-    well_name = 'test-name'
-    datetime_start_str = '2022-11-15 12:12:12'
-    work_type = 'test-work'
-    deposit_id = area_id
-
     work_info = WorkInfo(
-        well_name=well_name,
-        datetime_start_str=datetime_start_str,
-        work_type=work_type,
-        deposit_id=deposit_id
+        well_name='test-name',
+        datetime_start_str='2022-11-15 12:12:12',
+        work_type='test-work',
+        deposit_id=area_id
     )
     up_test_dbase.add_work_info(work_info=work_info)
 
     table = Table('works')
     query = str(
         Query.from_(table).select('id').where(
-            table.well_name == well_name).where(
-            table.start_time == datetime_start_str).where(
-            table.work_type == work_type).where(
-            table.deposit_id == deposit_id
+            table.well_name == work_info.well_name).where(
+            table.start_time == work_info.datetime_start_str).where(
+            table.work_type == work_info.work_type).where(
+            table.deposit_id == work_info.deposit_id
         )
     )
     cursor = up_test_dbase.connection.cursor()
@@ -458,65 +452,54 @@ def test_add_station_info(up_test_dbase, clear_deposits_table):
 
 
 def test_add_duplicate_station_info(up_test_dbase, clear_deposits_table):
-    area_name = 'test-area'
-    up_test_dbase.add_deposit_info(area_name=area_name)
+    up_test_dbase.add_deposit_info('test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
-            table.area_name == area_name
+            table.area_name == 'test-area'
         )
     )
     cursor = up_test_dbase.connection.cursor()
     cursor.execute(query)
     area_id = cursor.fetchone()[0]
 
-    well_name = 'test-name'
-    datetime_start_str = '2022-11-15 12:12:12'
-    work_type = 'test-work'
-    deposit_id = area_id
-
     work_info = WorkInfo(
-        well_name=well_name,
-        datetime_start_str=datetime_start_str,
-        work_type=work_type,
-        deposit_id=deposit_id
+        well_name='test-name',
+        datetime_start_str='2022-11-15 12:12:12',
+        work_type='test-work',
+        deposit_id=area_id
     )
     up_test_dbase.add_work_info(work_info=work_info)
 
     table = Table('works')
     query = str(
         Query.from_(table).select('id').where(
-            table.well_name == well_name).where(
-            table.start_time == datetime_start_str).where(
-            table.work_type == work_type).where(
-            table.deposit_id == deposit_id
+            table.well_name == work_info.well_name).where(
+            table.start_time == work_info.datetime_start_str).where(
+            table.work_type == work_info.work_type).where(
+            table.deposit_id == work_info.deposit_id
         )
     )
     cursor = up_test_dbase.connection.cursor()
     cursor.execute(query)
     work_id_value = cursor.fetchone()[0]
 
-    station_number = 666
-    x_wgs84 = 11.11111111
-    y_wgs84 = 22.22222222
-    altitude = 33.333333
-    work_id = work_id_value
-
     payload = StationInfo(
-        station_number=station_number,
-        x_wgs84=x_wgs84,
-        y_wgs84=y_wgs84,
-        altitude=altitude,
-        work_id=work_id
+        station_number=666,
+        x_wgs84=11.11111111,
+        y_wgs84=22.22222222,
+        altitude=33.333333,
+        work_id=work_id_value
     )
     url = f'{URL}/add-station-info'
     requests.post(url, json=payload.dict())
 
     expected_value = {
-        'status': True,
+        'status': False,
         'message': (
-            f'Successfully added station info: {station_number}, '
-            f'{x_wgs84}, {y_wgs84}, {altitude}, {work_id}'
+            f'Cant add station info: {payload.station_number}, '
+            f'{payload.x_wgs84}, {payload.y_wgs84}, {payload.altitude}, '
+            f'{payload.work_id}'
         ),
         'data': {}
     }
@@ -532,81 +515,65 @@ def test_add_duplicate_station_info(up_test_dbase, clear_deposits_table):
 
 
 def test_update_station_info(up_test_dbase, clear_deposits_table):
-    area_name = 'test-area'
-    up_test_dbase.add_deposit_info(area_name=area_name)
+    up_test_dbase.add_deposit_info('test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
-            table.area_name == area_name
+            table.area_name == 'test-area'
         )
     )
     cursor = up_test_dbase.connection.cursor()
     cursor.execute(query)
     area_id = cursor.fetchone()[0]
 
-    well_name = 'test-name'
-    datetime_start_str = '2022-11-15 12:12:12'
-    work_type = 'test-work'
-    deposit_id = area_id
-
     work_info = WorkInfo(
-        well_name=well_name,
-        datetime_start_str=datetime_start_str,
-        work_type=work_type,
-        deposit_id=deposit_id
+        well_name='test-name',
+        datetime_start_str='2022-11-15 12:12:12',
+        work_type='test-work',
+        deposit_id=area_id
     )
     up_test_dbase.add_work_info(work_info=work_info)
 
     table = Table('works')
     query = str(
         Query.from_(table).select('id').where(
-            table.well_name == well_name).where(
-            table.start_time == datetime_start_str).where(
-            table.work_type == work_type).where(
-            table.deposit_id == deposit_id
+            table.well_name == work_info.well_name).where(
+            table.start_time == work_info.datetime_start_str).where(
+            table.work_type == work_info.work_type).where(
+            table.deposit_id == work_info.deposit_id
         )
     )
     cursor = up_test_dbase.connection.cursor()
     cursor.execute(query)
     work_id_value = cursor.fetchone()[0]
 
-    old_station_number = 666
-    old_x_wgs84 = 11.11111111
-    old_y_wgs84 = 22.22222222
-    old_altitude = 33.333333
-    old_work_id = work_id_value
-
     old_station_info = StationInfo(
-        station_number=old_station_number,
-        x_wgs84=old_x_wgs84,
-        y_wgs84=old_y_wgs84,
-        altitude=old_altitude,
-        work_id=old_work_id
+        station_number=666,
+        x_wgs84=11.11111111,
+        y_wgs84=22.22222222,
+        altitude=33.333333,
+        work_id=work_id_value
     )
     url = f'{URL}/add-station-info'
     requests.post(url, json=old_station_info.dict())
 
-    new_station_number = 777
-    new_x_wgs84 = 55.11111111
-    new_y_wgs84 = 66.22222222
-    new_altitude = 77.333333
-    new_work_id = work_id_value
-
     new_station_info = StationInfo(
-        station_number=new_station_number,
-        x_wgs84=new_x_wgs84,
-        y_wgs84=new_y_wgs84,
-        altitude=new_altitude,
-        work_id=new_work_id
+        station_number=777,
+        x_wgs84=55.11111111,
+        y_wgs84=66.22222222,
+        altitude=77.333333,
+        work_id=work_id_value
     )
     expected_value = {
         'status': True,
         'message': (
             f'Successfully changed station info: '
-            f'{old_station_number}, {old_x_wgs84}, {old_y_wgs84}, '
-            f'{old_altitude}, {old_work_id} '
-            f'to {new_station_number}, {new_x_wgs84}, {new_y_wgs84}, '
-            f'{new_altitude}, {new_work_id}.'
+            f'{old_station_info.station_number}, {old_station_info.x_wgs84}, '
+            f'{old_station_info.y_wgs84}, {old_station_info.altitude}, '
+            f'{old_station_info.work_id} '
+            f'to {new_station_info.station_number}, '
+            f'{new_station_info.x_wgs84}, {new_station_info.y_wgs84},'
+            f' {new_station_info.altitude}, {new_station_info.work_id}.'
         ),
         'data': {}
     }
@@ -627,97 +594,75 @@ def test_update_station_info(up_test_dbase, clear_deposits_table):
 
 
 def test_update_duplicate_station_info(up_test_dbase, clear_deposits_table):
-    area_name = 'test-area'
-    up_test_dbase.add_deposit_info(area_name=area_name)
+    up_test_dbase.add_deposit_info('test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
-            table.area_name == area_name
+            table.area_name == 'test-area'
         )
     )
     cursor = up_test_dbase.connection.cursor()
     cursor.execute(query)
     area_id = cursor.fetchone()[0]
 
-    well_name = 'test-name'
-    datetime_start_str = '2022-11-15 12:12:12'
-    work_type = 'test-work'
-    deposit_id = area_id
-
     work_info = WorkInfo(
-        well_name=well_name,
-        datetime_start_str=datetime_start_str,
-        work_type=work_type,
-        deposit_id=deposit_id
+        well_name='test-name',
+        datetime_start_str='2022-11-15 12:12:12',
+        work_type='test-work',
+        deposit_id=area_id
     )
     up_test_dbase.add_work_info(work_info=work_info)
 
     table = Table('works')
     query = str(
         Query.from_(table).select('id').where(
-            table.well_name == well_name).where(
-            table.start_time == datetime_start_str).where(
-            table.work_type == work_type).where(
-            table.deposit_id == deposit_id
+            table.well_name == work_info.well_name).where(
+            table.start_time == work_info.datetime_start_str).where(
+            table.work_type == work_info.work_type).where(
+            table.deposit_id == work_info.deposit_id
         )
     )
     cursor = up_test_dbase.connection.cursor()
     cursor.execute(query)
     work_id_value = cursor.fetchone()[0]
 
-    station_number = 666
-    x_wgs84 = 11.111111
-    y_wgs84 = 22.222222
-    altitude = 33.3
-    work_id = work_id_value
-
     payload = StationInfo(
-        station_number=station_number,
-        x_wgs84=x_wgs84,
-        y_wgs84=y_wgs84,
-        altitude=altitude,
-        work_id=work_id
+        station_number=666,
+        x_wgs84=11.111111,
+        y_wgs84=22.222222,
+        altitude=33.3,
+        work_id=work_id_value
     )
     url = f'{URL}/add-station-info'
     requests.post(url, json=payload.dict())
-
-    old_station_number = 777
-    old_x_wgs84 = 55.111111
-    old_y_wgs84 = 99.222222
-    old_altitude = 66.3
-    old_work_id = work_id_value
 
     old_station_info = StationInfo(
-        station_number=old_station_number,
-        x_wgs84=old_x_wgs84,
-        y_wgs84=old_y_wgs84,
-        altitude=old_altitude,
-        work_id=old_work_id
+        station_number=777,
+        x_wgs84=55.111111,
+        y_wgs84=99.222222,
+        altitude=66.3,
+        work_id=work_id_value
     )
     url = f'{URL}/add-station-info'
     requests.post(url, json=payload.dict())
 
-    new_station_number = 666
-    new_x_wgs84 = 11.111111
-    new_y_wgs84 = 22.222222
-    new_altitude = 33.3
-    new_work_id = work_id_value
-
     new_station_info = StationInfo(
-        station_number=new_station_number,
-        x_wgs84=new_x_wgs84,
-        y_wgs84=new_y_wgs84,
-        altitude=new_altitude,
-        work_id=new_work_id
+        station_number=666,
+        x_wgs84=11.111111,
+        y_wgs84=22.222222,
+        altitude=33.3,
+        work_id=work_id_value
     )
     expected_value = {
         'status': True,
         'message': (
-            f'Successfully changed station info: {old_station_number}, '
-            f'{old_x_wgs84}, {old_y_wgs84}, '
-            f'{old_altitude}, {old_work_id} '
-            f'to {new_station_number}, {new_x_wgs84}, {new_y_wgs84}, '
-            f'{new_altitude}, {new_work_id}.'
+            f'Successfully changed station info: '
+            f'{old_station_info.station_number}, {old_station_info.x_wgs84}, '
+            f'{old_station_info.y_wgs84}, {old_station_info.altitude},'
+            f' {old_station_info.work_id} '
+            f'to {new_station_info.station_number}, '
+            f'{new_station_info.x_wgs84}, {new_station_info.y_wgs84}, '
+            f'{new_station_info.altitude}, {new_station_info.work_id}.'
         ),
         'data': {}
     }
@@ -737,72 +682,54 @@ def test_update_duplicate_station_info(up_test_dbase, clear_deposits_table):
     )
 
 
-def test_get_stations_info(self, up_test_dbase, clear_deposits_table):
-    area_name = 'test-area'
-    up_test_dbase.add_deposit_info(area_name=area_name)
+def test_get_stations_info(up_test_dbase, clear_deposits_table):
+    up_test_dbase.add_deposit_info('test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
-            table.area_name == area_name
+            table.area_name == 'test-area'
         )
     )
     cursor = up_test_dbase.connection.cursor()
     cursor.execute(query)
     area_id = cursor.fetchone()[0]
 
-    well_name = 'test-name'
-    datetime_start_str = '2022-11-15 12:12:12'
-    work_type = 'test-work'
-    deposit_id = area_id
-
     work_info = WorkInfo(
-        well_name=well_name,
-        datetime_start_str=datetime_start_str,
-        work_type=work_type,
-        deposit_id=deposit_id
+        well_name='test-name',
+        datetime_start_str='2022-11-15 12:12:12',
+        work_type='test-work',
+        deposit_id=area_id
     )
     up_test_dbase.add_work_info(work_info=work_info)
 
     table = Table('works')
     query = str(
         Query.from_(table).select('id').where(
-            table.well_name == well_name).where(
-            table.start_time == datetime_start_str).where(
-            table.work_type == work_type).where(
-            table.deposit_id == deposit_id
+            table.well_name == work_info.well_name).where(
+            table.start_time == work_info.datetime_start_str).where(
+            table.work_type == work_info.work_type).where(
+            table.deposit_id == work_info.deposit_id
         )
     )
     cursor = up_test_dbase.connection.cursor()
     cursor.execute(query)
     work_id_value = cursor.fetchone()[0]
 
-    first_station_number = 666
-    first_x_wgs84 = 11.111111
-    first_y_wgs84 = 22.222222
-    first_altitude = 33.3
-    first_work_id = work_id_value
-
     first_station_info = StationInfo(
-        station_number=first_station_number,
-        x_wgs84=first_x_wgs84,
-        y_wgs84=first_y_wgs84,
-        altitude=first_altitude,
-        work_id=first_work_id
+        station_number=666,
+        x_wgs84=11.111111,
+        y_wgs84=22.222222,
+        altitude=33.3,
+        work_id=work_id_value
     )
     up_test_dbase.add_station_info(station_info=first_station_info)
 
-    second_station_number = 777
-    second_x_wgs84 = 88.111111
-    second_y_wgs84 = 66.222222
-    second_altitude = 44.3
-    second_work_id = work_id_value
-
     second_station_info = StationInfo(
-        station_number=second_station_number,
-        x_wgs84=second_x_wgs84,
-        y_wgs84=second_y_wgs84,
-        altitude=second_altitude,
-        work_id=second_work_id
+        station_number=777,
+        x_wgs84=88.111111,
+        y_wgs84=66.222222,
+        altitude=44.3,
+        work_id=work_id_value
     )
     up_test_dbase.add_station_info(station_info=second_station_info)
 
@@ -815,18 +742,12 @@ def test_get_stations_info(self, up_test_dbase, clear_deposits_table):
             f'All works related to work with id:"{work_id_value}" '
             f'returend successfully'
         ),
-        'data': [
-            ['station_number', first_station_number],
-            ['x_wgs84', first_x_wgs84],
-            ['y_wgs84', first_y_wgs84],
-            ['altitude', first_altitude],
-            ['work_id', first_work_id],
-            ['station_number', second_station_number],
-            ['x_wgs84', second_x_wgs84],
-            ['y_wgs84', second_y_wgs84],
-            ['altitude', second_altitude],
-            ['work_id', second_work_id]
-        ]
+        'data': {
+            'stations_info': [
+                first_station_info.dict(),
+                second_station_info.dict()
+            ]
+        }
     }
     assert_that(
         actual_or_assertion=response.json(),

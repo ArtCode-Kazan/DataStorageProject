@@ -764,9 +764,9 @@ def test_duplicate_station_fields(up_test_dbase,
     work_id_value = cursor.fetchone()[0]
 
     station_number = 666
-    x_wgs84 = 11.11111111
-    y_wgs84 = 22.22222222
-    altitude = 33.333333
+    x_wgs84 = 11.111111
+    y_wgs84 = 22.222222
+    altitude = 33.3
     work_id = work_id_value
 
     station_info = StationInfo(
@@ -779,9 +779,9 @@ def test_duplicate_station_fields(up_test_dbase,
     up_test_dbase.add_station_info(station_info=station_info)
 
     station_number = 666
-    x_wgs84 = 11.11111111
-    y_wgs84 = 22.22222222
-    altitude = 33.333333
+    x_wgs84 = 11.111111
+    y_wgs84 = 22.222222
+    altitude = 33.3
     work_id = work_id_value
 
     station_info = StationInfo(
@@ -1167,16 +1167,8 @@ def test_get_stations_info(up_test_dbase, clear_deposits_table):
         matcher=is_(True)
     )
     record_check = [
-        ('station_number', first_station_number),
-        ('x_wgs84', first_x_wgs84),
-        ('y_wgs84', first_y_wgs84),
-        ('altitude', first_altitude),
-        ('work_id', first_work_id),
-        ('station_number', second_station_number),
-        ('x_wgs84', second_x_wgs84),
-        ('y_wgs84', second_y_wgs84),
-        ('altitude', second_altitude),
-        ('work_id', second_work_id)
+        first_station_info.dict(),
+        second_station_info.dict()
     ]
     assert_that(
         actual_or_assertion=records,
