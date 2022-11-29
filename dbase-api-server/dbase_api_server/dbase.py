@@ -20,7 +20,7 @@ Examples:
 """
 import logging
 from datetime import datetime
-from typing import Union
+from typing import List, Union
 
 from psycopg import OperationalError
 from psycopg.connection import Connection
@@ -219,3 +219,29 @@ class StorageDBase:
                     AND deposit_id = '{old_work_info.deposit_id}'
         """
         return self.is_success_changing_query(query=query)
+
+    def get_works_info(self, area_id: int) -> List[WorkInfo]:
+        """Get all works info by deposit name.
+
+        Args:
+            area_id: deposit id
+
+        Returns: list of selected rows. If no records - return None.
+        """
+        table = Table('works')
+        query = str(
+            Query.from_(table).select(
+                'well_name', 'start_time',
+                'work_type', 'deposit_id'
+            ).where(table.deposit_id == area_id)
+        )
+        works_list = []
+        for record in self.select_many_records(query=query):
+            work_info = WorkInfo(
+                well_name=record[0],
+                datetime_start_str=str(record[1]),
+                work_type=record[2],
+                deposit_id=record[3]
+            )
+            works_list.append(work_info)
+        return works_list
