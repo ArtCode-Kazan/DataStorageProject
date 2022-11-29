@@ -175,22 +175,18 @@ def test_add_new_work(up_test_dbase, clear_deposits_table):
     cursor.execute(query)
     area_id = cursor.fetchone()[0]
 
-    well_name = 'test-name'
-    datetime_start_str = '2022-11-15 12:12:12'
-    work_type = 'test-work'
-    deposit_id = area_id
-
     url = f'{URL}/add-work-info'
     payload = WorkInfo(
-        well_name=well_name,
-        datetime_start_str=datetime_start_str,
-        work_type=work_type,
-        deposit_id=deposit_id
+        well_name='test-name',
+        datetime_start_str='2022-11-15 12:12:12',
+        work_type='test-work',
+        deposit_id=area_id
     )
     expected_value = {
         'status': True,
-        'message': (f'Successfully added work info: {well_name}, '
-                    f'{datetime_start_str}, {work_type}, {deposit_id}'),
+        'message': (f'Successfully added work info: {payload.well_name}, '
+                    f'{payload.datetime_start_str}, {payload.work_type}, '
+                    f'{payload.deposit_id}'),
         'data': {}
     }
     response = requests.post(url, json=payload.dict())
@@ -217,24 +213,20 @@ def test_add_duplicate_work(up_test_dbase, clear_deposits_table):
     cursor.execute(query)
     area_id = cursor.fetchone()[0]
 
-    well_name = 'test-name'
-    datetime_start_str = '2022-11-15 12:12:12'
-    work_type = 'test-work'
-    deposit_id = area_id
-
     url = f'{URL}/add-work-info'
     payload = WorkInfo(
-        well_name=well_name,
-        datetime_start_str=datetime_start_str,
-        work_type=work_type,
-        deposit_id=deposit_id
+        well_name='test-name',
+        datetime_start_str='2022-11-15 12:12:12',
+        work_type='test-work',
+        deposit_id=area_id
     )
     requests.post(url, json=payload.dict())
 
     expected_value = {
         'status': False,
-        'message': (f'Cant add work info: {well_name}, '
-                    f'{datetime_start_str}, {work_type}, {deposit_id}'),
+        'message': (f'Cant add work info: {payload.well_name}, '
+                    f'{payload.datetime_start_str}, {payload.work_type}, '
+                    f'{payload.deposit_id}'),
         'data': {}
     }
     response = requests.post(url, json=payload.dict())
@@ -260,29 +252,19 @@ def test_update_work_info(up_test_dbase, clear_deposits_table):
     cursor.execute(query)
     area_id = cursor.fetchone()[0]
 
-    old_well_name = 'test-name'
-    old_datetime_start_str = '2022-11-15 12:12:12'
-    old_work_type = 'test-work'
-    old_deposit_id = area_id
-
     old_work_info = WorkInfo(
-        well_name=old_well_name,
-        datetime_start_str=old_datetime_start_str,
-        work_type=old_work_type,
-        deposit_id=old_deposit_id
+        well_name='test-name',
+        datetime_start_str='2022-11-15 12:12:12',
+        work_type='test-work',
+        deposit_id=area_id
     )
-    up_test_dbase.add_work_info(old_work_info)
-
-    new_well_name = 'test-name2'
-    new_datetime_start_str = '2022-11-20 10:10:10'
-    new_work_type = 'test-work2'
-    new_deposit_id = area_id
+    up_test_dbase.add_work_info(work_info=old_work_info)
 
     new_work_info = WorkInfo(
-        well_name=new_well_name,
-        datetime_start_str=new_datetime_start_str,
-        work_type=new_work_type,
-        deposit_id=new_deposit_id
+        well_name='test-name2',
+        datetime_start_str='2022-11-20 10:10:10',
+        work_type='test-work2',
+        deposit_id=area_id
     )
     payload = {
         'old_work_info': old_work_info.dict(),
@@ -325,42 +307,27 @@ def test_update_duplicate_work_info(up_test_dbase,
     cursor.execute(query)
     area_id = cursor.fetchone()[0]
 
-    well_name = 'test-name'
-    datetime_start_str = '2022-11-15 12:12:12'
-    work_type = 'test-work'
-    deposit_id = area_id
-
     work_info = WorkInfo(
-        well_name=well_name,
-        datetime_start_str=datetime_start_str,
-        work_type=work_type,
-        deposit_id=deposit_id
+        well_name='test-name',
+        datetime_start_str='2022-11-15 12:12:12',
+        work_type='test-work',
+        deposit_id=area_id
     )
-    up_test_dbase.add_work_info(work_info)
-
-    old_well_name = 'test-name1'
-    old_datetime_start_str = '2022-11-21 12:12:12'
-    old_work_type = 'test-work1'
-    old_deposit_id = area_id
+    up_test_dbase.add_work_info(work_info=work_info)
 
     old_work_info = WorkInfo(
-        well_name=old_well_name,
-        datetime_start_str=old_datetime_start_str,
-        work_type=old_work_type,
-        deposit_id=old_deposit_id
+        well_name='test-name1',
+        datetime_start_str='2022-11-21 12:12:12',
+        work_type='test-work1',
+        deposit_id=area_id
     )
-    up_test_dbase.add_work_info(old_work_info)
-
-    new_well_name = 'test-name'
-    new_datetime_start_str = '2022-11-15 12:12:12'
-    new_work_type = 'test-work'
-    new_deposit_id = area_id
+    up_test_dbase.add_work_info(work_info=old_work_info)
 
     new_work_info = WorkInfo(
-        well_name=new_well_name,
-        datetime_start_str=new_datetime_start_str,
-        work_type=new_work_type,
-        deposit_id=new_deposit_id
+        well_name='test-name',
+        datetime_start_str='2022-11-15 12:12:12',
+        work_type='test-work',
+        deposit_id=area_id
     )
     payload = {
         'old_work_info': old_work_info.dict(),
@@ -391,8 +358,7 @@ def test_update_duplicate_work_info(up_test_dbase,
 
 
 def test_get_works_info(up_test_dbase, clear_deposits_table):
-    area_name = 'test-area'
-    up_test_dbase.add_deposit_info(area_name)
+    up_test_dbase.add_deposit_info(area_name='test-area')
 
     table = Table('deposits')
     query = str(
@@ -404,31 +370,21 @@ def test_get_works_info(up_test_dbase, clear_deposits_table):
     cursor.execute(query)
     area_id = cursor.fetchone()[0]
 
-    first_well_name = 'test-name'
-    first_datetime_start_str = '2022-11-15 12:12:12'
-    first_work_type = 'test-work'
-    first_deposit_id = area_id
-
     first_work_info = WorkInfo(
-        well_name=first_well_name,
-        datetime_start_str=first_datetime_start_str,
-        work_type=first_work_type,
-        deposit_id=first_deposit_id
+        well_name='test-name',
+        datetime_start_str='2022-11-15 12:12:12',
+        work_type='test-work',
+        deposit_id=area_id
     )
-    up_test_dbase.add_work_info(first_work_info)
-
-    second_well_name = 'test-name2'
-    second_datetime_start_str = '2000-01-24 11:12:13'
-    second_work_type = 'test-work2'
-    second_deposit_id = area_id
+    up_test_dbase.add_work_info(work_info=first_work_info)
 
     second_work_info = WorkInfo(
-        well_name=second_well_name,
-        datetime_start_str=second_datetime_start_str,
-        work_type=second_work_type,
-        deposit_id=second_deposit_id
+        well_name='test-name2',
+        datetime_start_str='2000-01-24 11:12:13',
+        work_type='test-work2',
+        deposit_id=area_id
     )
-    up_test_dbase.add_work_info(second_work_info)
+    up_test_dbase.add_work_info(work_info=second_work_info)
 
     url = f'{URL}/get-works-info/{area_id}'
     response = requests.get(url)
