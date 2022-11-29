@@ -388,13 +388,13 @@ class TestStorageDBase:
         )
         cursor = up_test_dbase.connection.cursor()
         cursor.execute(query)
-        area_id = cursor.fetchone()[0]
+        deposit_id = cursor.fetchone()[0]
 
         work_info = WorkInfo(
             well_name='test-name',
             datetime_start_str='2022-11-15 12:12:12',
             work_type='test-work',
-            deposit_id=area_id
+            deposit_id=deposit_id
         )
         is_success = up_test_dbase.add_work_info(work_info=work_info)
         assert_that(actual_or_assertion=is_success, matcher=is_(True))
@@ -425,13 +425,13 @@ class TestStorageDBase:
         )
         cursor = up_test_dbase.connection.cursor()
         cursor.execute(query)
-        area_id = cursor.fetchone()[0]
+        deposit_id = cursor.fetchone()[0]
 
         work_info = WorkInfo(
             well_name='test-name',
             datetime_start_str='2022-11-15 12:12:12',
             work_type='test-work',
-            deposit_id=area_id
+            deposit_id=deposit_id
         )
         is_success = up_test_dbase.add_work_info(work_info=work_info)
         assert_that(actual_or_assertion=is_success, matcher=is_(True))
@@ -440,7 +440,7 @@ class TestStorageDBase:
             well_name='TEST-NAME',
             datetime_start_str='2022-11-15 12:12:12',
             work_type='TEST-WORK',
-            deposit_id=area_id
+            deposit_id=deposit_id
         )
         is_success = up_test_dbase.add_work_info(work_info=work_info)
         assert_that(actual_or_assertion=is_success, matcher=is_(False))
@@ -482,13 +482,13 @@ class TestStorageDBase:
         )
         cursor = up_test_dbase.connection.cursor()
         cursor.execute(query)
-        area_id = cursor.fetchone()[0]
+        deposit_id = cursor.fetchone()[0]
 
         work_info = WorkInfo(
             well_name=passed_well_name,
             datetime_start_str='2022-11-15 12:12:12',
             work_type=passed_work_type,
-            deposit_id=area_id
+            deposit_id=deposit_id
         )
 
         is_success = up_test_dbase.add_work_info(work_info=work_info)
@@ -525,13 +525,13 @@ class TestStorageDBase:
         )
         cursor = up_test_dbase.connection.cursor()
         cursor.execute(query)
-        area_id = cursor.fetchone()[0]
+        deposit_id = cursor.fetchone()[0]
 
         old_work_info = WorkInfo(
             well_name='test-name',
             datetime_start_str='2022-11-15 12:12:12',
             work_type='test-work',
-            deposit_id=area_id
+            deposit_id=deposit_id
         )
         up_test_dbase.add_work_info(work_info=old_work_info)
 
@@ -539,7 +539,7 @@ class TestStorageDBase:
             well_name='test-name2',
             datetime_start_str='2000-01-24 11:12:13',
             work_type='test-work2',
-            deposit_id=area_id
+            deposit_id=deposit_id
         )
         is_success = up_test_dbase.update_work_info(
             old_work_info=old_work_info,
@@ -576,13 +576,13 @@ class TestStorageDBase:
         )
         cursor = up_test_dbase.connection.cursor()
         cursor.execute(query)
-        area_id = cursor.fetchone()[0]
+        deposit_id = cursor.fetchone()[0]
 
         old_work_info = WorkInfo(
             well_name='test-name',
             datetime_start_str='2022-11-15 12:12:12',
             work_type='test-work',
-            deposit_id=area_id
+            deposit_id=deposit_id
         )
         up_test_dbase.add_work_info(work_info=old_work_info)
 
@@ -590,7 +590,7 @@ class TestStorageDBase:
             well_name='TEST-NAME',
             datetime_start_str='2022-11-15 12:12:12',
             work_type='TEST-WORK',
-            deposit_id=area_id
+            deposit_id=deposit_id
         )
         is_success = up_test_dbase.update_work_info(
             old_work_info=old_work_info,
@@ -626,13 +626,13 @@ class TestStorageDBase:
         )
         cursor = up_test_dbase.connection.cursor()
         cursor.execute(query)
-        area_id = cursor.fetchone()[0]
+        deposit_id = cursor.fetchone()[0]
 
         first_work_info = WorkInfo(
             well_name='test-name',
             datetime_start_str='2022-11-15 12:12:12',
             work_type='test-work',
-            deposit_id=area_id
+            deposit_id=deposit_id
         )
         up_test_dbase.add_work_info(work_info=first_work_info)
 
@@ -640,11 +640,11 @@ class TestStorageDBase:
             well_name='test-name2',
             datetime_start_str='2000-01-24 11:12:13',
             work_type='test-work2',
-            deposit_id=area_id
+            deposit_id=deposit_id
         )
         up_test_dbase.add_work_info(work_info=second_work_info)
 
-        records = up_test_dbase.get_works_info(area_id=area_id)
+        records = up_test_dbase.get_works_info(deposit_id=deposit_id)
         assert_that(
             actual_or_assertion=len(records),
             matcher=equal_to(2)
@@ -671,13 +671,13 @@ def test_add_station_info(up_test_dbase, clear_deposits_table):
     )
     cursor = up_test_dbase.connection.cursor()
     cursor.execute(query)
-    area_id = cursor.fetchone()[0]
+    deposit_id = cursor.fetchone()[0]
 
     work_info = WorkInfo(
         well_name='test-name',
         datetime_start_str='2022-11-15 12:12:12',
         work_type='test-work',
-        deposit_id=area_id
+        deposit_id=deposit_id
     )
     up_test_dbase.add_work_info(work_info=work_info)
 
@@ -735,13 +735,13 @@ def test_duplicate_station_fields(up_test_dbase,
     )
     cursor = up_test_dbase.connection.cursor()
     cursor.execute(query)
-    area_id = cursor.fetchone()[0]
+    deposit_id = cursor.fetchone()[0]
 
     work_info = WorkInfo(
         well_name='test-name',
         datetime_start_str='2022-11-15 12:12:12',
         work_type='test-work',
-        deposit_id=area_id
+        deposit_id=deposit_id
     )
     up_test_dbase.add_work_info(work_info=work_info)
 
@@ -808,13 +808,13 @@ def correct_station_field_value(up_test_dbase,
     )
     cursor = up_test_dbase.connection.cursor()
     cursor.execute(query)
-    area_id = cursor.fetchone()[0]
+    deposit_id = cursor.fetchone()[0]
 
     work_info = WorkInfo(
         well_name='test-name',
         datetime_start_str='2022-11-15 12:12:12',
         work_type='test-work',
-        deposit_id=area_id
+        deposit_id=deposit_id
     )
     up_test_dbase.add_work_info(work_info=work_info)
 
@@ -871,13 +871,13 @@ def test_update_station_info(up_test_dbase, clear_deposits_table):
     )
     cursor = up_test_dbase.connection.cursor()
     cursor.execute(query)
-    area_id = cursor.fetchone()[0]
+    deposit_id = cursor.fetchone()[0]
 
     work_info = WorkInfo(
         well_name='test-name',
         datetime_start_str='2022-11-15 12:12:12',
         work_type='test-work',
-        deposit_id=area_id
+        deposit_id=deposit_id
     )
     up_test_dbase.add_work_info(work_info=work_info)
 
@@ -945,13 +945,13 @@ def test_update_duplicate_station_info(up_test_dbase,
     )
     cursor = up_test_dbase.connection.cursor()
     cursor.execute(query)
-    area_id = cursor.fetchone()[0]
+    deposit_id = cursor.fetchone()[0]
 
     work_info = WorkInfo(
         well_name='test-name',
         datetime_start_str='2022-11-15 12:12:12',
         work_type='test-work',
-        deposit_id=area_id
+        deposit_id=deposit_id
     )
     up_test_dbase.add_work_info(work_info=work_info)
 
@@ -1027,13 +1027,13 @@ def test_get_stations_info(up_test_dbase, clear_deposits_table):
     )
     cursor = up_test_dbase.connection.cursor()
     cursor.execute(query)
-    area_id = cursor.fetchone()[0]
+    deposit_id = cursor.fetchone()[0]
 
     work_info = WorkInfo(
         well_name='test-name',
         datetime_start_str='2022-11-15 12:12:12',
         work_type='test-work',
-        deposit_id=area_id
+        deposit_id=deposit_id
     )
     up_test_dbase.add_work_info(work_info=work_info)
 
