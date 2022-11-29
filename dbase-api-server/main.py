@@ -25,7 +25,7 @@ dbase_adapter = StorageDBase(
 
 
 @app.get('/ping')
-def check_service_alive() -> dict:
+def check_service_alive() -> Response:
     """Return ping-pong response.
 
     Returns: dict object with status and message
@@ -36,11 +36,11 @@ def check_service_alive() -> dict:
         message='Service is alive',
         data={}
     )
-    return returning_info.dict()
+    return returning_info
 
 
 @app.get('/get-all-deposits')
-def get_all_deposits() -> dict:
+def get_all_deposits() -> Response:
     """Return all deposits name from deposit table.
 
     Returns: dict object with operation status, message with
@@ -57,11 +57,11 @@ def get_all_deposits() -> dict:
             'area_names': area_names
         }
     )
-    return returning_info.dict()
+    return returning_info
 
 
 @app.post('/add-deposit')
-def add_new_deposit(deposit: Deposit) -> dict:
+def add_new_deposit(deposit: Deposit) -> Response:
     """Add deposit info to database.
 
     Args:
@@ -83,11 +83,12 @@ def add_new_deposit(deposit: Deposit) -> dict:
         message=message,
         data={}
     )
-    return returning_info.dict()
+    return returning_info
 
 
 @app.post('/update-deposit')
-def update_deposit_info(old_deposit: Deposit, new_deposit: Deposit) -> dict:
+def update_deposit_info(old_deposit: Deposit,
+                        new_deposit: Deposit) -> Response:
     """Update deposit name.
 
     Args:
@@ -117,11 +118,11 @@ def update_deposit_info(old_deposit: Deposit, new_deposit: Deposit) -> dict:
         message=message,
         data={}
     )
-    return returning_info.dict()
+    return returning_info
 
 
 @app.post('/add-work-info')
-def add_work_info(work_info: WorkInfo) -> dict:
+def add_work_info(work_info: WorkInfo) -> Response:
     """Add work info to database.
 
     Args:
@@ -147,12 +148,12 @@ def add_work_info(work_info: WorkInfo) -> dict:
         message=message,
         data={}
     )
-    return returning_info.dict()
+    return returning_info
 
 
 @app.post('/update-work-info')
 def update_work_info(old_work_info: WorkInfo,
-                     new_work_info: WorkInfo) -> dict:
+                     new_work_info: WorkInfo) -> Response:
     """Update work info in database.
 
     Args:
@@ -189,11 +190,11 @@ def update_work_info(old_work_info: WorkInfo,
         message=message,
         data={}
     )
-    return returning_info.dict()
+    return returning_info
 
 
 @app.post('/add-station-info')
-def add_station_info(station_info: StationInfo) -> dict:
+def add_station_info(station_info: StationInfo) -> Response:
     """Add station info to database.
 
     Args:
@@ -224,12 +225,12 @@ def add_station_info(station_info: StationInfo) -> dict:
         message=message,
         data={}
     )
-    return returning_info.dict()
+    return returning_info
 
 
 @app.post('/update-station-info')
 def update_station_info(old_station_info: StationInfo,
-                        new_station_info: StationInfo) -> dict:
+                        new_station_info: StationInfo) -> Response:
     """Update station info.
 
     Args:
@@ -268,11 +269,11 @@ def update_station_info(old_station_info: StationInfo,
         message=message,
         data={}
     )
-    return returning_info.dict()
+    return returning_info
 
 
 @app.get('/get-stations-info/{work_id}')
-def get_stations_info(work_id: int) -> dict:
+def get_stations_info(work_id: int) -> Response:
     """Return stations info from table.
 
     Returns: dict object with operation status, message with
