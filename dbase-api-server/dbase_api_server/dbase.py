@@ -20,7 +20,7 @@ Examples:
 """
 import logging
 from datetime import datetime
-from typing import Union
+from typing import List, Union
 
 from psycopg import OperationalError
 from psycopg.connection import Connection
@@ -267,7 +267,7 @@ class StorageDBase:
         """
         return self.is_success_changing_query(query=query)
 
-    def get_stations_info(self, work_id: str) -> Union[None, list]:
+    def get_stations_info(self, work_id: str) -> List[StationInfo]:
         """Get station info by well name.
 
         Args:

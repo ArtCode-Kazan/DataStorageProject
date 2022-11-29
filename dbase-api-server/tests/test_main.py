@@ -163,7 +163,7 @@ def test_update_blank_deposit_name(up_test_dbase, clear_deposits_table):
 
 
 def test_add_new_work(up_test_dbase, clear_deposits_table):
-    up_test_dbase.add_deposit_info('test-area')
+    up_test_dbase.add_deposit_info(area_name='test-area')
 
     table = Table('deposits')
     query = str(
@@ -205,7 +205,7 @@ def test_add_new_work(up_test_dbase, clear_deposits_table):
 
 
 def test_add_duplicate_work(up_test_dbase, clear_deposits_table):
-    up_test_dbase.add_deposit_info('test-area')
+    up_test_dbase.add_deposit_info(area_name='test-area')
 
     table = Table('deposits')
     query = str(
@@ -249,7 +249,7 @@ def test_add_duplicate_work(up_test_dbase, clear_deposits_table):
 
 
 def test_update_work_info(up_test_dbase, clear_deposits_table):
-    up_test_dbase.add_deposit_info('test-area')
+    up_test_dbase.add_deposit_info(area_name='test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
@@ -314,7 +314,7 @@ def test_update_work_info(up_test_dbase, clear_deposits_table):
 
 def test_update_duplicate_work_info(up_test_dbase,
                                     clear_deposits_table):
-    up_test_dbase.add_deposit_info('test-area')
+    up_test_dbase.add_deposit_info(area_name='test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
@@ -391,7 +391,7 @@ def test_update_duplicate_work_info(up_test_dbase,
 
 
 def test_add_station_info(up_test_dbase, clear_deposits_table):
-    up_test_dbase.add_deposit_info('test-area')
+    up_test_dbase.add_deposit_info(area_name='test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
@@ -452,7 +452,7 @@ def test_add_station_info(up_test_dbase, clear_deposits_table):
 
 
 def test_add_duplicate_station_info(up_test_dbase, clear_deposits_table):
-    up_test_dbase.add_deposit_info('test-area')
+    up_test_dbase.add_deposit_info(area_name='test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
@@ -515,7 +515,7 @@ def test_add_duplicate_station_info(up_test_dbase, clear_deposits_table):
 
 
 def test_update_station_info(up_test_dbase, clear_deposits_table):
-    up_test_dbase.add_deposit_info('test-area')
+    up_test_dbase.add_deposit_info(area_name='test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
@@ -594,7 +594,7 @@ def test_update_station_info(up_test_dbase, clear_deposits_table):
 
 
 def test_update_duplicate_station_info(up_test_dbase, clear_deposits_table):
-    up_test_dbase.add_deposit_info('test-area')
+    up_test_dbase.add_deposit_info(area_name='test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
@@ -683,7 +683,7 @@ def test_update_duplicate_station_info(up_test_dbase, clear_deposits_table):
 
 
 def test_get_stations_info(up_test_dbase, clear_deposits_table):
-    up_test_dbase.add_deposit_info('test-area')
+    up_test_dbase.add_deposit_info(area_name='test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(

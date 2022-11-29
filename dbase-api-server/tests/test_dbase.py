@@ -359,7 +359,7 @@ class TestStorageDBase:
     def test_field_deposit_name_lengh(self, up_test_dbase,
                                       clear_deposits_table, passed_value,
                                       expected_value, expected_records_count):
-        is_success = up_test_dbase.add_deposit_info(passed_value)
+        is_success = up_test_dbase.add_deposit_info(area_name=passed_value)
         assert_that(
             actual_or_assertion=is_success,
             matcher=is_(expected_value)
@@ -378,7 +378,7 @@ class TestStorageDBase:
         )
 
     def test_add_work_info(self, up_test_dbase, clear_deposits_table):
-        up_test_dbase.add_deposit_info('test-area')
+        up_test_dbase.add_deposit_info(area_name='test-area')
 
         table = Table('deposits')
         query = str(
@@ -420,7 +420,7 @@ class TestStorageDBase:
 
     def test_duplicate_and_lower_upper_work_fields(self, up_test_dbase,
                                                    clear_deposits_table):
-        up_test_dbase.add_deposit_info('test-area')
+        up_test_dbase.add_deposit_info(area_name='test-area')
 
         table = Table('deposits')
         query = str(
@@ -487,7 +487,7 @@ class TestStorageDBase:
                                     clear_deposits_table, passed_well_name,
                                     passed_work_type, expected_value,
                                     expected_records_count):
-        up_test_dbase.add_deposit_info('test-area')
+        up_test_dbase.add_deposit_info(area_name='test-area')
 
         table = Table('deposits')
         query = str(
@@ -535,7 +535,7 @@ class TestStorageDBase:
         )
 
     def test_update_work_info(self, up_test_dbase, clear_deposits_table):
-        up_test_dbase.add_deposit_info('test-area')
+        up_test_dbase.add_deposit_info(area_name='test-area')
 
         table = Table('deposits')
         query = str(
@@ -596,7 +596,7 @@ class TestStorageDBase:
 
     def test_update_duplicate_lower_upper_work(self, up_test_dbase,
                                                clear_deposits_table):
-        up_test_dbase.add_deposit_info('test-area')
+        up_test_dbase.add_deposit_info(area_name='test-area')
 
         table = Table('deposits')
         query = str(
@@ -655,7 +655,7 @@ class TestStorageDBase:
 
 
 def test_add_station_info(up_test_dbase, clear_deposits_table):
-    up_test_dbase.add_deposit_info('test-area')
+    up_test_dbase.add_deposit_info(area_name='test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
@@ -719,7 +719,7 @@ def test_add_station_info(up_test_dbase, clear_deposits_table):
 
 def test_duplicate_station_fields(up_test_dbase,
                                   clear_deposits_table):
-    up_test_dbase.add_deposit_info('test-area')
+    up_test_dbase.add_deposit_info(area_name='test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
@@ -792,7 +792,7 @@ def test_duplicate_station_fields(up_test_dbase,
 
 def correct_station_field_value(up_test_dbase,
                                 clear_deposits_table):
-    up_test_dbase.add_deposit_info('test-area')
+    up_test_dbase.add_deposit_info(area_name='test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
@@ -855,7 +855,7 @@ def correct_station_field_value(up_test_dbase,
 
 
 def test_update_station_info(up_test_dbase, clear_deposits_table):
-    up_test_dbase.add_deposit_info('test-area')
+    up_test_dbase.add_deposit_info(area_name='test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
@@ -929,7 +929,7 @@ def test_update_station_info(up_test_dbase, clear_deposits_table):
 
 def test_update_duplicate_station_info(up_test_dbase,
                                        clear_deposits_table):
-    up_test_dbase.add_deposit_info('test-area')
+    up_test_dbase.add_deposit_info(area_name='test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
@@ -1011,7 +1011,7 @@ def test_update_duplicate_station_info(up_test_dbase,
 
 
 def test_get_stations_info(up_test_dbase, clear_deposits_table):
-    up_test_dbase.add_deposit_info('test-area')
+    up_test_dbase.add_deposit_info(area_name='test-area')
     table = Table('deposits')
     query = str(
         Query.from_(table).select('id').where(
