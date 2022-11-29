@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from hamcrest import assert_that, equal_to
 from pypika import Query, Table
 
-from dbase_api_server.models import Deposit, StationInfo, WorkInfo
+from dbase_api_server.models import Deposit, WorkInfo
 
 load_dotenv()
 
@@ -114,7 +114,7 @@ def test_update_deposit(up_test_dbase, clear_deposits_table):
                     f'renamed to "{new_area_name}"'),
         'data': {}
     }
-    url = (f'{URL}/update-deposit')
+    url = f'{URL}/update-deposit'
     response = requests.post(url, json=payload)
 
     assert_that(
@@ -149,7 +149,7 @@ def test_update_blank_deposit_name(up_test_dbase, clear_deposits_table):
                     f'to "{new_area_name}"'),
         'data': {}
     }
-    url = (f'{URL}/update-deposit')
+    url = f'{URL}/update-deposit'
     response = requests.post(url, json=payload)
 
     assert_that(

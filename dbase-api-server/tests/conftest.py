@@ -7,7 +7,7 @@ from dbase_api_server.dbase import StorageDBase
 
 @pytest.fixture(scope='session')
 def up_test_dbase():
-    environment = TestEnvironment(is_update_images=False)
+    environment = TestEnvironment(is_update_images=True)
     environment.initialize()
     test_dbase = StorageDBase(params=environment.dbase_connection_params)
     yield test_dbase
