@@ -299,7 +299,9 @@ def get_stations_info(work_id: int) -> Response:
     Returns: dict object with operation status, message with
     operation discription and stations related to work.
     """
-    stations_info = dbase_adapter.get_stations_info(work_id)
+    stations_info = dbase_adapter.get_stations_info(
+        work_id=work_id
+    )
 
     returning_info = Response(
         status=True,
