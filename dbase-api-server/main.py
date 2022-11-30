@@ -317,7 +317,7 @@ def get_stations_info(work_id: int) -> Response:
 
     returning_info = Response(
         status=True,
-        message=f'All works related to work with id:"{work_id}" '
+        message=f'All stations related to work with id:"{work_id}" '
                 f'returend successfully',
         data={
             'stations_info': stations_info
@@ -341,7 +341,7 @@ def add_seismic_record(record_info: SeismicRecordInfo) -> Response:
     is_added = dbase_adapter.add_seismic_record_info(record_info)
     if is_added:
         message = (
-            f'Successfully added seismec record info: '
+            f'Successfully added seismic record info: '
             f'{record_info.station_id}, '
             f'{record_info.datetime_start_str}, '
             f'{record_info.datetime_stop_str}, '
@@ -350,7 +350,7 @@ def add_seismic_record(record_info: SeismicRecordInfo) -> Response:
         )
     else:
         message = (
-            f'Cant add seismec record info: '
+            f'Cant add seismic record info: '
             f'{record_info.station_id}, '
             f'{record_info.datetime_start_str}, '
             f'{record_info.datetime_stop_str}, '
@@ -386,7 +386,7 @@ def update_seismic_record_info(
     )
     if is_added:
         message = (
-            f'Successfully changed seismec record info '
+            f'Successfully changed seismic record info '
             f'{old_record_info.station_id}, '
             f'{old_record_info.datetime_start_str}, '
             f'{old_record_info.datetime_stop_str}, '
@@ -400,7 +400,7 @@ def update_seismic_record_info(
         )
     else:
         message = (
-            f'Cant change seismec record info '
+            f'Cant change seismic record info '
             f'{old_record_info.station_id}, '
             f'{old_record_info.datetime_start_str}, '
             f'{old_record_info.datetime_stop_str}, '
@@ -436,10 +436,12 @@ def get_seismic_records_info(station_id: int) -> Response:
 
     returning_info = Response(
         status=True,
-        message=f'All works related to work with id:"{station_id}" '
-                f'returend successfully',
+        message=(
+            f'All seismic records related to station '
+            f'with id:"{station_id}" returend successfully'
+        ),
         data={
-            'stations_info': records_info
+            'records_info': records_info
         }
     )
     return returning_info
