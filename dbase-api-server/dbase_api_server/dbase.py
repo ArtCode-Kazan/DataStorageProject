@@ -293,7 +293,7 @@ class StorageDBase:
         """
         return self.is_success_changing_query(query=query)
 
-    def get_stations_info(self, work_id: str) -> List[StationInfo]:
+    def get_stations_info(self, work_id: int) -> List[StationInfo]:
         """Get station info by well name.
 
         Args:
