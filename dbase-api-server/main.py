@@ -8,7 +8,8 @@ from fastapi import FastAPI
 
 from dbase_api_server.containers import PostgresConnectionParams
 from dbase_api_server.dbase import StorageDBase
-from dbase_api_server.models import Deposit, Response, StationInfo, WorkInfo
+from dbase_api_server.models import (Deposit, Response, SeismicRecordInfo,
+                                     StationInfo, WorkInfo)
 
 dotenv.load_dotenv()
 
@@ -128,6 +129,9 @@ def add_work_info(work_info: WorkInfo) -> Response:
     Args:
         work_info: works fields (well_name, datetime_start_str,
         work_type, deposit_id)
+
+    Returns: Response model object with request status, message with
+    action discription.
     """
     is_added = dbase_adapter.add_work_info(work_info=work_info)
     if is_added:
@@ -162,6 +166,8 @@ def update_work_info(old_work_info: WorkInfo,
         new_work_info: updated works fields (well_name, datetime_start_str,
         work_type, deposit_id)
 
+    Returns: Response model object with request status, message with
+    action discription
     """
     is_added = dbase_adapter.update_work_info(
         old_work_info=old_work_info,
@@ -197,10 +203,13 @@ def update_work_info(old_work_info: WorkInfo,
 def get_works_info(deposit_id: int) -> Response:
     """Return works info from works table.
 
+    Args:
+        deposit_id: id of deposit
+
     Returns: dict object with operation status, message with
     operation discription and works related to deposit.
     """
-    works_info = dbase_adapter.get_works_info(deposit_id)
+    works_info = dbase_adapter.get_works_info(deposit_id=deposit_id)
 
     returning_info = Response(
         status=True,
@@ -296,6 +305,9 @@ def update_station_info(old_station_info: StationInfo,
 def get_stations_info(work_id: int) -> Response:
     """Return stations info from table.
 
+    Args:
+        work_id: associated with station work id
+
     Returns: dict object with operation status, message with
     operation discription and stations related to work.
     """
@@ -309,6 +321,125 @@ def get_stations_info(work_id: int) -> Response:
                 f'returend successfully',
         data={
             'stations_info': stations_info
+        }
+    )
+    return returning_info
+
+
+@app.post('/add-seimic-record-info')
+def add_seismic_record(record_info: SeismicRecordInfo) -> Response:
+    """Add seismic record info to database.
+
+    Args:
+        record_info: seismic record fields(station_id,
+        datetime_start_str, datetime_stop_str, frequency,
+        origin_name, unique_name, is_using)
+
+    Returns: Response model object with request status, message with
+    action discription.
+    """
+    is_added = dbase_adapter.add_seismic_record_info(record_info)
+    if is_added:
+        message = (
+            f'Successfully added seismec record info: '
+            f'{record_info.station_id}, '
+            f'{record_info.datetime_start_str}, '
+            f'{record_info.datetime_stop_str}, '
+            f'{record_info.frequency}, {record_info.origin_name}, '
+            f'{record_info.unique_name}, {record_info.is_using}'
+        )
+    else:
+        message = (
+            f'Cant add seismec record info: '
+            f'{record_info.station_id}, '
+            f'{record_info.datetime_start_str}, '
+            f'{record_info.datetime_stop_str}, '
+            f'{record_info.frequency}, {record_info.origin_name}, '
+            f'{record_info.unique_name}, {record_info.is_using}'
+        )
+
+    returning_info = Response(
+        status=is_added,
+        message=message,
+        data={}
+    )
+    return returning_info
+
+
+@app.post('/update-seismic-record-info')
+def update_seismic_record_info(
+    old_record_info: SeismicRecordInfo,
+    new_record_info: SeismicRecordInfo
+) -> Response:
+    """Update seismic record info.
+
+    Args:
+        old_record_info: container with seismic record columns
+        new_record_info: container with updated seismic record columns
+
+    Returns: dict object with request status, message with
+    action discription.
+    """
+    is_added = dbase_adapter.update_seismic_record_info(
+        old_record_info=old_record_info,
+        new_record_info=new_record_info
+    )
+    if is_added:
+        message = (
+            f'Successfully changed seismec record info '
+            f'{old_record_info.station_id}, '
+            f'{old_record_info.datetime_start_str}, '
+            f'{old_record_info.datetime_stop_str}, '
+            f'{old_record_info.frequency}, {old_record_info.origin_name}, '
+            f'{old_record_info.unique_name}, {old_record_info.is_using} to '
+            f'{new_record_info.station_id}, '
+            f'{new_record_info.datetime_start_str}, '
+            f'{new_record_info.datetime_stop_str}, '
+            f'{new_record_info.frequency}, {new_record_info.origin_name}, '
+            f'{new_record_info.unique_name}, {new_record_info.is_using}.'
+        )
+    else:
+        message = (
+            f'Cant change seismec record info '
+            f'{old_record_info.station_id}, '
+            f'{old_record_info.datetime_start_str}, '
+            f'{old_record_info.datetime_stop_str}, '
+            f'{old_record_info.frequency}, {old_record_info.origin_name}, '
+            f'{old_record_info.unique_name}, {old_record_info.is_using} to '
+            f'{new_record_info.station_id}, '
+            f'{new_record_info.datetime_start_str}, '
+            f'{new_record_info.datetime_stop_str}, '
+            f'{new_record_info.frequency}, {new_record_info.origin_name}, '
+            f'{new_record_info.unique_name}, {new_record_info.is_using}.'
+        )
+    returning_info = Response(
+        status=is_added,
+        message=message,
+        data={}
+    )
+    return returning_info
+
+
+@app.get('/get-seismic-records-info/{station_id}')
+def get_seismic_records_info(station_id: int) -> Response:
+    """Return seismic records info from table.
+
+    Args:
+        station_id: associated with seismic record station id
+
+    Returns: dict object with operation status, message with
+    operation discription and seismic records related to station.
+    """
+    records_info = dbase_adapter.get_seismic_records_info(
+        station_id=station_id
+    )
+
+    returning_info = Response(
+        status=True,
+        message=f'All works related to work with id:"{station_id}" '
+                f'returend successfully',
+        data={
+            'stations_info': records_info
         }
     )
     return returning_info

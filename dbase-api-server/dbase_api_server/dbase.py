@@ -29,7 +29,8 @@ from psycopg.errors import (CheckViolation, NumericValueOutOfRange,
 from pypika import Query, Table
 
 from dbase_api_server.containers import PostgresConnectionParams
-from dbase_api_server.models import DATETIME_FORMAT, StationInfo, WorkInfo
+from dbase_api_server.models import (DATETIME_FORMAT, SeismicRecordInfo,
+                                     StationInfo, WorkInfo)
 
 DEFAULT_PORT = 5432
 DEFAULT_PATH = '/var/lib/postgresql/data'
@@ -179,6 +180,7 @@ class StorageDBase:
         Args:
             work_info: container with works params
 
+        Returns: True if info was added success, False - if not.
         """
         lower_well_name = work_info.well_name.lower()
         lower_work_type = work_info.work_type.lower()
@@ -294,7 +296,7 @@ class StorageDBase:
         return self.is_success_changing_query(query=query)
 
     def get_stations_info(self, work_id: int) -> List[StationInfo]:
-        """Get station info by well name.
+        """Get station info by work id.
 
         Args:
             work_id: associated with station id
@@ -319,3 +321,96 @@ class StorageDBase:
             )
             stations_list.append(station_info)
         return stations_list
+
+    def add_seismic_record_info(self,
+                                record_info: SeismicRecordInfo) -> bool:
+        """Add seismic record info to database.
+
+        Args:
+            record_info: container with seismic record params
+
+        Returns: True if info was added success, False - if not.
+        """
+        origin_name = record_info.origin_name.lower()
+        unique_name = record_info.unique_name.lower()
+        table = Table('seismic_records')
+        query = str(
+            Query.into(table).columns(
+                'station_id', 'start_time', 'stop_time', 'frequency',
+                'origin_name', 'unique_name', 'is_using').insert(
+                    record_info.station_id,
+                    record_info.datetime_start_str,
+                    record_info.datetime_stop_str,
+                    record_info.frequency, origin_name,
+                    unique_name, record_info.is_using
+            )
+        )
+        return self.is_success_changing_query(query=query)
+
+    def update_seismic_record_info(
+            self,
+            old_record_info: SeismicRecordInfo,
+            new_record_info: SeismicRecordInfo
+    ) -> bool:
+        """Method for updating seismic record info.
+
+        Args:
+            old_record_info: container with parameters
+            new_record_info: container with updated params
+
+        Returns: True if name updated success, False - if not.
+
+        """
+        old_origin_name = old_record_info.origin_name.lower()
+        old_unique_name = old_record_info.unique_name.lower()
+        new_origin_name = new_record_info.origin_name.lower()
+        new_unique_name = new_record_info.unique_name.lower()
+
+        query = f"""UPDATE seismic_records SET
+        station_id = {new_record_info.station_id},
+        start_time = '{new_record_info.datetime_start_str}',
+        stop_time = '{new_record_info.datetime_stop_str}',
+        frequency = {new_record_info.frequency},
+        origin_name = '{new_origin_name}',
+        unique_name = '{new_unique_name}',
+        is_using = {new_record_info.is_using}
+        WHERE station_id = {old_record_info.station_id}
+        AND start_time = '{old_record_info.datetime_start_str}'
+        AND stop_time = '{old_record_info.datetime_stop_str}'
+        AND frequency = {old_record_info.frequency}
+        AND origin_name = '{old_origin_name}'
+        AND unique_name = '{old_unique_name}'
+        AND is_using = {old_record_info.is_using}
+        """
+        return self.is_success_changing_query(query=query)
+
+    def get_seismic_records_info(self,
+                                 station_id: int) -> List[SeismicRecordInfo]:
+        """Get station info by station id.
+
+        Args:
+            station_id: associated with seismic record id
+
+        Returns: list of selected rows. If no records - return None.
+        """
+        table = Table('seismic_records')
+        query = str(
+            Query.from_(table).select(
+                'station_id', 'start_time', 'stop_time', 'frequency',
+                'origin_name', 'unique_name', 'is_using').where(
+                    table.station_id == station_id
+            )
+        )
+        records_list = []
+        for record in self.select_many_records(query=query):
+            record_info = SeismicRecordInfo(
+                station_id=record[0],
+                datetime_start_str=str(record[1]),
+                datetime_stop_str=str(record[2]),
+                frequency=record[3],
+                origin_name=record[4],
+                unique_name=record[5],
+                is_using=record[6]
+            )
+            records_list.append(record_info)
+        return records_list

@@ -29,12 +29,12 @@ CREATE TABLE IF NOT EXISTS stations(
 
 CREATE TABLE IF NOT EXISTS seismic_records(
     id SERIAL PRIMARY KEY,
+    station_id INTEGER NOT NULL,
     start_time TIMESTAMP NOT NULL,
     stop_time TIMESTAMP NOT NULL,
     frequency INTEGER NOT NULL,
-    is_using BOOLEAN NOT NULL DEFAULT TRUE,
     origin_name TEXT NOT NULL,
     unique_name TEXT NOT NULL UNIQUE,
-    station_id INTEGER NOT NULL,
+    is_using BOOLEAN NOT NULL DEFAULT TRUE,
     FOREIGN KEY(station_id) REFERENCES stations(id) ON DELETE CASCADE
 );
