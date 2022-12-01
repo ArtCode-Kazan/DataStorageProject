@@ -11,7 +11,7 @@ from pypika.functions import Count
 
 from dbase_api_server.containers import PostgresConnectionParams
 from dbase_api_server.dbase import StorageDBase
-from dbase_api_server.models import StationInfo, WorkInfo
+from dbase_api_server.models import SeismicRecordInfo, StationInfo, WorkInfo
 
 
 class TestStorageDBase:
@@ -1078,8 +1078,511 @@ def test_get_stations_info(up_test_dbase, clear_deposits_table):
         matcher=is_(True)
     )
     record_check = [
-        first_station_info.dict(),
-        second_station_info.dict()
+        first_station_info,
+        second_station_info
+    ]
+    assert_that(
+        actual_or_assertion=records,
+        matcher=equal_to(record_check)
+    )
+
+
+def test_add_seismic_record_info(up_test_dbase, clear_deposits_table):
+    up_test_dbase.add_deposit_info(area_name='test-area')
+    table = Table('deposits')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.area_name == 'test-area'
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    deposit_id = cursor.fetchone()[0]
+
+    work_info = WorkInfo(
+        well_name='test-name',
+        datetime_start_str='2022-11-15 12:12:12',
+        work_type='test-work',
+        deposit_id=deposit_id
+    )
+    up_test_dbase.add_work_info(work_info=work_info)
+
+    table = Table('works')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.well_name == work_info.well_name).where(
+            table.start_time == work_info.datetime_start_str).where(
+            table.work_type == work_info.work_type).where(
+            table.deposit_id == work_info.deposit_id
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    work_id_value = cursor.fetchone()[0]
+
+    station_info = StationInfo(
+        station_number=666,
+        x_wgs84=11.111111,
+        y_wgs84=22.222222,
+        altitude=33.3,
+        work_id=work_id_value
+    )
+    up_test_dbase.add_station_info(station_info=station_info)
+
+    table = Table('stations')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.station_number == station_info.station_number).where(
+            table.x_wgs84 == station_info.x_wgs84).where(
+            table.y_wgs84 == station_info.y_wgs84).where(
+            table.altitude == station_info.altitude).where(
+            table.work_id == station_info.work_id)
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    station_id_value = cursor.fetchone()[0]
+
+    record_info = SeismicRecordInfo(
+        station_id=station_id_value,
+        datetime_start_str='2022-12-12 12:12:12',
+        datetime_stop_str='2022-12-30 15:15:15',
+        frequency=888,
+        origin_name='test-name',
+        unique_name='test-name-2',
+        is_using=True
+    )
+    is_success = up_test_dbase.add_seismic_record_info(
+        record_info=record_info
+    )
+    assert_that(
+        actual_or_assertion=is_success,
+        matcher=is_(True)
+    )
+    table = Table('seismic_records')
+    query = str(
+        Query.from_(table).select(Count(1)).where(
+            table.station_id == record_info.station_id).where(
+            table.start_time == record_info.datetime_start_str).where(
+            table.stop_time == record_info.datetime_stop_str).where(
+            table.frequency == record_info.frequency).where(
+            table.origin_name == record_info.origin_name).where(
+            table.unique_name == record_info.unique_name).where(
+            table.is_using == record_info.is_using)
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    records_count = cursor.fetchone()[0]
+    assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
+
+
+def test_add_duplicate_unique_name(up_test_dbase, clear_deposits_table):
+    up_test_dbase.add_deposit_info(area_name='test-area')
+    table = Table('deposits')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.area_name == 'test-area'
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    deposit_id = cursor.fetchone()[0]
+
+    work_info = WorkInfo(
+        well_name='test-name',
+        datetime_start_str='2022-11-15 12:12:12',
+        work_type='test-work',
+        deposit_id=deposit_id
+    )
+    up_test_dbase.add_work_info(work_info=work_info)
+
+    table = Table('works')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.well_name == work_info.well_name).where(
+            table.start_time == work_info.datetime_start_str).where(
+            table.work_type == work_info.work_type).where(
+            table.deposit_id == work_info.deposit_id
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    work_id_value = cursor.fetchone()[0]
+
+    station_info = StationInfo(
+        station_number=666,
+        x_wgs84=11.111111,
+        y_wgs84=22.222222,
+        altitude=33.3,
+        work_id=work_id_value
+    )
+    up_test_dbase.add_station_info(station_info=station_info)
+
+    table = Table('stations')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.station_number == station_info.station_number).where(
+            table.x_wgs84 == station_info.x_wgs84).where(
+            table.y_wgs84 == station_info.y_wgs84).where(
+            table.altitude == station_info.altitude).where(
+            table.work_id == station_info.work_id)
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    station_id_value = cursor.fetchone()[0]
+
+    record_info = SeismicRecordInfo(
+        station_id=station_id_value,
+        datetime_start_str='2022-12-12 12:12:12',
+        datetime_stop_str='2022-12-30 15:15:15',
+        frequency=888,
+        origin_name='test-name',
+        unique_name='test-name-2',
+        is_using=True
+    )
+    up_test_dbase.add_seismic_record_info(
+        record_info=record_info
+    )
+    record_info = SeismicRecordInfo(
+        station_id=station_id_value,
+        datetime_start_str='2000-10-11:11:11',
+        datetime_stop_str='2002-12-30 15:15:15',
+        frequency=888,
+        origin_name='test-name-3',
+        unique_name='test-name-2',
+        is_using=True
+    )
+    is_success = up_test_dbase.add_seismic_record_info(
+        record_info=record_info
+    )
+    assert_that(
+        actual_or_assertion=is_success,
+        matcher=is_(False)
+    )
+    table = Table('seismic_records')
+    query = str(
+        Query.from_(table).select(Count(1)).where(
+            table.station_id == record_info.station_id).where(
+            table.start_time == record_info.datetime_start_str).where(
+            table.stop_time == record_info.datetime_stop_str).where(
+            table.frequency == record_info.frequency).where(
+            table.origin_name == record_info.origin_name).where(
+            table.unique_name == record_info.unique_name).where(
+            table.is_using == record_info.is_using)
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    records_count = cursor.fetchone()[0]
+    assert_that(actual_or_assertion=records_count, matcher=equal_to(0))
+
+
+def test_update_seismic_records_info(up_test_dbase, clear_deposits_table):
+    up_test_dbase.add_deposit_info(area_name='test-area')
+    table = Table('deposits')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.area_name == 'test-area'
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    deposit_id = cursor.fetchone()[0]
+
+    work_info = WorkInfo(
+        well_name='test-name',
+        datetime_start_str='2022-11-15 12:12:12',
+        work_type='test-work',
+        deposit_id=deposit_id
+    )
+    up_test_dbase.add_work_info(work_info=work_info)
+
+    table = Table('works')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.well_name == work_info.well_name).where(
+            table.start_time == work_info.datetime_start_str).where(
+            table.work_type == work_info.work_type).where(
+            table.deposit_id == work_info.deposit_id
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    work_id_value = cursor.fetchone()[0]
+
+    station_info = StationInfo(
+        station_number=666,
+        x_wgs84=11.111111,
+        y_wgs84=22.222222,
+        altitude=33.3,
+        work_id=work_id_value
+    )
+    up_test_dbase.add_station_info(station_info=station_info)
+
+    table = Table('stations')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.station_number == station_info.station_number).where(
+            table.x_wgs84 == station_info.x_wgs84).where(
+            table.y_wgs84 == station_info.y_wgs84).where(
+            table.altitude == station_info.altitude).where(
+            table.work_id == station_info.work_id)
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    station_id_value = cursor.fetchone()[0]
+
+    old_record_info = SeismicRecordInfo(
+        station_id=station_id_value,
+        datetime_start_str='2022-12-12 12:12:12',
+        datetime_stop_str='2022-12-30 15:15:15',
+        frequency=888,
+        origin_name='test-name',
+        unique_name='test-name-2',
+        is_using=True
+    )
+    up_test_dbase.add_seismic_record_info(
+        record_info=old_record_info
+    )
+    new_record_info = SeismicRecordInfo(
+        station_id=station_id_value,
+        datetime_start_str='2222-12-12 12:12:12',
+        datetime_stop_str='2122-12-30 15:15:15',
+        frequency=777,
+        origin_name='test-name-3',
+        unique_name='test-name-4',
+        is_using=True
+    )
+    is_success = up_test_dbase.update_seismic_record_info(
+        old_record_info=old_record_info,
+        new_record_info=new_record_info
+    )
+    assert_that(
+        actual_or_assertion=is_success,
+        matcher=is_(True)
+    )
+    table = Table('seismic_records')
+    query = str(
+        Query.from_(table).select(Count(1)).where(
+            table.station_id == new_record_info.station_id).where(
+            table.start_time == new_record_info.datetime_start_str).where(
+            table.stop_time == new_record_info.datetime_stop_str).where(
+            table.frequency == new_record_info.frequency).where(
+            table.origin_name == new_record_info.origin_name).where(
+            table.unique_name == new_record_info.unique_name).where(
+            table.is_using == new_record_info.is_using)
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    records_count = cursor.fetchone()[0]
+    assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
+
+
+def test_update_duplicate_seismic_records_info(up_test_dbase,
+                                               clear_deposits_table):
+    up_test_dbase.add_deposit_info(area_name='test-area')
+    table = Table('deposits')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.area_name == 'test-area'
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    deposit_id = cursor.fetchone()[0]
+
+    work_info = WorkInfo(
+        well_name='test-name',
+        datetime_start_str='2022-11-15 12:12:12',
+        work_type='test-work',
+        deposit_id=deposit_id
+    )
+    up_test_dbase.add_work_info(work_info=work_info)
+
+    table = Table('works')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.well_name == work_info.well_name).where(
+            table.start_time == work_info.datetime_start_str).where(
+            table.work_type == work_info.work_type).where(
+            table.deposit_id == work_info.deposit_id
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    work_id_value = cursor.fetchone()[0]
+
+    station_info = StationInfo(
+        station_number=666,
+        x_wgs84=11.111111,
+        y_wgs84=22.222222,
+        altitude=33.3,
+        work_id=work_id_value
+    )
+    up_test_dbase.add_station_info(station_info=station_info)
+
+    table = Table('stations')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.station_number == station_info.station_number).where(
+            table.x_wgs84 == station_info.x_wgs84).where(
+            table.y_wgs84 == station_info.y_wgs84).where(
+            table.altitude == station_info.altitude).where(
+            table.work_id == station_info.work_id)
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    station_id_value = cursor.fetchone()[0]
+
+    record_info = SeismicRecordInfo(
+        station_id=station_id_value,
+        datetime_start_str='2022-12-12 12:12:12',
+        datetime_stop_str='2022-12-30 15:15:15',
+        frequency=888,
+        origin_name='test-name',
+        unique_name='test-name-2',
+        is_using=True
+    )
+    up_test_dbase.add_seismic_record_info(
+        record_info=record_info
+    )
+    old_record_info = SeismicRecordInfo(
+        station_id=station_id_value,
+        datetime_start_str='2722-12-12 12:12:12',
+        datetime_stop_str='2082-12-30 15:15:15',
+        frequency=777,
+        origin_name='test-name-4',
+        unique_name='test-name-8',
+        is_using=True
+    )
+    up_test_dbase.add_seismic_record_info(
+        record_info=old_record_info
+    )
+    new_record_info = SeismicRecordInfo(
+        station_id=station_id_value,
+        datetime_start_str='2022-12-12 12:12:12',
+        datetime_stop_str='2022-12-30 15:15:15',
+        frequency=888,
+        origin_name='test-name',
+        unique_name='test-name-2',
+        is_using=True
+    )
+    is_success = up_test_dbase.update_seismic_record_info(
+        old_record_info=old_record_info,
+        new_record_info=new_record_info
+    )
+    assert_that(
+        actual_or_assertion=is_success,
+        matcher=is_(False)
+    )
+    table = Table('seismic_records')
+    query = str(
+        Query.from_(table).select(Count(1)).where(
+            table.station_id == new_record_info.station_id).where(
+            table.start_time == new_record_info.datetime_start_str).where(
+            table.stop_time == new_record_info.datetime_stop_str).where(
+            table.frequency == new_record_info.frequency).where(
+            table.origin_name == new_record_info.origin_name).where(
+            table.unique_name == new_record_info.unique_name).where(
+            table.is_using == new_record_info.is_using)
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    records_count = cursor.fetchone()[0]
+    assert_that(actual_or_assertion=records_count, matcher=equal_to(1))
+
+
+def test_get_seismic_records_info(up_test_dbase, clear_deposits_table):
+    up_test_dbase.add_deposit_info(area_name='test-area')
+    table = Table('deposits')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.area_name == 'test-area'
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    deposit_id = cursor.fetchone()[0]
+
+    work_info = WorkInfo(
+        well_name='test-name',
+        datetime_start_str='2022-11-15 12:12:12',
+        work_type='test-work',
+        deposit_id=deposit_id
+    )
+    up_test_dbase.add_work_info(work_info=work_info)
+
+    table = Table('works')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.well_name == work_info.well_name).where(
+            table.start_time == work_info.datetime_start_str).where(
+            table.work_type == work_info.work_type).where(
+            table.deposit_id == work_info.deposit_id
+        )
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    work_id_value = cursor.fetchone()[0]
+
+    station_info = StationInfo(
+        station_number=666,
+        x_wgs84=11.111111,
+        y_wgs84=22.222222,
+        altitude=33.3,
+        work_id=work_id_value
+    )
+    up_test_dbase.add_station_info(station_info=station_info)
+
+    table = Table('stations')
+    query = str(
+        Query.from_(table).select('id').where(
+            table.station_number == station_info.station_number).where(
+            table.x_wgs84 == station_info.x_wgs84).where(
+            table.y_wgs84 == station_info.y_wgs84).where(
+            table.altitude == station_info.altitude).where(
+            table.work_id == station_info.work_id)
+    )
+    cursor = up_test_dbase.connection.cursor()
+    cursor.execute(query)
+    station_id_value = cursor.fetchone()[0]
+
+    record_info = SeismicRecordInfo(
+        station_id=station_id_value,
+        datetime_start_str='2022-12-12 12:12:12',
+        datetime_stop_str='2022-12-30 15:15:15',
+        frequency=888,
+        origin_name='test-name',
+        unique_name='test-name-2',
+        is_using=True
+    )
+    up_test_dbase.add_seismic_record_info(
+        record_info=record_info
+    )
+    new_record_info = SeismicRecordInfo(
+        station_id=station_id_value,
+        datetime_start_str='2722-12-12 12:12:12',
+        datetime_stop_str='2082-12-30 15:15:15',
+        frequency=777,
+        origin_name='test-name-4',
+        unique_name='test-name-8',
+        is_using=True
+    )
+    up_test_dbase.add_seismic_record_info(
+        record_info=new_record_info
+    )
+    records = up_test_dbase.get_seismic_records_info(
+        station_id=station_id_value
+    )
+    assert_that(
+        actual_or_assertion=len(records),
+        matcher=equal_to(2)
+    )
+    assert_that(
+        actual_or_assertion=isinstance(records, list),
+        matcher=is_(True)
+    )
+    record_check = [
+        record_info,
+        new_record_info
     ]
     assert_that(
         actual_or_assertion=records,

@@ -67,3 +67,24 @@ class StationInfo(BaseModel):
     y_wgs84: float
     altitude: float
     work_id: int
+
+
+class SeismicRecordInfo(BaseModel):
+    """Model with parameters for acting with stations table.
+
+    Args:
+        station_id: id of station
+        datetime_start_str: record start
+        datetime_stop_str: record finish
+        frequency: frequency of record
+        origin_name: record origin name
+        unique_name: record unique name
+        is_using: flag of using
+    """
+    station_id: int
+    datetime_start_str: str
+    datetime_stop_str: str
+    frequency: int
+    origin_name: str
+    unique_name: str
+    is_using: bool
