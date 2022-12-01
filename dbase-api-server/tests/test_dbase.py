@@ -1078,8 +1078,8 @@ def test_get_stations_info(up_test_dbase, clear_deposits_table):
         matcher=is_(True)
     )
     record_check = [
-        first_station_info.dict(),
-        second_station_info.dict()
+        first_station_info,
+        second_station_info
     ]
     assert_that(
         actual_or_assertion=records,
@@ -1581,8 +1581,8 @@ def test_get_seismic_records_info(up_test_dbase, clear_deposits_table):
         matcher=is_(True)
     )
     record_check = [
-        record_info.dict(),
-        new_record_info.dict()
+        record_info,
+        new_record_info
     ]
     assert_that(
         actual_or_assertion=records,

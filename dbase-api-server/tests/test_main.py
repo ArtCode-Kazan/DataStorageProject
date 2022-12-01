@@ -1292,8 +1292,8 @@ def test_get_seismic_records_info(up_test_dbase, clear_deposits_table):
         ),
         'data': {
             'records_info': [
-                record_info.dict(),
-                new_record_info.dict()
+                record_info,
+                new_record_info
             ]
         }
     }
